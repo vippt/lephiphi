@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lê Phi Phi — Kỹ sư Điện & Tự động hóa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-main: #000000;
+            --card-dark: #111111;
+            --gold: #d4af37;
+            --gold-light: #f5d969;
+            --gold-soft: #fff8dc;
+            --text-light: #ffffff;
+            --text-dark: #1a1a1a;
+            --border-radius: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #222222 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .resume-card {
+            background: var(--bg-main);
+            color: var(--text-light);
+            max-width: 760px;
+            width: 100%;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.35);
+            border: 1px solid rgba(212, 175, 55, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resume-card::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.25), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .section-label {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--text-dark);
+            display: inline-block;
+            padding: 9px 24px;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 18px;
+            border: 3px solid var(--bg-main);
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+        }
+
+        .icon-heading {
+            margin-right: 8px;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .avatar-frame {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 5px solid var(--bg-main);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.25);
+        }
+
+        .avatar-frame i {
+            font-size: 60px;
+            color: var(--text-dark);
+        }
+
+        .avatar-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 34px;
+            height: 34px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .header-info {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .greeting-tag {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold-light);
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+        }
+
+        .name {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gold-light);
+        }
+
+        .name i {
+            font-size: 1.4rem;
+        }
+
+        .title {
+            font-size: 1.1rem;
+            color: #cccccc;
+            margin-bottom: 12px;
+        }
+
+        .contact-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.04);
+            color: var(--text-light);
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .contact-item i {
+            color: var(--gold);
+        }
+
+        .about-card {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.14) 0%, rgba(245, 217, 105, 0.04) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+        }
+
+        .about-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .section-card {
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            margin-bottom: 20px;
+            position: relative;
+            top: -10px;
+            overflow: hidden;
+        }
+
+        .card-dark {
+            background: var(--card-dark);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .card-gold {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(245, 217, 105, 0.08) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            color: #e0e0e0;
+        }
+
+        .exp-item {
+            margin-bottom: 18px;
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--gold-light);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .exp-place {
+            font-size: 0.9rem;
+            color: #999999;
+            margin-bottom: 8px;
+        }
+
+        .exp-list {
+            list-style: none;
+            padding-left: 16px;
+        }
+
+        .exp-list li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #cccccc;
+        }
+
+        .exp-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .skill-bar-item {
+            margin-bottom: 14px;
+        }
+
+        .skill-name {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .skill-bar-bg {
+            height: 10px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+            border-radius: 5px;
+        }
+
+        .product-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-list li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            color: #cccccc;
+            font-size: 0.95rem;
+        }
+
+        .product-list li::before {
+            content: '\f013';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 10px;
+            color: var(--gold);
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 0.85rem;
+            color: #666666;
+        }
+
+        @media (max-width: 600px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+            .resume-card {
+                padding: 22px;
+            }
+            .name {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="resume-card">
+        <!-- === HEADER === -->
+        <div class="header-section">
+            <div class="avatar-wrapper">
+                <div class="avatar-frame">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="avatar-badge">⚡</div>
+            </div>
+            <div class="header-info">
+                <span class="greeting-tag">Xin chào! Tôi là</span>
+                <h1 class="name">Lê Phi Phi <i class="fas fa-cog"></i></h1>
+                <p class="title">Kỹ sư Điện & Tự động hóa | BMS · Điện Lạnh · CNTT</p>
+                <div class="contact-row">
+                    <span class="contact-item"><i class="fas fa-phone"></i> 09 22 33 22 43</span>
+                    <span class="contact-item"><i class="fas fa-map-marker-alt"></i> Phan Thiết, Bình Thuận</span>
+                    <span class="contact-item"><i class="fab fa-facebook"></i> Lê Phi Phi</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- === VỀ TÔI === -->
+        <div style="position: relative;">
+            <h2 class="section-label"><span class="icon-heading">👤</span> Về tôi</h2>
+            <div class="about-card">
+                <p class="about-text">
+                    Kỹ thuật viên Điện & Tự động hóa với hơn 7 năm kinh nghiệm trong thiết kế, lập trình, vận hành và bảo trì hệ thống. Từ nền tảng CNTT tự học chuyển sang chuyên môn Điện — Điện Lạnh, kết hợp công nghệ & kỹ thuật thực tế. Chuyên sâu hệ thống quản lý tòa nhà BMS, tự động hóa, giám sát công trình và bảo trì cơ sở vật chất. Luôn tỉ mỉ, học hỏi nhanh và làm việc với trách nhiệm cao.
+                </p>
+            </div>
+        </div>
+
+        <!-- === 2 CỘT: KINH NGHIỆM & HỌC VẤN === -->
+        <div class="two-columns">
+            <!-- KINH NGHIỆM -->
+            <div style="position: relative;">
+                <h2 class="section-label"><span class="icon-heading">💼</span> Kinh nghiệm</h2>
+                <div class="section-card card-dark">
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span>Bảo trì — Xưởng Điều Intersnack</span>
+                            <span>2022 → Hiện tại</span>
+                        </div>
+                        <p class="exp-place">Điện công nghiệp · Điện lạnh · Bảo trì thiết bị</p>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span>Giám sát Điện Hạ tầng — NoVa</span>
+                            <span>2019 → 2022</span>
+                        </div>
+                        <p class="exp-place">Quản lý tiến độ · Kiểm tra chất lượng thi công điện</p>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span>Bảo trì Khu nghỉ dưỡng</span>
+                            <span>2016 → 2019</span>
+                        </div>
+                        <p class="exp-place">Điện · Điện lạnh · Cơ sở vật chất · Hệ thống mạng</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HỌC VẤN -->
+            <div style="position: relative;">
+                <h2 class="section-label"><span class="icon-heading">🎓</span> Học vấn</h2>
+                <div class="section-card card-dark">
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span>TCCN Điện CN & DD</span>
+                            <span>Tốt nghiệp</span>
+                        </div>
+                        <p class="exp-place">Chuyên ngành Điện Công nghiệp & Dân dụng</p>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span>Tự học CNTT</span>
+                            <span>Liên tục</span>
+                        </div>
+                        <ul class="exp-list">
+                            <li>Lập trình: PHP, C++, C#</li>
+                            <li>Hệ thống mạng, Máy tính</li>
+                            <li>Thiết kế CAD, Tin học văn phòng</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === KỸ NĂNG CHUYÊN MÔN === -->
+        <div style="position: relative; margin-top: 5px;">
+            <h2 class="section-label"><span class="icon-heading">⚙️</span> Kỹ năng chuyên môn</h2>
+            <div class="section-card card-gold">
+                <div class="two-columns">
+                    <div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">⚡ Lập trình & Tự động hóa BMS</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:92%"></div></div>
+                        </div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">🔌 Điện công nghiệp & Dân dụng</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:95%"></div></div>
+                        </div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">❄️ Điện Lạnh & Bảo trì</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:90%"></div></div>
+                        </div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">📡 Hệ thống mạng & CNTT</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:85%"></div></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">📐 Thiết kế CAD — Bản vẽ</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:80%"></div></div>
+                        </div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">🛡️ Giám sát An toàn HSE</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:88%"></div></div>
+                        </div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">💻 Lập trình: C++ · C# · PHP</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:78%"></div></div>
+                        </div>
+                        <div class="skill-bar-item">
+                            <div class="skill-name">🤝 Quản lý công trình & Kho</div>
+                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:86%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === SẢN PHẨM & DỰ ÁN === -->
+        <div style="position: relative; margin-top: 5px;">
+            <h2 class="section-label"><span class="icon-heading">🔧</span> Sản phẩm & Dự án</h2>
+            <div class="section-card card-dark">
+                <div class="two-columns">
+                    <ul class="product-list">
+                        <li>📦 Gian hàng Shopee</li>
+                        <li>🎬 Kênh Youtube — Chia sẻ kiến thức</li>
+                        <li>📱 Giá kẹp điện thoại có sạc</li>
+                    </ul>
+                    <ul class="product-list">
+                        <li>⛽ Thiết bị tiết kiệm xăng xe & ô tô</li>
+                        <li>🔌 Mạch Passing L4 3S xe máy</li>
+                        <li>⚡ Role xi nhan điều chỉnh tốc độ</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            © 2026 Lê Phi Phi — Kỹ sư Điện & Tự động hóa · Phan Thiết, Bình Thuận
+        </footer>
+    </div>
+</body>
+</html>
