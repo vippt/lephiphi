@@ -18,6 +18,8 @@
             --gold: #d4af37;
             --gold-light: #f5d969;
             --gold-soft: #fff8dc;
+            --rose: #e8a8a8;
+            --rose-light: #f8d7d7;
             --text-light: #ffffff;
             --text-dark: #1a1a1a;
             --border-radius: 28px;
@@ -99,7 +101,6 @@
             box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.25);
         }
 
-        /* === ẢNH ĐẠI DIỆN CỦA BẠN === */
         .avatar-frame img {
             width: 100%;
             height: 100%;
@@ -222,6 +223,70 @@
             color: #e0e0e0;
         }
 
+        /* === KHUNG CHỦ ĐỀ CƯỚI === */
+        .wedding-card {
+            background: linear-gradient(135deg, rgba(232, 168, 168, 0.15) 0%, rgba(248, 215, 215, 0.05) 100%);
+            border: 1px solid rgba(232, 168, 168, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            top: -10px;
+        }
+
+        .wedding-icon {
+            font-size: 2.5rem;
+            color: var(--rose);
+            margin-bottom: 12px;
+        }
+
+        .wedding-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--rose-light);
+            margin-bottom: 8px;
+        }
+
+        .wedding-desc {
+            font-size: 0.95rem;
+            color: #cccccc;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .wedding-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-light) 100%);
+            color: var(--text-dark);
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .wedding-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 168, 168, 0.3);
+        }
+
+        .wedding-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 10px 0;
+        }
+
+        .wedding-divider span {
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--rose), transparent);
+        }
+
         .exp-item {
             margin-bottom: 18px;
         }
@@ -337,9 +402,9 @@
         <div class="header-section">
             <div class="avatar-wrapper">
                 <div class="avatar-frame">
-                    <!-- ========== THAY LINK ẢNH CỦA BẠN Ở DƯỚI ========== -->
+                    <!-- ========== THAY LINK ẢNH ĐẠI DIỆN CỦA BẠN Ở DƯỚI ========== -->
                     <img src="https://vippt.github.io/lephiphi/chu-re.jpg" alt="Lê Phi Phi">
-                    <!-- =================================================== -->
+                    <!-- ======================================================== -->
                 </div>
                 <div class="avatar-badge">⚡</div>
             </div>
@@ -482,8 +547,38 @@
             </div>
         </div>
 
+        <!-- === KHUNG KỶ NIỆM NGÀY CƯỚI === -->
+        <div style="position: relative; margin-top: 5px;">
+            <h2 class="section-label" style="background: linear-gradient(135deg, var(--rose) 0%, var(--rose-light) 100%);">
+                <span class="icon-heading">💍</span> Kỷ niệm Ngày Cưới
+            </h2>
+            <div class="wedding-card">
+                <div class="wedding-icon">
+                    <i class="fas fa-heart"></i>
+                    <i class="fas fa-ring"></i>
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="wedding-title">Trọn Vẹn Tình Yêu — Trọn Vẹn Ngày Hôm Nay</h3>
+                <div class="wedding-divider">
+                    <span></span>
+                    <span>💕</span>
+                    <span></span>
+                </div>
+                <p class="wedding-desc">
+                    Nơi lưu giữ những khoảnh khắc đẹp, lời chúc chân thành và hành trình yêu thương của chúng tôi.<br>
+                    Mỗi ngày trôi qua đều là một trang viết tiếp trong câu chuyện của hai người.
+                </p>
+                <a href="https://love.lephiphi.com" target="_blank" class="wedding-link">
+                    <i class="fas fa-star"></i>
+                    Xem Trang Kỷ Niệm Cưới
+                    <i class="fas fa-external-link-alt" style="font-size: 0.85rem;"></i>
+                </a>
+            </div>
+        </div>
+
         <footer>
-            © 2026 Lê Phi Phi — Kỹ sư Điện & Tự động hóa · Phan Thiết, Bình Thuận
+            © 2026 Lê Phi Phi — Kỹ sư Điện & Tự động hóa · Phan Thiết, Bình Thuận<br>
+            <span style="color: var(--rose); font-size: 0.8rem;">💍 Đặc biệt dành cho người yêu thương — love.lephiphi.com</span>
         </footer>
     </div>
 </body>
