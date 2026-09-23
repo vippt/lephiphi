@@ -26,19 +26,24 @@
         }
 
         body {
-  background: 
-    linear-gradient(135deg, rgba(0,0,0,0.75), rgba(0,0,0,0.85)),
-    url('https://vippt.github.io/lephiphi/hinh-nen-lephiphi.com.png') no-repeat center fixed / cover;
-  
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  min-height: 100vh;
-  padding: 40px 20px;
-  display: flex;
-  justify-content: center;
-}
+            /* === NỀN ẢNH + LỚP MỜ === */
+            background: 
+                linear-gradient(135deg, rgba(0,0,0,0.78), rgba(20,15,5,0.82)),
+                url('https://vippt.github.io/lephiphi/hinh-nen-lephiphi.com.png');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
 
         .resume-card {
-            background: var(--bg-main);
+            background: rgba(0, 0, 0, 0.85); /* Nền thẻ trong suốt nhẹ để thấy ảnh nền */
             color: var(--text-light);
             max-width: 760px;
             width: 100%;
@@ -48,18 +53,6 @@
             border: 1px solid rgba(212, 175, 55, 0.12);
             position: relative;
             overflow: hidden;
-        }
-
-        .resume-card::before {
-            content: '';
-            position: absolute;
-            top: -60px;
-            right: -60px;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.25), transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
         }
 
         .section-label {
@@ -217,7 +210,7 @@
         }
 
         .card-dark {
-            background: var(--card-dark);
+            background: rgba(17, 17, 17, 0.8);
             border: 1px solid rgba(255,255,255,0.06);
         }
 
@@ -370,7 +363,6 @@
 
         <!-- === 2 CỘT: KINH NGHIỆM & HỌC VẤN === -->
         <div class="two-columns">
-            <!-- KINH NGHIỆM -->
             <div style="position: relative;">
                 <h2 class="section-label"><span class="icon-heading">💼</span> Kinh nghiệm</h2>
                 <div class="section-card card-dark">
@@ -381,7 +373,6 @@
                         </div>
                         <p class="exp-place">Điện công nghiệp · Điện lạnh · Bảo trì thiết bị</p>
                     </div>
-
                     <div class="exp-item">
                         <div class="exp-header">
                             <span>Giám sát Điện Hạ tầng — NoVa</span>
@@ -389,7 +380,6 @@
                         </div>
                         <p class="exp-place">Quản lý tiến độ · Kiểm tra chất lượng thi công điện</p>
                     </div>
-
                     <div class="exp-item">
                         <div class="exp-header">
                             <span>Bảo trì Khu nghỉ dưỡng</span>
@@ -399,8 +389,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- HỌC VẤN -->
             <div style="position: relative;">
                 <h2 class="section-label"><span class="icon-heading">🎓</span> Học vấn</h2>
                 <div class="section-card card-dark">
@@ -411,7 +399,6 @@
                         </div>
                         <p class="exp-place">Chuyên ngành Điện Công nghiệp & Dân dụng</p>
                     </div>
-
                     <div class="exp-item">
                         <div class="exp-header">
                             <span>Tự học CNTT</span>
@@ -427,7 +414,7 @@
             </div>
         </div>
 
-        <!-- === KỸ NĂNG CHUYÊN MÔN === -->
+        <!-- === KỸ NĂNG === -->
         <div style="position: relative; margin-top: 5px;">
             <h2 class="section-label"><span class="icon-heading">⚙️</span> Kỹ năng chuyên môn</h2>
             <div class="section-card card-gold">
@@ -472,7 +459,7 @@
             </div>
         </div>
 
-        <!-- === SẢN PHẨM & DỰ ÁN === -->
+        <!-- === SẢN PHẨM === -->
         <div style="position: relative; margin-top: 5px;">
             <h2 class="section-label"><span class="icon-heading">🔧</span> Sản phẩm & Dự án</h2>
             <div class="section-card card-dark">
