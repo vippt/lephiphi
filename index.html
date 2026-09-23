@@ -26,7 +26,6 @@
         }
 
         body {
-            /* === NỀN ẢNH + LỚP MỜ === */
             background: 
                 linear-gradient(135deg, rgba(0,0,0,0.4), rgba(20,15,5,0.5)),
                 url('https://vippt.github.io/lephiphi/hinh-nen-lephiphi.com.png');
@@ -43,7 +42,7 @@
         }
 
         .resume-card {
-            background: rgba(0, 0, 0, 0.85); /* Nền thẻ trong suốt nhẹ để thấy ảnh nền */
+            background: rgba(0, 0, 0, 0.85);
             color: var(--text-light);
             max-width: 760px;
             width: 100%;
@@ -100,9 +99,12 @@
             box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.25);
         }
 
-        .avatar-frame i {
-            font-size: 60px;
-            color: var(--text-dark);
+        /* === ẢNH ĐẠI DIỆN CỦA BẠN === */
+        .avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
         }
 
         .avatar-badge {
@@ -335,7 +337,9 @@
         <div class="header-section">
             <div class="avatar-wrapper">
                 <div class="avatar-frame">
-                    <i class="fas fa-user"></i>
+                    <!-- ========== THAY LINK ẢNH CỦA BẠN Ở DƯỚI ========== -->
+                    <img src="https://vippt.github.io/lephiphi/chu-re.png" alt="Lê Phi Phi">
+                    <!-- =================================================== -->
                 </div>
                 <div class="avatar-badge">⚡</div>
             </div>
