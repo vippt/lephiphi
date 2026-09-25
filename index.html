@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Cá Nhân — Lê Phi Phi</title>
+    <title>Lê Phi Phi - LePhiPhi.Com</title>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700&family=Noto+Sans:wght@400;500;600;700&display=swap');
@@ -23,44 +23,40 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Noto Sans', sans-serif; min-height: 100vh; overflow: hidden; background: #000500; }
 
-        /* ===== MƯA MÃ NHỊ PHÂN MA TRẬN ===== */
-        .matrix-bg {
-            position: fixed; top: 0; left: 0;
+        /* ===== ẢNH NỀN NGOÀI KHUNG LOADING ===== */
+        .login-bg {
+            position: fixed;
+            top: 0; left: 0;
             width: 100vw; height: 100vh;
-            z-index: 1; overflow: hidden;
-            pointer-events: none;
-        }
-        .matrix-col {
-            position: absolute; top: -100vh;
-            font-size: 15px; line-height: 1.6;
-            color: #00ff41; font-family: 'Share Tech Mono', monospace;
-            animation: fall linear infinite;
-            text-shadow: 0 0 6px #00ff41;
-            opacity: 0.75; white-space: pre;
-        }
-        @keyframes fall {
-            0% { transform: translateY(0); opacity: 0; }
-            10% { opacity: 0.75; }
-            90% { opacity: 0.75; }
-            100% { transform: translateY(200vh); opacity: 0; }
+            z-index: 1;
+            background-image: url('https://vippt.github.io/lephiphi/bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        /* ===== KHUNG LOADING ===== */
+        /* ===== KHUNG LOADING — TRONG SUỐT ===== */
         .access-screen {
-            position: fixed; top: 50%; left: 50%;
+            position: fixed;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10; width: 90%; max-width: 520px;
+            z-index: 10;
+            width: 90%; max-width: 520px;
             text-align: center;
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
-        .access-screen.hidden { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.9); }
+        .access-screen.hidden {
+            opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.9);
+        }
 
         .terminal {
             border: 2px solid var(--neon-green);
             box-shadow: 0 0 30px rgba(0,255,65,0.6);
-            background: rgba(0,10,2,0.85);
-            border-radius: 8px; padding: 2rem 1.5rem;
+            background: transparent;
+            border-radius: 8px;
+            padding: 2rem 1.5rem;
         }
+
         .status {
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green); font-size: 1.1rem;
@@ -96,7 +92,7 @@
             50% { opacity: 1; box-shadow: 0 0 20px rgba(0,255,65,0.6); }
         }
 
-        /* ===== CỬA ===== */
+        /* ===== CỬA — MỞ TRONG 2 GIÂY ===== */
         .doors {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh; z-index: 5;
@@ -105,7 +101,7 @@
         .door {
             position: absolute; top: 0; width: 50%; height: 100%;
             background: linear-gradient(180deg, #001200, #000800);
-            transition: transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 2s cubic-bezier(0.175, 0.885, 0.32, 1);
         }
         .door-l { left: 0; border-right: 2px solid var(--neon-green); }
         .door-r { right: 0; border-left: 2px solid var(--neon-green); }
@@ -118,25 +114,28 @@
             width: 100vw; height: 100vh; overflow-y: auto;
             padding: 2rem 1rem; z-index: 3;
             background: linear-gradient(135deg, #f5f0e1 0%, #e8dfc9 100%);
-            opacity: 0; transition: opacity 0.6s ease 0.2s;
+            opacity: 0; transition: opacity 0.8s ease 0.5s;
         }
         .opened .main { opacity: 1; }
 
-        .frag {
-            opacity: 0; transform: translateY(20px) scale(0.95);
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* ===== HIỆU ỨNG ĐÁNH MÁY ===== */
+        .type-text {
+            overflow: hidden;
+            white-space: pre-wrap;
+            width: 0;
+            transition: width 0.05s ease;
+            display: inline-block;
         }
-        .opened .frag { opacity: 1; transform: translateY(0) scale(1); }
-        .f1 { transition-delay: 0.9s; }
-        .f2 { transition-delay: 1.15s; }
-        .f3 { transition-delay: 1.4s; }
-        .f4 { transition-delay: 1.65s; }
 
         .notebook { max-width: 780px; margin: 0 auto; }
         .book {
             display: flex; background: var(--cream); border-radius: 12px;
             box-shadow: 0 10px 40px rgba(139,105,20,0.2); overflow: hidden;
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s ease 0.8s, transform 0.8s ease 0.8s;
         }
+        .opened .book { opacity: 1; transform: translateY(0); }
+
         .page { width: 50%; padding: 2rem 1.5rem; position: relative; min-height: 520px; }
         .p-l { background: var(--paper); border-right: 1px dashed rgba(139,105,20,0.15); }
         .p-r { background: var(--cream); }
@@ -157,18 +156,25 @@
             display: flex; align-items: center; justify-content: center;
             margin-bottom: 1.2rem; box-shadow: 0 4px 15px rgba(139,105,20,0.3);
             overflow: hidden; border: 3px solid white;
+            opacity: 0; transform: scale(0.8);
+            transition: opacity 0.7s ease 1.2s, transform 0.7s ease 1.2s;
         }
+        .opened .avatar { opacity: 1; transform: scale(1); }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .info-group { opacity: 0; transition: opacity 0.5s ease; }
+        .info-group.show { opacity: 1; }
         .row { margin-bottom: 1rem; }
         .lbl { font-size: 0.8rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; }
-        .val { font-size: 1rem; color: var(--text-dark); font-weight: 600; }
-        .intro { margin-top: 1.5rem; line-height: 1.8; color: var(--text-dark); font-size: 0.95rem; }
+        .val { font-size: 1rem; color: var(--text-dark); font-weight: 600; min-height: 1.5rem; }
+        .intro { margin-top: 1.5rem; line-height: 1.8; color: var(--text-dark); font-size: 0.95rem; min-height: 4.5rem; }
 
         .btn {
             display: flex; align-items: center; text-decoration: none;
             border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.2rem;
             transition: all 0.3s ease; width: 100%;
+            opacity: 0; transform: translateX(-20px);
         }
+        .btn.show { opacity: 1; transform: translateX(0); }
         .btn:hover { transform: translateY(-3px); }
         .cv { background: linear-gradient(135deg, #4a90d9, #357abd); color: white; }
         .love { background: linear-gradient(135deg, #e85d75, #d64860); color: white; }
@@ -178,7 +184,36 @@
         .btn-p { font-size: 0.85rem; opacity: 0.9; }
         .btn-arrow { transition: transform 0.3s; }
         .btn:hover .btn-arrow { transform: translateX(4px); }
-        .foot { text-align: center; margin-top: 2rem; font-size: 0.8rem; color: var(--text-soft); }
+
+        /* ===== MÃ QR ===== */
+        .qr-box {
+            margin-top: 1rem;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.5s ease 1s, transform 0.5s ease 1s;
+        }
+        .qr-box.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .qr-img {
+            max-width: 160px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .qr-note {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-soft);
+        }
+
+        .foot {
+            text-align: center; margin-top: 2rem; font-size: 0.8rem; color: var(--text-soft);
+            opacity: 0; transition: opacity 0.5s ease 2.4s;
+        }
+        .opened .foot { opacity: 1; }
         .close {
             position: fixed; top: 1rem; right: 1rem;
             background: rgba(255,255,255,0.9); border: none;
@@ -194,26 +229,27 @@
             .page { width: 100%; min-height: auto; padding: 1.5rem 1.2rem; }
             .p-l { border-right: none; border-bottom: 1px dashed rgba(139,105,20,0.15); }
             .avatar { width: 100px; height: 100px; }
+            .qr-img { max-width: 140px; }
         }
     </style>
 </head>
 <body id="body">
-    <!-- MƯA MÃ NHỊ PHÂN MA TRẬN -->
-    <div class="matrix-bg" id="matrix"></div>
+    <!-- ẢNH NỀN NGOÀI KHUNG -->
+    <div class="login-bg"></div>
 
-    <!-- KHUNG LOADING -->
+    <!-- KHUNG LOADING TRONG SUỐT -->
     <div class="access-screen" id="access">
         <div class="terminal">
             <p class="status" id="status">Đang khởi tạo...</p>
             <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
             <p class="progress-pct" id="pct">0%</p>
             <p class="enter-btn" id="enterBtn" onclick="openDoors()">
-                ⌨️ Nhấn <strong>ENTER</strong> để vào trang cá nhân
+                ⌨️ <strong>ENTER</strong> 
             </p>
         </div>
     </div>
 
-    <!-- CỬA -->
+    <!-- CỬA MỞ 2 GIÂY -->
     <div class="doors">
         <div class="door door-l"></div>
         <div class="door door-r"></div>
@@ -221,73 +257,86 @@
 
     <!-- DASHBOARD -->
     <div class="main">
-        <div class="notebook frag f1">
+        <div class="notebook">
             <div class="book">
                 <div class="page p-l">
                     <div class="lines"></div>
                     <div style="position:relative;z-index:1;">
                         <h2 class="title">Thông Tin Cá Nhân</h2>
-                        <div class="avatar frag f2">
+                        <div class="avatar" id="avatar">
                             <img src="https://vippt.github.io/lephiphi/chu-re.jpg" alt="Avatar">
                         </div>
-                        <div class="row"><div class="lbl">Họ và tên</div><div class="val">Lê Phi Phi</div></div>
-                        <div class="row"><div class="lbl">Nơi sinh sống</div><div class="val">Đà Nẵng, Việt Nam</div></div>
-                        <p class="intro frag f3">Chào bạn! 👋<br>Tôi là Phi Phi — người luôn yêu thích khám phá, tạo dựng và ghi chép những khoảnh khắc đáng nhớ.</p>
+                        <div class="info-group" id="infoGroup">
+                            <div class="row">
+                                <div class="lbl">Họ và tên</div>
+                                <div class="val type-text" data-text="Lê Phi Phi"></div>
+                            </div>
+                            <div class="row">
+                                <div class="lbl">Nơi sinh sống</div>
+                                <div class="val type-text" data-text="Phan Thiết - Bình Thuận"></div>
+                            </div>
+                            <p class="intro type-text" data-text="Chào bạn! 👋 Tôi là Phi Phi — Tôi thích xem phim và du lịch."></p>
+                        </div>
                     </div>
                 </div>
                 <div class="page p-r">
                     <div class="lines"></div>
                     <div style="position:relative;z-index:1;">
                         <h2 class="title">Khám Phá</h2>
-                        <a href="https://cv.lephiphi.com" class="btn cv frag f2">
+                        <a href="https://cv.lephiphi.com" class="btn cv" id="btnCv">
                             <i class="fa fa-file-text-o btn-icon"></i>
-                            <div class="btn-text"><div class="btn-h">CV & Hồ Sơ</div><div class="btn-p">Kinh nghiệm, học vấn, dự án</div></div>
+                            <div class="btn-text">
+                                <div class="btn-h">CV & Hồ Sơ</div>
+                                <div class="btn-p">Kinh nghiệm, học vấn, dự án</div>
+                            </div>
                             <i class="fa fa-chevron-right btn-arrow"></i>
                         </a>
-                        <a href="https://love.lephiphi.com" class="btn love frag f3">
+                        <a href="https://love.lephiphi.com" class="btn love" id="btnLove">
                             <i class="fa fa-heart btn-icon"></i>
-                            <div class="btn-text"><div class="btn-h">Kỷ Niệm Cưới 💍</div><div class="btn-p">Hình ảnh và câu chuyện yêu thương</div></div>
+                            <div class="btn-text">
+                                <div class="btn-h">Kỷ Niệm Cưới 💍</div>
+                                <div class="btn-p">Hình ảnh và câu chuyện yêu thương</div>
+                            </div>
                             <i class="fa fa-chevron-right btn-arrow"></i>
                         </a>
-                        <div style="margin-top:2rem;padding-top:1rem;border-top:1px dashed rgba(139,105,20,0.15);" class="frag f4">
+                        <div style="margin-top:2rem;padding-top:1rem;border-top:1px dashed rgba(139,105,20,0.15);" class="info-group" id="contactGroup">
                             <p style="font-size:0.85rem;color:var(--text-soft);margin-bottom:0.5rem;">Liên hệ:</p>
-                            <p style="font-size:0.9rem;color:var(--text-dark);">📧 contact@lephiphi.com</p>
+                            <p style="font-size:0.9rem;color:var(--text-dark);" class="type-text" data-text="📧 contact@lephiphi.com"></p>
+                            
+                            <!-- ẢNH QR MỚI THÊM -->
+                            <div class="qr-box" id="qrBox">
+                                <img src="https://vippt.github.io/lephiphi/qrpaylephiphi.png" alt="QR Thanh toán" class="qr-img">
+                                
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <p class="foot frag f4">✨ Trang cá nhân của Lê Phi Phi</p>
+      
     </div>
 
     <button class="close" onclick="closeDoors()"><i class="fa fa-times"></i></button>
 
     <script>
-        // TẠO MƯA MÃ NHỊ PHÂN — ĐƠN GIẢN, CHẮC CHẮN
-        function initMatrix() {
-            const container = document.getElementById('matrix');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const cols = Math.ceil(window.innerWidth / 18);
-            for (let i = 0; i < cols; i++) {
-                const el = document.createElement('div');
-                el.className = 'matrix-col';
-                el.style.left = `${i * 18}px`;
-                el.style.animationDuration = `${5 + Math.random() * 8}s`;
-                el.style.animationDelay = `${Math.random() * 4}s`;
-
-                let text = '';
-                for (let j = 0; j < 60; j++) {
-                    text += (Math.random() > 0.5 ? '1' : '0') + ' ';
-                }
-                el.textContent = text;
-                container.appendChild(el);
-            }
+        // HIỆU ỨNG ĐÁNH MÁY
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.textContent = '';
+            element.style.width = '100%';
+            
+            return new Promise(resolve => {
+                const timer = setInterval(() => {
+                    if (i < text.length) {
+                        element.textContent = text.substring(0, i + 1);
+                        i++;
+                    } else {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, speed);
+            });
         }
-
-        initMatrix();
-        window.addEventListener('resize', initMatrix);
 
         // LOADING
         const statusTexts = ["Đang khởi tạo...", "Đang xác minh danh tính...", "Đang mở trang cá nhân...", "Đã sẵn sàng ✨"];
@@ -316,16 +365,42 @@
             status.textContent = statusTexts[Math.min(Math.floor(progress / 25), 3)];
         }, 80);
 
-        // MỞ / ĐÓNG CỬA
-        function openDoors() {
+        // MỞ CỬA + ĐÁNH MÁY + HIỆN QR
+        async function openDoors() {
             if (!ready) return;
             access.classList.add('hidden');
-            setTimeout(() => body.classList.add('opened'), 400);
+            
+            setTimeout(() => {
+                body.classList.add('opened');
+                setTimeout(startTyping, 2000);
+            }, 300);
         }
+
+        async function startTyping() {
+            document.getElementById('infoGroup').classList.add('show');
+            
+            const typeElements = document.querySelectorAll('.type-text');
+            for (let i = 0; i < typeElements.length; i++) {
+                const text = typeElements[i].getAttribute('data-text');
+                await typeWriter(typeElements[i], text, 50);
+                await new Promise(r => setTimeout(r, 200));
+            }
+            
+            setTimeout(() => document.getElementById('btnCv').classList.add('show'), 300);
+            setTimeout(() => document.getElementById('btnLove').classList.add('show'), 600);
+            setTimeout(() => document.getElementById('contactGroup').classList.add('show'), 900);
+            setTimeout(() => document.getElementById('qrBox').classList.add('show'), 1200); // Hiện QR sau email
+        }
+
         function closeDoors() {
             body.classList.remove('opened');
-            setTimeout(() => access.classList.remove('hidden'), 500);
+            setTimeout(() => {
+                document.querySelectorAll('.type-text').forEach(el => el.textContent = '');
+                document.querySelectorAll('.info-group, .btn, .qr-box').forEach(el => el.classList.remove('show'));
+                access.classList.remove('hidden');
+            }, 500);
         }
+
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter' && ready) openDoors();
         });
