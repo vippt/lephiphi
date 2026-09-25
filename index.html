@@ -3,583 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lê Phi Phi — Kỹ sư Điện & Tự động hóa</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Trang Cá Nhân — Lê Phi Phi</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700&family=Noto+Sans:wght@400;500;600;700&display=swap');
 
         :root {
-            --bg-main: #000000;
-            --card-dark: #111111;
-            --gold: #d4af37;
-            --gold-light: #f5d969;
-            --gold-soft: #fff8dc;
-            --rose: #e8a8a8;
-            --rose-light: #f8d7d7;
-            --text-light: #ffffff;
-            --text-dark: #1a1a1a;
-            --border-radius: 28px;
-            --radius-lg: 20px;
-            --radius-md: 14px;
+            --neon-green: #00ff41;
+            --cream: #faf6ed;
+            --paper: #fff9ef;
+            --warm-brown: #8b6914;
+            --soft-brown: #b8860b;
+            --text-dark: #3a3a3a;
+            --text-soft: #6b6b6b;
+            --accent-love: #e85d75;
+            --accent-cv: #4a90d9;
         }
 
-        body {
-            background: 
-                linear-gradient(135deg, rgba(0,0,0,0.4), rgba(20,15,5,0.5)),
-                url('https://vippt.github.io/lephiphi/hinh-nen-lephiphi.com.png');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            min-height: 100vh;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans', sans-serif; min-height: 100vh; overflow: hidden; background: #000500; }
+
+        /* ===== MƯA MÃ NHỊ PHÂN MA TRẬN ===== */
+        .matrix-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1; overflow: hidden;
+            pointer-events: none;
+        }
+        .matrix-col {
+            position: absolute; top: -100vh;
+            font-size: 15px; line-height: 1.6;
+            color: #00ff41; font-family: 'Share Tech Mono', monospace;
+            animation: fall linear infinite;
+            text-shadow: 0 0 6px #00ff41;
+            opacity: 0.75; white-space: pre;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 0.75; }
+            90% { opacity: 0.75; }
+            100% { transform: translateY(200vh); opacity: 0; }
         }
 
-        .resume-card {
-            background: rgba(0, 0, 0, 0.85);
-            color: var(--text-light);
-            max-width: 760px;
-            width: 100%;
-            border-radius: var(--border-radius);
-            padding: 30px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.35);
-            border: 1px solid rgba(212, 175, 55, 0.12);
-            position: relative;
-            overflow: hidden;
+        /* ===== KHUNG LOADING ===== */
+        .access-screen {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; width: 90%; max-width: 520px;
+            text-align: center;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .access-screen.hidden { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.9); }
+
+        .terminal {
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 30px rgba(0,255,65,0.6);
+            background: rgba(0,10,2,0.85);
+            border-radius: 8px; padding: 2rem 1.5rem;
+        }
+        .status {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-green); font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .progress-bar {
+            width: 100%; height: 24px;
+            border: 1px solid var(--neon-green); border-radius: 4px;
+            background: rgba(0,0,0,0.6); margin-bottom: 0.8rem; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; width: 0;
+            background: linear-gradient(90deg, #00cc34, var(--neon-green), #00cc34);
+            transition: width 0.25s ease;
+            box-shadow: 0 0 12px rgba(0,255,65,0.8);
+        }
+        .progress-pct {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-green); font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .enter-btn {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-green); font-size: 1rem;
+            padding: 0.8rem 1.2rem;
+            border: 1px dashed rgba(0,255,65,0.8); border-radius: 6px;
+            background: rgba(0,255,65,0.08);
+            cursor: pointer; display: none;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 0.7; }
+            50% { opacity: 1; box-shadow: 0 0 20px rgba(0,255,65,0.6); }
         }
 
-        .section-label {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: var(--text-dark);
-            display: inline-block;
-            padding: 9px 24px;
-            border-radius: 24px;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 18px;
-            border: 3px solid var(--bg-main);
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+        /* ===== CỬA ===== */
+        .doors {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh; z-index: 5;
+            pointer-events: none;
         }
-
-        .icon-heading {
-            margin-right: 8px;
+        .door {
+            position: absolute; top: 0; width: 50%; height: 100%;
+            background: linear-gradient(180deg, #001200, #000800);
+            transition: transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .door-l { left: 0; border-right: 2px solid var(--neon-green); }
+        .door-r { right: 0; border-left: 2px solid var(--neon-green); }
+        .opened .door-l { transform: translateX(-100%); }
+        .opened .door-r { transform: translateX(100%); }
 
-        .header-section {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+        /* ===== DASHBOARD ===== */
+        .main {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh; overflow-y: auto;
+            padding: 2rem 1rem; z-index: 3;
+            background: linear-gradient(135deg, #f5f0e1 0%, #e8dfc9 100%);
+            opacity: 0; transition: opacity 0.6s ease 0.2s;
         }
+        .opened .main { opacity: 1; }
 
-        .avatar-wrapper {
-            position: relative;
-            flex-shrink: 0;
+        .frag {
+            opacity: 0; transform: translateY(20px) scale(0.95);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .opened .frag { opacity: 1; transform: translateY(0) scale(1); }
+        .f1 { transition-delay: 0.9s; }
+        .f2 { transition-delay: 1.15s; }
+        .f3 { transition-delay: 1.4s; }
+        .f4 { transition-delay: 1.65s; }
 
-        .avatar-frame {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 5px solid var(--bg-main);
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.25);
+        .notebook { max-width: 780px; margin: 0 auto; }
+        .book {
+            display: flex; background: var(--cream); border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(139,105,20,0.2); overflow: hidden;
         }
-
-        .avatar-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
+        .page { width: 50%; padding: 2rem 1.5rem; position: relative; min-height: 520px; }
+        .p-l { background: var(--paper); border-right: 1px dashed rgba(139,105,20,0.15); }
+        .p-r { background: var(--cream); }
+        .lines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(139,105,20,0.08) 31px, rgba(139,105,20,0.08) 32px);
+            pointer-events: none;
         }
-
-        .avatar-badge {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 34px;
-            height: 34px;
-            background: var(--gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-dark);
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .header-info {
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .greeting-tag {
-            background: rgba(212, 175, 55, 0.15);
-            color: var(--gold-light);
-            display: inline-block;
-            padding: 6px 18px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            border: 1px solid rgba(212, 175, 55, 0.35);
-        }
-
-        .name {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--gold-light);
-        }
-
-        .name i {
-            font-size: 1.4rem;
-        }
-
         .title {
-            font-size: 1.1rem;
-            color: #cccccc;
-            margin-bottom: 12px;
+            font-family: 'Orbitron', sans-serif; font-size: 1rem;
+            color: var(--warm-brown); text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 1.5rem; padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(139,105,20,0.2);
         }
-
-        .contact-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            font-size: 0.9rem;
+        .avatar {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--soft-brown), var(--warm-brown));
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.2rem; box-shadow: 0 4px 15px rgba(139,105,20,0.3);
+            overflow: hidden; border: 3px solid white;
         }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .row { margin-bottom: 1rem; }
+        .lbl { font-size: 0.8rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; }
+        .val { font-size: 1rem; color: var(--text-dark); font-weight: 600; }
+        .intro { margin-top: 1.5rem; line-height: 1.8; color: var(--text-dark); font-size: 0.95rem; }
 
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.04);
-            color: var(--text-light);
-            padding: 7px 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.08);
+        .btn {
+            display: flex; align-items: center; text-decoration: none;
+            border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.2rem;
+            transition: all 0.3s ease; width: 100%;
         }
-
-        .contact-item i {
-            color: var(--gold);
+        .btn:hover { transform: translateY(-3px); }
+        .cv { background: linear-gradient(135deg, #4a90d9, #357abd); color: white; }
+        .love { background: linear-gradient(135deg, #e85d75, #d64860); color: white; }
+        .btn-icon { font-size: 1.8rem; margin-right: 1rem; }
+        .btn-text { flex: 1; }
+        .btn-h { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .btn-p { font-size: 0.85rem; opacity: 0.9; }
+        .btn-arrow { transition: transform 0.3s; }
+        .btn:hover .btn-arrow { transform: translateX(4px); }
+        .foot { text-align: center; margin-top: 2rem; font-size: 0.8rem; color: var(--text-soft); }
+        .close {
+            position: fixed; top: 1rem; right: 1rem;
+            background: rgba(255,255,255,0.9); border: none;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: var(--text-soft); cursor: pointer;
+            z-index: 10; opacity: 0; transition: opacity 0.3s;
         }
+        .opened .close { opacity: 1; }
 
-        .about-card {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.14) 0%, rgba(245, 217, 105, 0.04) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 25px;
-            color: #e0e0e0;
-        }
-
-        .about-text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        .two-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .section-card {
-            border-radius: var(--radius-lg);
-            padding: 22px;
-            margin-bottom: 20px;
-            position: relative;
-            top: -10px;
-            overflow: hidden;
-        }
-
-        .card-dark {
-            background: rgba(17, 17, 17, 0.8);
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .card-gold {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(245, 217, 105, 0.08) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            color: #e0e0e0;
-        }
-
-        /* === KHUNG CHỦ ĐỀ CƯỚI === */
-        .wedding-card {
-            background: linear-gradient(135deg, rgba(232, 168, 168, 0.15) 0%, rgba(248, 215, 215, 0.05) 100%);
-            border: 1px solid rgba(232, 168, 168, 0.3);
-            border-radius: var(--radius-lg);
-            padding: 28px 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            position: relative;
-            top: -10px;
-        }
-
-        .wedding-icon {
-            font-size: 2.5rem;
-            color: var(--rose);
-            margin-bottom: 12px;
-        }
-
-        .wedding-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--rose-light);
-            margin-bottom: 8px;
-        }
-
-        .wedding-desc {
-            font-size: 0.95rem;
-            color: #cccccc;
-            margin-bottom: 16px;
-            line-height: 1.6;
-        }
-
-        .wedding-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-light) 100%);
-            color: var(--text-dark);
-            padding: 10px 24px;
-            border-radius: 24px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .wedding-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(232, 168, 168, 0.3);
-        }
-
-        .wedding-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 10px 0;
-        }
-
-        .wedding-divider span {
-            width: 40px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--rose), transparent);
-        }
-
-        .exp-item {
-            margin-bottom: 18px;
-        }
-
-        .exp-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--gold-light);
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .exp-place {
-            font-size: 0.9rem;
-            color: #999999;
-            margin-bottom: 8px;
-        }
-
-        .exp-list {
-            list-style: none;
-            padding-left: 16px;
-        }
-
-        .exp-list li {
-            position: relative;
-            padding-left: 14px;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            color: #cccccc;
-        }
-
-        .exp-list li::before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: var(--gold);
-            font-weight: bold;
-        }
-
-        .skill-bar-item {
-            margin-bottom: 14px;
-        }
-
-        .skill-name {
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #e0e0e0;
-        }
-
-        .skill-bar-bg {
-            height: 10px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .skill-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
-            border-radius: 5px;
-        }
-
-        .product-list {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .product-list li {
-            padding: 8px 0 8px 28px;
-            position: relative;
-            color: #cccccc;
-            font-size: 0.95rem;
-        }
-
-        .product-list li::before {
-            content: '\f013';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            position: absolute;
-            left: 0;
-            top: 10px;
-            color: var(--gold);
-            font-size: 14px;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 10px;
-            padding-top: 15px;
-            font-size: 0.85rem;
-            color: #666666;
-        }
-
-        @media (max-width: 600px) {
-            .two-columns {
-                grid-template-columns: 1fr;
-            }
-            .resume-card {
-                padding: 22px;
-            }
-            .name {
-                font-size: 1.8rem;
-            }
+        @media (max-width: 640px) {
+            .book { flex-direction: column; }
+            .page { width: 100%; min-height: auto; padding: 1.5rem 1.2rem; }
+            .p-l { border-right: none; border-bottom: 1px dashed rgba(139,105,20,0.15); }
+            .avatar { width: 100px; height: 100px; }
         }
     </style>
 </head>
-<body>
-    <div class="resume-card">
-        <!-- === HEADER === -->
-        <div class="header-section">
-            <div class="avatar-wrapper">
-                <div class="avatar-frame">
-                    <!-- ========== THAY LINK ẢNH ĐẠI DIỆN CỦA BẠN Ở DƯỚI ========== -->
-                    <img src="https://vippt.github.io/lephiphi/chu-re.jpg" alt="Lê Phi Phi">
-                    <!-- ======================================================== -->
-                </div>
-                <div class="avatar-badge">⚡</div>
-            </div>
-            <div class="header-info">
-                <span class="greeting-tag">Xin chào! Tôi là</span>
-                <h1 class="name">Lê Phi Phi <i class="fas fa-cog"></i></h1>
-                <p class="title">Kỹ sư Điện & Tự động hóa | BMS · Điện Lạnh · CNTT</p>
-                <div class="contact-row">
-                    <span class="contact-item"><i class="fas fa-phone"></i> 09 22 33 22 43</span>
-                    <span class="contact-item"><i class="fas fa-map-marker-alt"></i> Phan Thiết, Bình Thuận</span>
-                    <span class="contact-item"><i class="fab fa-facebook"></i> Lê Phi Phi</span>
-                </div>
-            </div>
-        </div>
+<body id="body">
+    <!-- MƯA MÃ NHỊ PHÂN MA TRẬN -->
+    <div class="matrix-bg" id="matrix"></div>
 
-        <!-- === VỀ TÔI === -->
-        <div style="position: relative;">
-            <h2 class="section-label"><span class="icon-heading">👤</span> Về tôi</h2>
-            <div class="about-card">
-                <p class="about-text">
-                    Kỹ thuật viên Điện & Tự động hóa với hơn 7 năm kinh nghiệm trong thiết kế, lập trình, vận hành và bảo trì hệ thống. Từ nền tảng CNTT tự học chuyển sang chuyên môn Điện — Điện Lạnh, kết hợp công nghệ & kỹ thuật thực tế. Chuyên sâu hệ thống quản lý tòa nhà BMS, tự động hóa, giám sát công trình và bảo trì cơ sở vật chất. Luôn tỉ mỉ, học hỏi nhanh và làm việc với trách nhiệm cao.
-                </p>
-            </div>
+    <!-- KHUNG LOADING -->
+    <div class="access-screen" id="access">
+        <div class="terminal">
+            <p class="status" id="status">Đang khởi tạo...</p>
+            <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+            <p class="progress-pct" id="pct">0%</p>
+            <p class="enter-btn" id="enterBtn" onclick="openDoors()">
+                ⌨️ Nhấn <strong>ENTER</strong> để vào trang cá nhân
+            </p>
         </div>
-
-        <!-- === 2 CỘT: KINH NGHIỆM & HỌC VẤN === -->
-        <div class="two-columns">
-            <div style="position: relative;">
-                <h2 class="section-label"><span class="icon-heading">💼</span> Kinh nghiệm</h2>
-                <div class="section-card card-dark">
-                    <div class="exp-item">
-                        <div class="exp-header">
-                            <span>Bảo trì — Xưởng Điều Intersnack</span>
-                            <span>2022 → Hiện tại</span>
-                        </div>
-                        <p class="exp-place">Điện công nghiệp · Điện lạnh · Bảo trì thiết bị</p>
-                    </div>
-                    <div class="exp-item">
-                        <div class="exp-header">
-                            <span>Giám sát Điện Hạ tầng — NoVa</span>
-                            <span>2019 → 2022</span>
-                        </div>
-                        <p class="exp-place">Quản lý tiến độ · Kiểm tra chất lượng thi công điện</p>
-                    </div>
-                    <div class="exp-item">
-                        <div class="exp-header">
-                            <span>Bảo trì Khu nghỉ dưỡng</span>
-                            <span>2016 → 2019</span>
-                        </div>
-                        <p class="exp-place">Điện · Điện lạnh · Cơ sở vật chất · Hệ thống mạng</p>
-                    </div>
-                </div>
-            </div>
-            <div style="position: relative;">
-                <h2 class="section-label"><span class="icon-heading">🎓</span> Học vấn</h2>
-                <div class="section-card card-dark">
-                    <div class="exp-item">
-                        <div class="exp-header">
-                            <span>TCCN Điện CN & DD</span>
-                            <span>Tốt nghiệp</span>
-                        </div>
-                        <p class="exp-place">Chuyên ngành Điện Công nghiệp & Dân dụng</p>
-                    </div>
-                    <div class="exp-item">
-                        <div class="exp-header">
-                            <span>Tự học CNTT</span>
-                            <span>Liên tục</span>
-                        </div>
-                        <ul class="exp-list">
-                            <li>Lập trình: PHP, C++, C#</li>
-                            <li>Hệ thống mạng, Máy tính</li>
-                            <li>Thiết kế CAD, Tin học văn phòng</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- === KỸ NĂNG === -->
-        <div style="position: relative; margin-top: 5px;">
-            <h2 class="section-label"><span class="icon-heading">⚙️</span> Kỹ năng chuyên môn</h2>
-            <div class="section-card card-gold">
-                <div class="two-columns">
-                    <div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">⚡ Lập trình & Tự động hóa BMS</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:92%"></div></div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">🔌 Điện công nghiệp & Dân dụng</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:95%"></div></div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">❄️ Điện Lạnh & Bảo trì</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:90%"></div></div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">📡 Hệ thống mạng & CNTT</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:85%"></div></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">📐 Thiết kế CAD — Bản vẽ</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:80%"></div></div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">🛡️ Giám sát An toàn HSE</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:88%"></div></div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">💻 Lập trình: C++ · C# · PHP</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:78%"></div></div>
-                        </div>
-                        <div class="skill-bar-item">
-                            <div class="skill-name">🤝 Quản lý công trình & Kho</div>
-                            <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:86%"></div></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- === SẢN PHẨM === -->
-        <div style="position: relative; margin-top: 5px;">
-            <h2 class="section-label"><span class="icon-heading">🔧</span> Sản phẩm & Dự án</h2>
-            <div class="section-card card-dark">
-                <div class="two-columns">
-                    <ul class="product-list">
-                        <li>📦 Gian hàng Shopee</li>
-                        <li>🎬 Kênh Youtube — Chia sẻ kiến thức</li>
-                        <li>📱 Giá kẹp điện thoại có sạc</li>
-                    </ul>
-                    <ul class="product-list">
-                        <li>⛽ Thiết bị tiết kiệm xăng xe & ô tô</li>
-                        <li>🔌 Mạch Passing L4 3S xe máy</li>
-                        <li>⚡ Role xi nhan điều chỉnh tốc độ</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- === KHUNG KỶ NIỆM NGÀY CƯỚI === -->
-        <div style="position: relative; margin-top: 5px;">
-            <h2 class="section-label" style="background: linear-gradient(135deg, var(--rose) 0%, var(--rose-light) 100%);">
-                <span class="icon-heading">💍</span> Kỷ niệm Ngày Cưới
-            </h2>
-            <div class="wedding-card">
-                <div class="wedding-icon">
-                    <i class="fas fa-heart"></i>
-                    <i class="fas fa-ring"></i>
-                    <i class="fas fa-heart"></i>
-                </div>
-                <h3 class="wedding-title">Trọn Vẹn Tình Yêu — Trọn Vẹn Ngày Hôm Nay</h3>
-                <div class="wedding-divider">
-                    <span></span>
-                    <span>💕</span>
-                    <span></span>
-                </div>
-                <p class="wedding-desc">
-                    Nơi lưu giữ những khoảnh khắc đẹp, lời chúc chân thành và hành trình yêu thương của chúng tôi.<br>
-                    Mỗi ngày trôi qua đều là một trang viết tiếp trong câu chuyện của hai người.
-                </p>
-                <a href="https://love.lephiphi.com" target="_blank" class="wedding-link">
-                    <i class="fas fa-star"></i>
-                    Xem Trang Kỷ Niệm Cưới
-                    <i class="fas fa-external-link-alt" style="font-size: 0.85rem;"></i>
-                </a>
-            </div>
-        </div>
-
-        <footer>
-            © 2026 Lê Phi Phi — Kỹ sư Điện & Tự động hóa · Phan Thiết, Bình Thuận<br>
-            <span style="color: var(--rose); font-size: 0.8rem;">💍 Đặc biệt dành cho người yêu thương — love.lephiphi.com</span>
-        </footer>
     </div>
+
+    <!-- CỬA -->
+    <div class="doors">
+        <div class="door door-l"></div>
+        <div class="door door-r"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="main">
+        <div class="notebook frag f1">
+            <div class="book">
+                <div class="page p-l">
+                    <div class="lines"></div>
+                    <div style="position:relative;z-index:1;">
+                        <h2 class="title">Thông Tin Cá Nhân</h2>
+                        <div class="avatar frag f2">
+                            <img src="https://vippt.github.io/lephiphi/chu-re.jpg" alt="Avatar">
+                        </div>
+                        <div class="row"><div class="lbl">Họ và tên</div><div class="val">Lê Phi Phi</div></div>
+                        <div class="row"><div class="lbl">Nơi sinh sống</div><div class="val">Đà Nẵng, Việt Nam</div></div>
+                        <p class="intro frag f3">Chào bạn! 👋<br>Tôi là Phi Phi — người luôn yêu thích khám phá, tạo dựng và ghi chép những khoảnh khắc đáng nhớ.</p>
+                    </div>
+                </div>
+                <div class="page p-r">
+                    <div class="lines"></div>
+                    <div style="position:relative;z-index:1;">
+                        <h2 class="title">Khám Phá</h2>
+                        <a href="https://cv.lephiphi.com" class="btn cv frag f2">
+                            <i class="fa fa-file-text-o btn-icon"></i>
+                            <div class="btn-text"><div class="btn-h">CV & Hồ Sơ</div><div class="btn-p">Kinh nghiệm, học vấn, dự án</div></div>
+                            <i class="fa fa-chevron-right btn-arrow"></i>
+                        </a>
+                        <a href="https://love.lephiphi.com" class="btn love frag f3">
+                            <i class="fa fa-heart btn-icon"></i>
+                            <div class="btn-text"><div class="btn-h">Kỷ Niệm Cưới 💍</div><div class="btn-p">Hình ảnh và câu chuyện yêu thương</div></div>
+                            <i class="fa fa-chevron-right btn-arrow"></i>
+                        </a>
+                        <div style="margin-top:2rem;padding-top:1rem;border-top:1px dashed rgba(139,105,20,0.15);" class="frag f4">
+                            <p style="font-size:0.85rem;color:var(--text-soft);margin-bottom:0.5rem;">Liên hệ:</p>
+                            <p style="font-size:0.9rem;color:var(--text-dark);">📧 contact@lephiphi.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="foot frag f4">✨ Trang cá nhân của Lê Phi Phi</p>
+    </div>
+
+    <button class="close" onclick="closeDoors()"><i class="fa fa-times"></i></button>
+
+    <script>
+        // TẠO MƯA MÃ NHỊ PHÂN — ĐƠN GIẢN, CHẮC CHẮN
+        function initMatrix() {
+            const container = document.getElementById('matrix');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const cols = Math.ceil(window.innerWidth / 18);
+            for (let i = 0; i < cols; i++) {
+                const el = document.createElement('div');
+                el.className = 'matrix-col';
+                el.style.left = `${i * 18}px`;
+                el.style.animationDuration = `${5 + Math.random() * 8}s`;
+                el.style.animationDelay = `${Math.random() * 4}s`;
+
+                let text = '';
+                for (let j = 0; j < 60; j++) {
+                    text += (Math.random() > 0.5 ? '1' : '0') + ' ';
+                }
+                el.textContent = text;
+                container.appendChild(el);
+            }
+        }
+
+        initMatrix();
+        window.addEventListener('resize', initMatrix);
+
+        // LOADING
+        const statusTexts = ["Đang khởi tạo...", "Đang xác minh danh tính...", "Đang mở trang cá nhân...", "Đã sẵn sàng ✨"];
+        let progress = 0, ready = false;
+        const fill = document.getElementById('fill');
+        const pct = document.getElementById('pct');
+        const status = document.getElementById('status');
+        const enterBtn = document.getElementById('enterBtn');
+        const body = document.getElementById('body');
+        const access = document.getElementById('access');
+
+        const timer = setInterval(() => {
+            progress += Math.random() * 8 + 2;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(timer);
+                fill.style.width = '100%';
+                pct.textContent = '100%';
+                status.textContent = 'Đã sẵn sàng ✨';
+                enterBtn.style.display = 'block';
+                ready = true;
+                return;
+            }
+            fill.style.width = `${progress}%`;
+            pct.textContent = `${Math.floor(progress)}%`;
+            status.textContent = statusTexts[Math.min(Math.floor(progress / 25), 3)];
+        }, 80);
+
+        // MỞ / ĐÓNG CỬA
+        function openDoors() {
+            if (!ready) return;
+            access.classList.add('hidden');
+            setTimeout(() => body.classList.add('opened'), 400);
+        }
+        function closeDoors() {
+            body.classList.remove('opened');
+            setTimeout(() => access.classList.remove('hidden'), 500);
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && ready) openDoors();
+        });
+    </script>
 </body>
 </html>
