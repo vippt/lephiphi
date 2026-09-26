@@ -1,0 +1,27 @@
+{
+  "name": "Lê Phi Phi — Trang Cá Nhân",
+  "short_name": "LePhiPhi",
+  "description": "Trang cá nhân, hồ sơ và liên hệ của Lê Phi Phi",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#000500",
+  "theme_color": "#00ff41",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "vi-VN",
+  "icons": [
+    {
+      "src": "pwa_icon_192_lephiphi.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "pwa_icon_512_lephiphi.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "splash_pages": null
+}
