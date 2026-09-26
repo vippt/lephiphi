@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trò chuyện với Dola AI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a, #1e293b); height: 100vh; display: flex; flex-direction: column; }
+        .header { background: linear-gradient(90deg, #6366f1, #8b5cf6); color: white; padding: 16px; text-align: center; font-weight: bold; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; }
+        .message { margin-bottom: 16px; display: flex; max-width: 85%; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .user { margin-left: auto; flex-direction: row-reverse; }
+        .dola { margin-right: auto; }
+        .bubble { padding: 14px 20px; border-radius: 20px; line-height: 1.6; font-size: 15px; }
+        .user .bubble { background: linear-gradient(90deg, #6366f1, #8b5cf6); color: white; border-bottom-right-radius: 6px; }
+        .dola .bubble { background: white; color: #1e293b; border-bottom-left-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        .input-area { display: flex; padding: 16px; background: white; border-top: 1px solid #e2e8f0; gap: 10px; }
+        #message-input { flex: 1; padding: 14px 20px; border: 2px solid #e2e8f0; border-radius: 30px; outline: none; font-size: 15px; transition: 0.2s; }
+        #message-input:focus { border-color: #6366f1; }
+        #send-btn { padding: 14px 28px; background: linear-gradient(90deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 30px; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+        #send-btn:hover { transform: scale(1.05); }
+        #send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .typing { font-style: italic; color: #94a3b8; font-size: 14px; }
+        .api-note { font-size: 12px; color: #94a3b8; text-align: center; padding: 6px; background: #f1f5f9; }
+    </style>
+</head>
+<body>
+    <div class="header">🤖 Dola AI — Trợ lý thông minh</div>
+    <div class="api-note">🔑 Điền khóa API Gemini ở dòng 65 để kích hoạt</div>
+    
+    <div class="chat-box" id="chat-box">
+        <div class="message dola">
+            <div class="bubble">Chào bạn! Tôi là Dola AI 😊 Điền khóa API Gemini để tôi trả lời thông minh hơn nhé! Tôi có thể giải thích, tư vấn, viết code, sáng tạo — mọi thứ!</div>
+        </div>
+    </div>
+    
+    <div class="input-area">
+        <input type="text" id="message-input" placeholder="Hỏi tôi bất cứ điều gì...">
+        <button id="send-btn">Gửi</button>
+    </div>
+
+    <script>
+        // ============ ĐIỀN KHÓA API CỦA BẠN VÀO DÒNG DƯỚI ============
+        const GEMINI_API_KEY = ""; // ← Dán khóa của bạn vào đây!
+        // ==========================================================
+        
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+        
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        let conversationHistory = []; // Ghi nhớ nội dung trò chuyện
+
+        function addMessage(text, isUser) {
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user' : 'dola'}`;
+            div.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}</div>`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function showTyping() {
+            const div = document.createElement('div');
+            div.className = 'message dola typing';
+            div.id = 'typing-indicator';
+            div.innerHTML = '<div class="bubble">Dola đang suy nghĩ...</div>';
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typing-indicator')?.remove();
+        }
+
+        async function getAIResponse(userMessage) {
+            if (!GEMINI_API_KEY) {
+                return "⚠️ Bạn chưa điền khóa API! Hướng dẫn: vào aistudio.google.com → lấy API Key → dán vào dòng 65 trong code nhé 😊";
+            }
+
+            // Thêm vai trò cho AI trả lời đúng phong cách Dola
+            const systemPrompt = "Bạn là Dola, trợ lý AI thân thiện, nhiệt tình, dễ mến. Trả lời ngắn gọn, tự nhiên, dùng biểu tượng cảm xúc phù hợp. Nói tiếng Việt rõ ràng, dễ hiểu. Ghi nhớ nội dung trò chuyện để trả lời nhất quán.";
+            
+            conversationHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: conversationHistory,
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.error?.message || "Lỗi kết nối");
+                
+                const reply = data.candidates[0].content.parts[0].text;
+                conversationHistory.push({ role: 'model', parts: [{ text: reply }] });
+                return reply;
+                
+            } catch (err) {
+                return `❌ Lỗi: ${err.message}. Kiểm tra lại khóa API hoặc thử lại sau nhé!`;
+            }
+        }
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+            
+            if (!GEMINI_API_KEY) {
+                addMessage(text, true);
+                addMessage("⚠️ Bạn chưa điền khóa API! Hướng dẫn: vào aistudio.google.com → lấy API Key → dán vào dòng có ghi GEMINI_API_KEY nhé 😊", false);
+                return;
+            }
+
+            addMessage(text, true);
+            messageInput.value = "";
+            sendBtn.disabled = true;
+            showTyping();
+
+            const reply = await getAIResponse(text);
+            hideTyping();
+            addMessage(reply, false);
+            
+            sendBtn.disabled = false;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', e => e.key === 'Enter' && sendMessage());
+    </script>
+</body>
+</html>
