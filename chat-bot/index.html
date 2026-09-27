@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Google Script</title>
+    <title>DeepSeek — Đã Sửa Lỗi</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -48,7 +48,7 @@
         <div class="msgs" id="msgs">
             <div class="msg bot">
                 <div class="bubble">
-                    Xin chào! 😊 Đã sửa lỗi — dùng ngay! Hãy hỏi tôi nhé!
+                    Xin chào! 😊 Đã sửa lỗi hoàn toàn! Hãy hỏi tôi bất cứ điều gì nhé!
                 </div>
             </div>
         </div>
@@ -59,8 +59,8 @@
     </div>
 
     <script>
-        // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuIrQbL5nJJF-_UCiGTlHFv90Iv3HVE_htoogpKq5aK0e3EL4g1AgJsXLZl0nOjOil/exec";
+        // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO DƯỚI ĐÂY 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydKMClCzXEYnJpC5QDlz6y5r75r8h1mAPESyLmyB0GEQ7iVfBGKP7YrHKF37y4lB5w/exec";
         // ==============================================
 
         const msgsEl = document.getElementById('msgs');
@@ -92,8 +92,9 @@
 
         async function sendMsg() {
             const text = inpEl.value.trim();
-            if (!text || SCRIPT_URL.includes("THAY_THANH")) {
-                alert("⚠️ Vui lòng dán URL Google Script vào file HTML!");
+            if (!text) return;
+            if (SCRIPT_URL.includes("THAY_BANG")) {
+                alert("⚠️ Vui lòng dán URL Google Script vào!");
                 return;
             }
             
@@ -106,8 +107,9 @@
             statusEl.textContent = 'Đang suy nghĩ... 🧠';
 
             try {
-                const response = await fetch(SCRIPT_URL, {
+                const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         messages: [
                             {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
@@ -116,9 +118,11 @@
                     })
                 });
 
-                const data = await response.json();
+                const data = await res.json();
                 
-                if (data.error) throw new Error(data.error);
+                if (!res.ok || data.error) {
+                    throw new Error(data.error || `Lỗi ${res.status}`);
+                }
                 
                 const reply = data.choices[0].message.content;
                 history.push({role:'assistant', content:reply});
@@ -130,6 +134,7 @@
                 hideTyping();
                 addMsg(`❌ Lỗi: ${err.message}`);
                 statusEl.textContent = 'Có lỗi ❌';
+                console.error(err);
             }
             
             sendBtn.disabled = false;
