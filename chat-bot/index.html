@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Ghi Được Tin Nhắn</title>
+    <title>DeepSeek — Sửa Gốc Lỗi</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -30,25 +30,16 @@
         .dot:nth-child(2){animation-delay:.2s}
         .dot:nth-child(3){animation-delay:.4s}
         @keyframes typing{0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)}}
-        .msgs::-webkit-scrollbar{width:5px}
-        .msgs::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
     </style>
 </head>
 <body>
     <div class="chat">
         <div class="hd">
             <div class="avt">🧠</div>
-            <div class="hd-info">
-                <h3>DeepSeek AI</h3>
-                <p id="status" style="font-size:12px;opacity:.9">Sẵn sàng 💚</p>
-            </div>
+            <div class="hd-info"><h3>DeepSeek AI</h3></div>
         </div>
         <div class="msgs" id="msgs">
-            <div class="msg bot">
-                <div class="bubble">
-                    Xin chào! 😊 Gõ tin nhắn → nhấn mũi tên hoặc Enter để gửi nhé!
-                </div>
-            </div>
+            <div class="msg bot"><div class="bubble">Sẵn sàng! 😊 Hãy hỏi tôi nhé!</div></div>
         </div>
         <div class="input-area">
             <input type="text" id="inp" placeholder="Nhập tin nhắn..." autocomplete="off">
@@ -57,132 +48,115 @@
     </div>
 
     <script>
-        // =============================================
-        // === DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY ===
+        // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO DƯỚI ĐÂY 👇
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNpq0HiyssNxk0PWBAYItJ-X1ygzzziEzVN0lwpUL6_5wZOCtoSMKNTxVvbS5EcPLA/exec";
         // =============================================
 
         const msgsBox = document.getElementById('msgs');
         const inputBox = document.getElementById('inp');
-        const sendButton = document.getElementById('sendBtn');
-        const statusText = document.getElementById('status');
-        let conversation = [];
+        const sendBtn = document.getElementById('sendBtn');
+        let history = [];
 
-        // === THÊM TIN NHẮN VÀO KHUNG ===
-        function hienTinNhan(noiDung, laNguoiDung) {
-            const safeText = String(noiDung || "");
+        // === LUÔN TRẢ VỀ CHUỖI, KHÔNG BAO GIỜ [object Object] ===
+        function layChuoiLoi(e) {
+            if (!e) return "Lỗi không xác định";
+            if (typeof e === 'string') return e;
+            if (e.message && typeof e.message === 'string') return e.message;
+            try { return JSON.stringify(e); }
+            catch { return "Đối tượng lỗi không hiển thị được"; }
+        }
+
+        function themTin(noiDung, laNguoiDung) {
+            const text = String(noiDung || "");
             const gio = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
-            
             const div = document.createElement('div');
             div.className = `msg ${laNguoiDung ? 'user' : 'bot'}`;
-            div.innerHTML = `
-                <div class="bubble">
-                    ${safeText.replace(/\n/g, '<br>')}
-                    <div class="time">${gio}</div>
-                </div>`;
-            
+            div.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>')}<div class="time">${gio}</div></div>`;
             msgsBox.appendChild(div);
             msgsBox.scrollTop = msgsBox.scrollHeight;
         }
 
-        function hienDangGoi() {
+        function hienDangXuLy() {
             const div = document.createElement('div');
-            div.className = 'msg bot';
-            div.id = 'danggoi';
+            div.className = 'msg bot'; div.id = 'dangxuly';
             div.innerHTML = `<div class="bubble typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
             msgsBox.appendChild(div);
             msgsBox.scrollTop = msgsBox.scrollHeight;
         }
+        function anDangXuLy() { document.getElementById('dangxuly')?.remove(); }
 
-        function anDangGoi() {
-            document.getElementById('danggoi')?.remove();
-        }
-
-        // === HÀM GỬI TIN NHẮN ===
-        async function guiTinNhan() {
-            const noiDung = inputBox.value.trim();
-            
-            // Kiểm tra rỗng
-            if (!noiDung) {
-                statusText.textContent = "⚠️ Vui lòng nhập nội dung!";
-                return;
-            }
-            
-            // Kiểm tra URL
+        async function gui() {
+            const cauHoi = inputBox.value.trim();
+            if (!cauHoi) return;
             if (SCRIPT_URL.includes("THAY_URL")) {
-                alert("⚠️ Bạn chưa điền URL Google Script!\nMở file HTML → dán URL vào chỗ THAY_URL_CUA_BAN");
+                alert("⚠️ Dán URL Google Script vào file HTML!");
                 return;
             }
 
-            // Bước 1: Hiển thị tin nhắn người dùng NGAY LẬP TỨC ✅
-            hienTinNhan(noiDung, true);
+            // Hiển thị tin nhắn người dùng NGAY LẬP TỨC ✅
+            themTin(cauHoi, true);
             inputBox.value = "";
-            inputBox.disabled = true;
-            sendButton.disabled = true;
-            statusText.textContent = "Đang gửi... ⏳";
-
-            // Lưu lịch sử
-            conversation.push({role: 'user', content: noiDung});
-
-            hienDangGoi();
+            sendBtn.disabled = true;
+            
+            history.push({role:'user', content:cauHoi});
+            hienDangXuLy();
 
             try {
-                // Gọi Google Script
-                const duLieu = new FormData();
-                duLieu.append("data", JSON.stringify({
+                const formData = new FormData();
+                formData.append("data", JSON.stringify({
                     messages: [
-                        {role: 'system', content: 'Trả lời bằng tiếng Việt tự nhiên, ngắn gọn, dễ hiểu.'},
-                        ...conversation
+                        {role:'system', content:'Trả lời bằng tiếng Việt, ngắn gọn, dễ hiểu.'},
+                        ...history
                     ]
                 }));
 
-                const phanHoi = await fetch(SCRIPT_URL, {
+                const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: duLieu
+                    body: formData
                 });
 
-                if (!phanHoi.ok) throw new Error(`Lỗi kết nối: ${phanHoi.status}`);
+                if (!res.ok) {
+                    throw new Error(`Máy chủ trả về lỗi: ${res.status}`);
+                }
 
-                const noiDungTraVe = await phanHoi.text();
+                const noiDungTraVe = await res.text();
                 let json;
                 try {
                     json = JSON.parse(noiDungTraVe);
-                } catch {
-                    throw new Error(`Phản hồi không hợp lệ: ${noiDungTraVe.slice(0, 100)}`);
+                } catch (e) {
+                    throw new Error(`Phản hồi không phải JSON: ${noiDungTraVe.slice(0, 60)}`);
                 }
 
-                if (json.error) throw new Error(json.error);
+                if (json.error) {
+                    throw new Error(json.error);
+                }
+
                 if (!json.choices || !json.choices[0]?.message?.content) {
-                    throw new Error("API không trả về nội dung");
+                    throw new Error("API không trả về nội dung câu trả lời");
                 }
 
-                // Hiển thị câu trả lời
                 const cauTraLoi = json.choices[0].message.content;
-                conversation.push({role: 'assistant', content: cauTraLoi});
-                
-                anDangGoi();
-                hienTinNhan(cauTraLoi, false);
-                statusText.textContent = "Sẵn sàng 💚";
+                history.push({role:'assistant', content:cauTraLoi});
+                anDangXuLy();
+                themTin(cauTraLoi, false);
 
-            } catch (loi) {
-                anDangGoi();
-                const thongBaoLoi = loi?.message || String(loi) || "Lỗi không xác định";
-                hienTinNhan(`❌ Lỗi: ${thongBaoLoi}`, false);
-                statusText.textContent = "Có lỗi ❌";
-                console.error("Chi tiết lỗi:", loi);
+            } catch (e) {
+                anDangXuLy();
+                // === SỬA GỐC: Luôn lấy chuỗi đúng ===
+                const thongBao = layChuoiLoi(e);
+                themTin(`❌ Lỗi: ${thongBao}`, false);
+                console.error("Chi tiết lỗi:", e);
             }
 
-            inputBox.disabled = false;
-            sendButton.disabled = false;
-            inputBox.focus(); // Trở lại ô gõ ngay ✅
+            sendBtn.disabled = false;
+            inputBox.focus();
         }
 
-        // === NÚT GỬI & PHÍM ENTER ===
-        sendButton.addEventListener('click', guiTinNhan);
-        inputBox.addEventListener('keydown', function(e) {
+        sendBtn.addEventListener('click', gui);
+        inputBox.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                guiTinNhan();
+                gui();
             }
         });
     </script>
