@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Sửa Gốc Lỗi</title>
+    <title>DeepSeek — Chạy Ngay</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -12,10 +12,8 @@
         .avt{width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#1a91ff;font-weight:bold;font-size:20px}
         .hd-info{flex:1}
         .hd-info h3{font-size:16px}
-        .hd-info p{font-size:12px;opacity:.9}
         .msgs{flex:1;padding:20px;overflow-y:auto;background:#f8fafc;display:flex;flex-direction:column;gap:16px}
-        .msg{max-width:78%;animation:fadeIn .3s ease-out}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)}}
+        .msg{max-width:78%}
         .bot{align-self:flex-start}
         .user{align-self:flex-end}
         .bubble{padding:14px 18px;border-radius:20px;line-height:1.6;white-space:pre-wrap}
@@ -24,33 +22,23 @@
         .time{font-size:10px;opacity:.6;margin-top:6px;text-align:right}
         .input-area{padding:18px 20px;background:#fff;border-top:1px solid #e2e8f0;display:flex;gap:10px}
         #inp{flex:1;padding:14px 20px;border:1px solid #e2e8f0;border-radius:25px;outline:none;font-size:15px}
-        #inp:focus{border-color:#1a91ff;box-shadow:0 0 0 3px rgba(26,145,255,.1)}
         .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(90deg,#1a91ff,#00c6ff);color:#fff;cursor:pointer}
-        .send:disabled{opacity:.5;cursor:not-allowed}
+        .send:disabled{opacity:.5}
         .typing{display:flex;gap:4px;padding:14px 18px}
         .dot{width:8px;height:8px;background:#cbd5e1;border-radius:50%;animation:typing 1.4s infinite}
         .dot:nth-child(2){animation-delay:.2s}
         .dot:nth-child(3){animation-delay:.4s}
         @keyframes typing{0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)}}
-        .msgs::-webkit-scrollbar{width:5px}
-        .msgs::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
     </style>
 </head>
 <body>
     <div class="chat">
         <div class="hd">
             <div class="avt">🧠</div>
-            <div class="hd-info">
-                <h3>DeepSeek AI</h3>
-                <p id="status">Sẵn sàng 💚</p>
-            </div>
+            <div class="hd-info"><h3>DeepSeek AI</h3></div>
         </div>
         <div class="msgs" id="msgs">
-            <div class="msg bot">
-                <div class="bubble">
-                    Xin chào! 😊 Đã sửa gốc lỗi hiển thị! Hãy thử hỏi nhé!
-                </div>
-            </div>
+            <div class="msg bot"><div class="bubble">Sẵn sàng! 😊 Hãy hỏi tôi nhé!</div></div>
         </div>
         <div class="input-area">
             <input type="text" id="inp" placeholder="Nhập câu hỏi...">
@@ -59,114 +47,84 @@
     </div>
 
     <script>
-        // 👇 DÁN URL GOOGLE SCRIPT MỚI VÀO DƯỚI ĐÂY 👇
+        // === DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO DƯỚI ===
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNpq0HiyssNxk0PWBAYItJ-X1ygzzziEzVN0lwpUL6_5wZOCtoSMKNTxVvbS5EcPLA/exec";
-        // ==============================================
+        // =============================================
 
-        const msgsEl = document.getElementById('msgs');
-        const inpEl = document.getElementById('inp');
+        const msgs = document.getElementById('msgs');
+        const inp = document.getElementById('inp');
         const sendBtn = document.getElementById('send');
-        const statusEl = document.getElementById('status');
         let history = [];
 
-        // === HÀM SỬA LỖI HIỂN THỊ — KHÔNG BAO GIỜ [object Object] ===
-        function layLoi(err) {
-            if (!err) return "Lỗi không xác định";
-            if (typeof err === 'string') return err;
-            if (err.message && typeof err.message === 'string') return err.message;
-            try { return JSON.stringify(err); }
-            catch { return "Đối tượng lỗi không đọc được"; }
-        }
-
         function addMsg(text, isUser=false) {
-            const safeText = String(text || "");
+            const t = String(text || ""); // LUÔN là chuỗi ✅
             const time = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
             const div = document.createElement('div');
             div.className = `msg ${isUser?'user':'bot'}`;
-            div.innerHTML = `<div class="bubble">${safeText.replace(/\n/g,'<br>')}<div class="time">${time}</div></div>`;
-            msgsEl.appendChild(div);
-            msgsEl.scrollTop = msgsEl.scrollHeight;
+            div.innerHTML = `<div class="bubble">${t.replace(/\n/g,'<br>')}<div class="time">${time}</div></div>`;
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
         }
 
         function showTyping() {
-            const div = document.createElement('div');
-            div.className = 'msg bot';
-            div.id = 'typing';
-            div.innerHTML = `<div class="bubble typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-            msgsEl.appendChild(div);
-            msgsEl.scrollTop = msgsEl.scrollHeight;
+            const d = document.createElement('div');
+            d.className = 'msg bot'; d.id = 'typing';
+            d.innerHTML = `<div class="bubble typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+            msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
         }
-
         function hideTyping() { document.getElementById('typing')?.remove(); }
 
-        async function sendMsg() {
-            const text = inpEl.value.trim();
+        async function go() {
+            const text = inp.value.trim();
             if (!text) return;
-            if (SCRIPT_URL.includes("THAY_URL")) {
-                alert("⚠️ Dán URL Google Script vào file HTML!");
+            if (SCRIPT_URL.includes("THAY_BANG")) {
+                alert("⚠️ Dán URL Google Script vào chỗ SCRIPT_URL!");
                 return;
             }
             
             addMsg(text, true);
-            inpEl.value = '';
+            inp.value = '';
             history.push({role:'user', content:text});
             
             showTyping();
             sendBtn.disabled = true;
-            statusEl.textContent = 'Đang xử lý... ⏳';
 
             try {
-                const payload = {
+                const fd = new FormData();
+                fd.append("data", JSON.stringify({
                     messages: [
-                        {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, ngắn gọn, dễ hiểu.'},
+                        {role:'system', content:'Trả lời bằng tiếng Việt, ngắn gọn, dễ hiểu.'},
                         ...history
                     ]
-                };
+                }));
 
-                const formData = new FormData();
-                formData.append("data", JSON.stringify(payload));
-
-                const res = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!res.ok) throw new Error(`Lỗi kết nối: ${res.status}`);
-                
-                const raw = await res.text();
+                const res = await fetch(SCRIPT_URL, {method:'POST', body:fd});
+                const txt = await res.text();
                 let data;
-                try {
-                    data = JSON.parse(raw);
-                } catch {
-                    throw new Error(`Phản hồi không phải JSON: ${raw.slice(0,100)}`);
-                }
-                
+                try { data = JSON.parse(txt); }
+                catch { throw new Error(`Phản hồi không phải JSON: ${txt.slice(0,80)}`); }
+
                 if (data.error) throw new Error(data.error);
-                
-                if (!data.choices || !data.choices[0]?.message?.content) {
-                    throw new Error("API không trả về kết quả mong đợi");
-                }
-                
+                if (!data.choices?.[0]?.message?.content) throw new Error("API không trả về kết quả");
+
                 const reply = data.choices[0].message.content;
                 history.push({role:'assistant', content:reply});
-                
                 hideTyping();
                 addMsg(reply);
-                statusEl.textContent = 'Sẵn sàng 💚';
                 
-            } catch (err) {
+            } catch (e) {
                 hideTyping();
-                // === DÙNG HÀM layLoi ĐỂ LẤY CHUỖI ĐÚNG ===
-                addMsg(`❌ Lỗi: ${layLoi(err)}`);
-                statusEl.textContent = 'Có lỗi ❌';
-                console.error("Chi tiết lỗi:", err);
+                // === SỬA GỐC: Lấy đúng message ===
+                const loi = e?.message || String(e) || "Lỗi không xác định";
+                addMsg(`❌ Lỗi: ${loi}`);
+                console.error("Lỗi:", e);
             }
             
             sendBtn.disabled = false;
         }
 
-        sendBtn.addEventListener('click', sendMsg);
-        inpEl.addEventListener('keypress', e => e.key === 'Enter' && sendMsg());
+        sendBtn.onclick = go;
+        inp.onkeypress = e => e.key === 'Enter' && go();
     </script>
 </body>
 </html>
