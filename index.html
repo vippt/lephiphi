@@ -127,7 +127,7 @@
 
         .chat-bot-window {
             position: fixed; bottom: 90px; right: 20px;
-            width: 360px; height: 480px; /* Giảm chiều cao cố định */
+            width: 360px; height: 550px; /* Giảm chiều cao cố định */
             max-height: calc(100vh - 140px); /* Không vượt quá màn hình */
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
@@ -265,7 +265,7 @@
             /* Điện thoại: khung chat chiếm gần toàn màn hình, thấy luôn ô nhập */
             .chat-bot-window {
                 width: calc(100vw - 32px);
-                height: calc(100vh - 120px); /* Đủ thấy ô nhập tin nhắn */
+                height: calc(140vh - 160px); /* Đủ thấy ô nhập tin nhắn */
                 max-height: calc(100vh - 120px);
                 right: 16px;
                 bottom: 85px;
@@ -283,7 +283,7 @@
             <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
             <p class="progress-pct" id="pct">0%</p>
             <button class="enter-btn" id="enterBtn" onclick="startBinaryRain()">
-                ⌨️ Nhấn <strong>ENTER</strong>
+                ⌨️ <strong>TRUY CẬP</strong>
             </button>
         </div>
     </div>
@@ -300,7 +300,7 @@
                     <div style="position:relative;z-index:1;">
                         <h2 class="title">Thông Tin Cá Nhân</h2>
                         <div class="avatar" id="avatar">
-                            <img src="https://vippt.github.io/lephiphi/chu-re.jpg" alt="Avatar">
+                            <img src="/chu-re.jpg" alt="Avatar">
                         </div>
                         <div class="info-group" id="infoGroup">
                             <div class="row">
@@ -311,7 +311,7 @@
                                 <div class="lbl">Nơi sinh sống</div>
                                 <div class="val type-text" data-text="Phan Thiết - Bình Thuận"></div>
                             </div>
-                            <p class="intro type-text" data-text="Chào bạn! 👋 Tôi là Phi Phi — Tôi thích xem phim và du lịch."></p>
+                            <p class="intro type-text" data-text="Chào bạn! 👋 Tôi là Phi Phi — Tôi là anh thợ điện lành nghể. Thích chơi game, xem phim và du lịch."></p>
                         </div>
                     </div>
                 </div>
@@ -339,15 +339,15 @@
                             <p style="font-size:.85rem;color:var(--text-soft);margin-bottom:.5rem;">Liên hệ:</p>
                             <p style="font-size:.9rem;color:var(--text-dark);" class="type-text" data-text="📧 contact@lephiphi.com"></p>
                             <div class="qr-box" id="qrBox">
-                                <img src="https://vippt.github.io/lephiphi/qrpaylephiphi.png" alt="QR Thanh toán" class="qr-img">
-                                <p class="qr-note">Quét mã để ủng hộ / thanh toán 💳</p>
+                                <img src="/qrpaylephiphi.png" alt="QR Thanh toán" class="qr-img">
+                                <p class="qr-note">Quét mã để ủng hộ  💳</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <p class="foot">✨ Trang cá nhân của Lê Phi Phi</p>
+        <p class="foot">✨ Copy Right by LePhiPhi.Com v3 2026</p>
     </div>
 
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
