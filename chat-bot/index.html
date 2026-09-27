@@ -48,7 +48,7 @@
         <div class="msgs" id="msgs">
             <div class="msg bot">
                 <div class="bubble">
-                    Xin chào! 😊 Dùng Google Script làm trung gian — không bị chặn! Hãy hỏi tôi nhé!
+                    Xin chào! 😊 Đã sửa lỗi — dùng ngay! Hãy hỏi tôi nhé!
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@
 
     <script>
         // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyPC6o7tOs3EEluuOSylIbmdklxBiMfnw63opWkG0a24DZA7_fBzjUdS3vO190blKC-/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuIrQbL5nJJF-_UCiGTlHFv90Iv3HVE_htoogpKq5aK0e3EL4g1AgJsXLZl0nOjOil/exec";
         // ==============================================
 
         const msgsEl = document.getElementById('msgs');
@@ -92,7 +92,10 @@
 
         async function sendMsg() {
             const text = inpEl.value.trim();
-            if (!text) return;
+            if (!text || SCRIPT_URL.includes("THAY_THANH")) {
+                alert("⚠️ Vui lòng dán URL Google Script vào file HTML!");
+                return;
+            }
             
             addMsg(text, true);
             inpEl.value = '';
@@ -103,10 +106,8 @@
             statusEl.textContent = 'Đang suy nghĩ... 🧠';
 
             try {
-                const res = await fetch(SCRIPT_URL, {
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Quan trọng cho Google Script
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         messages: [
                             {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
@@ -115,9 +116,9 @@
                     })
                 });
 
-                // Với no-cors, cần chờ dữ liệu trả về khác
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error?.message || `Lỗi ${res.status}`);
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error);
                 
                 const reply = data.choices[0].message.content;
                 history.push({role:'assistant', content:reply});
@@ -126,28 +127,9 @@
                 addMsg(reply);
                 statusEl.textContent = 'Sẵn sàng 💚';
             } catch (err) {
-                // Sửa cách xử lý cho Google Script
-                try {
-                    const res = await fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            messages: [
-                                {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
-                                ...history
-                            ]
-                        })
-                    });
-                    const data = await res.json();
-                    const reply = data.choices[0].message.content;
-                    history.push({role:'assistant', content:reply});
-                    hideTyping();
-                    addMsg(reply);
-                    statusEl.textContent = 'Sẵn sàng 💚';
-                } catch (err2) {
-                    hideTyping();
-                    addMsg(`❌ Lỗi: ${err2.message}\nKiểm tra lại quyền triển khai Script nhé!`);
-                    statusEl.textContent = 'Có lỗi ❌';
-                }
+                hideTyping();
+                addMsg(`❌ Lỗi: ${err.message}`);
+                statusEl.textContent = 'Có lỗi ❌';
             }
             
             sendBtn.disabled = false;
