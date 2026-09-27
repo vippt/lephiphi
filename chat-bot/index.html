@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Sửa Gốc Lỗi</title>
+    <title>DeepSeek — Chắc Chắn Chạy</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -48,8 +48,9 @@
     </div>
 
     <script>
-        // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO DƯỚI ĐÂY 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNpq0HiyssNxk0PWBAYItJ-X1ygzzziEzVN0lwpUL6_5wZOCtoSMKNTxVvbS5EcPLA/exec";
+        // =============================================
+        // === DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY ===
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzb_Uu_F4zqAWHk0e8o31yqJ9QQ4EOM295qKUiKPhmCFKZ8LCAfi6oGs8LFB1dGiTUH/exec";
         // =============================================
 
         const msgsBox = document.getElementById('msgs');
@@ -57,17 +58,20 @@
         const sendBtn = document.getElementById('sendBtn');
         let history = [];
 
-        // === LUÔN TRẢ VỀ CHUỖI, KHÔNG BAO GIỜ [object Object] ===
-        function layChuoiLoi(e) {
-            if (!e) return "Lỗi không xác định";
-            if (typeof e === 'string') return e;
-            if (e.message && typeof e.message === 'string') return e.message;
-            try { return JSON.stringify(e); }
-            catch { return "Đối tượng lỗi không hiển thị được"; }
+        // === CHUYỂN MỌI THÀNH CHUỖI — KHÔNG BAO GIỜ [object Object] ===
+        function asString(giTri) {
+            if (giTri === null || giTri === undefined) return "";
+            if (typeof giTri === 'string') return giTri;
+            if (typeof giTri === 'object') {
+                if (giTri.message && typeof giTri.message === 'string') return giTri.message;
+                try { return JSON.stringify(giTri); }
+                catch { return "Đối tượng không hiển thị được"; }
+            }
+            return String(giTri);
         }
 
         function themTin(noiDung, laNguoiDung) {
-            const text = String(noiDung || "");
+            const text = asString(noiDung) || "Nội dung trống";
             const gio = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
             const div = document.createElement('div');
             div.className = `msg ${laNguoiDung ? 'user' : 'bot'}`;
@@ -83,17 +87,21 @@
             msgsBox.appendChild(div);
             msgsBox.scrollTop = msgsBox.scrollHeight;
         }
-        function anDangXuLy() { document.getElementById('dangxuly')?.remove(); }
+        function anDangXuLy() {
+            const el = document.getElementById('dangxuly');
+            if (el) el.remove();
+        }
 
-        async function gui() {
+        async function guiTin() {
             const cauHoi = inputBox.value.trim();
             if (!cauHoi) return;
-            if (SCRIPT_URL.includes("THAY_URL")) {
-                alert("⚠️ Dán URL Google Script vào file HTML!");
+            
+            if (SCRIPT_URL.indexOf("THAY_URL") !== -1) {
+                alert("⚠️ Chưa điền URL Google Script!\nMở file HTML → dán URL vào chỗ THAY_URL_CUA_BAN");
                 return;
             }
 
-            // Hiển thị tin nhắn người dùng NGAY LẬP TỨC ✅
+            // Hiển thị tin nhắn ngay
             themTin(cauHoi, true);
             inputBox.value = "";
             sendBtn.disabled = true;
@@ -116,47 +124,46 @@
                 });
 
                 if (!res.ok) {
-                    throw new Error(`Máy chủ trả về lỗi: ${res.status}`);
+                    throw new Error(`Lỗi kết nối: ${res.status}`);
                 }
 
-                const noiDungTraVe = await res.text();
+                const textTraVe = await res.text();
                 let json;
                 try {
-                    json = JSON.parse(noiDungTraVe);
-                } catch (e) {
-                    throw new Error(`Phản hồi không phải JSON: ${noiDungTraVe.slice(0, 60)}`);
+                    json = JSON.parse(textTraVe);
+                } catch (parseErr) {
+                    throw new Error(`Phản hồi không phải JSON: ${textTraVe.substring(0, 80)}`);
                 }
 
-                if (json.error) {
-                    throw new Error(json.error);
+                if (json.error !== undefined) {
+                    throw new Error(asString(json.error));
                 }
 
-                if (!json.choices || !json.choices[0]?.message?.content) {
-                    throw new Error("API không trả về nội dung câu trả lời");
+                if (!json.choices || !json.choices[0] || !json.choices[0].message) {
+                    throw new Error("API không trả về định dạng mong đợi");
                 }
 
-                const cauTraLoi = json.choices[0].message.content;
+                const cauTraLoi = asString(json.choices[0].message.content);
                 history.push({role:'assistant', content:cauTraLoi});
                 anDangXuLy();
                 themTin(cauTraLoi, false);
 
             } catch (e) {
                 anDangXuLy();
-                // === SỬA GỐC: Luôn lấy chuỗi đúng ===
-                const thongBao = layChuoiLoi(e);
+                const thongBao = asString(e);
                 themTin(`❌ Lỗi: ${thongBao}`, false);
-                console.error("Chi tiết lỗi:", e);
+                console.error("Chi tiết lỗi đầy đủ:", e);
             }
 
             sendBtn.disabled = false;
             inputBox.focus();
         }
 
-        sendBtn.addEventListener('click', gui);
-        inputBox.addEventListener('keydown', e => {
+        sendBtn.addEventListener('click', guiTin);
+        inputBox.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                gui();
+                guiTin();
             }
         });
     </script>
