@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Đã Sửa Lỗi</title>
+    <title>DeepSeek — Đã Sửa Fetch</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -48,7 +48,7 @@
         <div class="msgs" id="msgs">
             <div class="msg bot">
                 <div class="bubble">
-                    Xin chào! 😊 Đã sửa lỗi hoàn toàn! Hãy hỏi tôi bất cứ điều gì nhé!
+                    Xin chào! 😊 Đã sửa lỗi "Failed to fetch"! Hãy thử hỏi tôi nhé!
                 </div>
             </div>
         </div>
@@ -59,8 +59,8 @@
     </div>
 
     <script>
-        // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO DƯỚI ĐÂY 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydKMClCzXEYnJpC5QDlz6y5r75r8h1mAPESyLmyB0GEQ7iVfBGKP7YrHKF37y4lB5w/exec";
+        // 👇 DÁN URL GOOGLE SCRIPT MỚI CỦA BẠN VÀO ĐÂY 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybZ7iW46zeeAi3S6eMainRTVdvkipDmpAqdhNSxCp7Y6aJ7i1ZO0eVHU97MZ8zKs30/exec";
         // ==============================================
 
         const msgsEl = document.getElementById('msgs');
@@ -93,8 +93,8 @@
         async function sendMsg() {
             const text = inpEl.value.trim();
             if (!text) return;
-            if (SCRIPT_URL.includes("THAY_BANG")) {
-                alert("⚠️ Vui lòng dán URL Google Script vào!");
+            if (SCRIPT_URL.includes("THAY_URL")) {
+                alert("⚠️ Dán URL Google Script vào dòng SCRIPT_URL nhé!");
                 return;
             }
             
@@ -104,25 +104,27 @@
             
             showTyping();
             sendBtn.disabled = true;
-            statusEl.textContent = 'Đang suy nghĩ... 🧠';
+            statusEl.textContent = 'Đang gửi... 📤';
 
             try {
+                // === Cách gọi đúng cho Google Script ===
+                const formData = new FormData();
+                formData.append("data", JSON.stringify({
+                    messages: [
+                        {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
+                        ...history
+                    ]
+                }));
+
                 const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: [
-                            {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
-                            ...history
-                        ]
-                    })
+                    body: formData
                 });
 
-                const data = await res.json();
+                const textResp = await res.text();
+                const data = JSON.parse(textResp);
                 
-                if (!res.ok || data.error) {
-                    throw new Error(data.error || `Lỗi ${res.status}`);
-                }
+                if (data.error) throw new Error(data.error);
                 
                 const reply = data.choices[0].message.content;
                 history.push({role:'assistant', content:reply});
