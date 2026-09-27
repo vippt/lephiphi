@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-GROQ_KEY = os.environ.get("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", "")
+GROQ_KEY = os.environ.get("GROQ_KEY", "")
 
 @app.route('/chat-bot/')
 def index():
