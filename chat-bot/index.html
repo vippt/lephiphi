@@ -60,7 +60,8 @@
 
             try {
                 // Gọi API backend
-                const response = await fetch('/chat-bot/ask', {
+                const response = await fetch('https://lephiphi-chatbot.onrender.com/chat-bot/
+', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text })
