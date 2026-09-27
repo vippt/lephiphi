@@ -7,11 +7,10 @@ app = Flask(__name__)
 
 GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
 
-# Danh sách mô hình dự phòng
+# Chỉ dùng mô hình CHẮC CHẮN tồn tại & ổn định
 MODEL_LIST = [
-    "gemini-2.0-flash-exp",
     "gemini-1.5-flash",
-    "gemini-2.0-flash"
+    "gemini-1.5-flash-8b"
 ]
 
 @app.route('/chat-bot/')
@@ -42,7 +41,6 @@ def ask():
     if not GEMINI_KEY:
         return jsonify({"reply": "❌ Chưa cài đặt khóa AI!"})
 
-    # Thử lần lượt từng mô hình, tối đa 2 lần mỗi mô hình
     for model in MODEL_LIST:
         for thu in range(2):
             try:
@@ -51,9 +49,8 @@ def ask():
                 if "error" in ket_qua:
                     msg = ket_qua["error"].get("message", "")
                     print(f"[{model}] Lỗi: {msg}")
-                    # Nếu quá tải → thử ngay mô hình khác
-                    if "high demand" in msg or "quota" in msg:
-                        time.sleep(1)
+                    if "high demand" in msg.lower() or "quota" in msg.lower():
+                        time.sleep(1.5)
                         continue
                     return jsonify({"reply": f"❌ {msg}"})
                 
@@ -62,10 +59,10 @@ def ask():
                     return jsonify({"reply": cau_tra_loi})
 
             except Exception as e:
-                print(f"Lỗi gọi AI: {str(e)}")
+                print(f"Lỗi: {str(e)}")
                 time.sleep(1)
 
-    return jsonify({"reply": "⏳ AI đang bận, vui lòng gửi lại sau ít phút nhé!"})
+    return jsonify({"reply": "⏳ AI đang bận, vui lòng gửi lại sau nhé!"})
 
 if __name__ == "__main__":
     app.run(port=5000)
