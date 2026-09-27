@@ -6,6 +6,13 @@ app = Flask(__name__)
 
 GROQ_KEY = os.environ.get("GROQ_KEY", "")
 
+# === TÊN MÔ HÌNH CHÍNH XÁC TRÊN GROQ ===
+MODEL_LIST = [
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "gemma2-9b-it"
+]
+
 @app.route('/chat-bot/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -22,35 +29,46 @@ def ask():
     if not cau_hoi:
         return jsonify({"reply": "Bạn chưa nhập câu hỏi ạ!"})
     if not GROQ_KEY:
-        return jsonify({"reply": "❌ Chưa cài đặt GROQ_KEY!"})
+        return jsonify({"reply": "❌ Chưa cài đặt GROQ_KEY trên Render!"})
 
-    try:
-        res = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {GROQ_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": "llama-3.3-70b-versatile",
-                "messages": [
-                    {"role": "system", "content": "Bạn là trợ lý thông minh, thân thiện, trả lời tiếng Việt ngắn gọn tự nhiên."},
-                    {"role": "user", "content": cau_hoi}
-                ],
-                "temperature": 0.7
-            },
-            timeout=30
-        )
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {GROQ_KEY}",
+        "Content-Type": "application/json"
+    }
 
-        ket_qua = res.json()
-        if "choices" in ket_qua:
-            cau_tra_loi = ket_qua["choices"][0]["message"]["content"]
-            return jsonify({"reply": cau_tra_loi})
-        
-        return jsonify({"reply": "❌ " + str(ket_qua)})
+    for model in MODEL_LIST:
+        try:
+            res = requests.post(
+                url,
+                headers=headers,
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": "Bạn là trợ lý thông minh, thân thiện, trả lời bằng tiếng Việt ngắn gọn tự nhiên."},
+                        {"role": "user", "content": cau_hoi}
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 1024
+                },
+                timeout=30
+            )
 
-    except Exception as e:
-        return jsonify({"reply": f"❌ Lỗi: {str(e)}"})
+            ket_qua = res.json()
+            
+            if "error" in ket_qua:
+                print(f"[{model}] Lỗi: {ket_qua['error']}")
+                continue
+            
+            if "choices" in ket_qua and ket_qua["choices"]:
+                cau_tra_loi = ket_qua["choices"][0]["message"]["content"]
+                return jsonify({"reply": cau_tra_loi})
+
+        except Exception as e:
+            print(f"Lỗi {model}: {str(e)}")
+            continue
+
+    return jsonify({"reply": "⚠️ Tất cả mô hình đều bận, thử lại sau nhé!"})
 
 if __name__ == "__main__":
     app.run(port=5000)
