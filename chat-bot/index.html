@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Chạy Ngay</title>
+    <title>DeepSeek — Ghi Được Tin Nhắn</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -22,109 +22,169 @@
         .time{font-size:10px;opacity:.6;margin-top:6px;text-align:right}
         .input-area{padding:18px 20px;background:#fff;border-top:1px solid #e2e8f0;display:flex;gap:10px}
         #inp{flex:1;padding:14px 20px;border:1px solid #e2e8f0;border-radius:25px;outline:none;font-size:15px}
-        .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(90deg,#1a91ff,#00c6ff);color:#fff;cursor:pointer}
-        .send:disabled{opacity:.5}
+        #inp:focus{border-color:#1a91ff;box-shadow:0 0 0 3px rgba(26,145,255,.1)}
+        .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(90deg,#1a91ff,#00c6ff);color:#fff;cursor:pointer;font-size:18px}
+        .send:disabled{opacity:.5;cursor:not-allowed}
         .typing{display:flex;gap:4px;padding:14px 18px}
         .dot{width:8px;height:8px;background:#cbd5e1;border-radius:50%;animation:typing 1.4s infinite}
         .dot:nth-child(2){animation-delay:.2s}
         .dot:nth-child(3){animation-delay:.4s}
         @keyframes typing{0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)}}
+        .msgs::-webkit-scrollbar{width:5px}
+        .msgs::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
     </style>
 </head>
 <body>
     <div class="chat">
         <div class="hd">
             <div class="avt">🧠</div>
-            <div class="hd-info"><h3>DeepSeek AI</h3></div>
+            <div class="hd-info">
+                <h3>DeepSeek AI</h3>
+                <p id="status" style="font-size:12px;opacity:.9">Sẵn sàng 💚</p>
+            </div>
         </div>
         <div class="msgs" id="msgs">
-            <div class="msg bot"><div class="bubble">Sẵn sàng! 😊 Hãy hỏi tôi nhé!</div></div>
+            <div class="msg bot">
+                <div class="bubble">
+                    Xin chào! 😊 Gõ tin nhắn → nhấn mũi tên hoặc Enter để gửi nhé!
+                </div>
+            </div>
         </div>
         <div class="input-area">
-            <input type="text" id="inp" placeholder="Nhập câu hỏi...">
-            <button class="send" id="send">➤</button>
+            <input type="text" id="inp" placeholder="Nhập tin nhắn..." autocomplete="off">
+            <button class="send" id="sendBtn">➤</button>
         </div>
     </div>
 
     <script>
-        // === DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO DƯỚI ===
+        // =============================================
+        // === DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY ===
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNpq0HiyssNxk0PWBAYItJ-X1ygzzziEzVN0lwpUL6_5wZOCtoSMKNTxVvbS5EcPLA/exec";
         // =============================================
 
-        const msgs = document.getElementById('msgs');
-        const inp = document.getElementById('inp');
-        const sendBtn = document.getElementById('send');
-        let history = [];
+        const msgsBox = document.getElementById('msgs');
+        const inputBox = document.getElementById('inp');
+        const sendButton = document.getElementById('sendBtn');
+        const statusText = document.getElementById('status');
+        let conversation = [];
 
-        function addMsg(text, isUser=false) {
-            const t = String(text || ""); // LUÔN là chuỗi ✅
-            const time = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+        // === THÊM TIN NHẮN VÀO KHUNG ===
+        function hienTinNhan(noiDung, laNguoiDung) {
+            const safeText = String(noiDung || "");
+            const gio = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+            
             const div = document.createElement('div');
-            div.className = `msg ${isUser?'user':'bot'}`;
-            div.innerHTML = `<div class="bubble">${t.replace(/\n/g,'<br>')}<div class="time">${time}</div></div>`;
-            msgs.appendChild(div);
-            msgs.scrollTop = msgs.scrollHeight;
+            div.className = `msg ${laNguoiDung ? 'user' : 'bot'}`;
+            div.innerHTML = `
+                <div class="bubble">
+                    ${safeText.replace(/\n/g, '<br>')}
+                    <div class="time">${gio}</div>
+                </div>`;
+            
+            msgsBox.appendChild(div);
+            msgsBox.scrollTop = msgsBox.scrollHeight;
         }
 
-        function showTyping() {
-            const d = document.createElement('div');
-            d.className = 'msg bot'; d.id = 'typing';
-            d.innerHTML = `<div class="bubble typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-            msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+        function hienDangGoi() {
+            const div = document.createElement('div');
+            div.className = 'msg bot';
+            div.id = 'danggoi';
+            div.innerHTML = `<div class="bubble typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+            msgsBox.appendChild(div);
+            msgsBox.scrollTop = msgsBox.scrollHeight;
         }
-        function hideTyping() { document.getElementById('typing')?.remove(); }
 
-        async function go() {
-            const text = inp.value.trim();
-            if (!text) return;
-            if (SCRIPT_URL.includes("THAY_BANG")) {
-                alert("⚠️ Dán URL Google Script vào chỗ SCRIPT_URL!");
+        function anDangGoi() {
+            document.getElementById('danggoi')?.remove();
+        }
+
+        // === HÀM GỬI TIN NHẮN ===
+        async function guiTinNhan() {
+            const noiDung = inputBox.value.trim();
+            
+            // Kiểm tra rỗng
+            if (!noiDung) {
+                statusText.textContent = "⚠️ Vui lòng nhập nội dung!";
                 return;
             }
             
-            addMsg(text, true);
-            inp.value = '';
-            history.push({role:'user', content:text});
-            
-            showTyping();
-            sendBtn.disabled = true;
+            // Kiểm tra URL
+            if (SCRIPT_URL.includes("THAY_URL")) {
+                alert("⚠️ Bạn chưa điền URL Google Script!\nMở file HTML → dán URL vào chỗ THAY_URL_CUA_BAN");
+                return;
+            }
+
+            // Bước 1: Hiển thị tin nhắn người dùng NGAY LẬP TỨC ✅
+            hienTinNhan(noiDung, true);
+            inputBox.value = "";
+            inputBox.disabled = true;
+            sendButton.disabled = true;
+            statusText.textContent = "Đang gửi... ⏳";
+
+            // Lưu lịch sử
+            conversation.push({role: 'user', content: noiDung});
+
+            hienDangGoi();
 
             try {
-                const fd = new FormData();
-                fd.append("data", JSON.stringify({
+                // Gọi Google Script
+                const duLieu = new FormData();
+                duLieu.append("data", JSON.stringify({
                     messages: [
-                        {role:'system', content:'Trả lời bằng tiếng Việt, ngắn gọn, dễ hiểu.'},
-                        ...history
+                        {role: 'system', content: 'Trả lời bằng tiếng Việt tự nhiên, ngắn gọn, dễ hiểu.'},
+                        ...conversation
                     ]
                 }));
 
-                const res = await fetch(SCRIPT_URL, {method:'POST', body:fd});
-                const txt = await res.text();
-                let data;
-                try { data = JSON.parse(txt); }
-                catch { throw new Error(`Phản hồi không phải JSON: ${txt.slice(0,80)}`); }
+                const phanHoi = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: duLieu
+                });
 
-                if (data.error) throw new Error(data.error);
-                if (!data.choices?.[0]?.message?.content) throw new Error("API không trả về kết quả");
+                if (!phanHoi.ok) throw new Error(`Lỗi kết nối: ${phanHoi.status}`);
 
-                const reply = data.choices[0].message.content;
-                history.push({role:'assistant', content:reply});
-                hideTyping();
-                addMsg(reply);
+                const noiDungTraVe = await phanHoi.text();
+                let json;
+                try {
+                    json = JSON.parse(noiDungTraVe);
+                } catch {
+                    throw new Error(`Phản hồi không hợp lệ: ${noiDungTraVe.slice(0, 100)}`);
+                }
+
+                if (json.error) throw new Error(json.error);
+                if (!json.choices || !json.choices[0]?.message?.content) {
+                    throw new Error("API không trả về nội dung");
+                }
+
+                // Hiển thị câu trả lời
+                const cauTraLoi = json.choices[0].message.content;
+                conversation.push({role: 'assistant', content: cauTraLoi});
                 
-            } catch (e) {
-                hideTyping();
-                // === SỬA GỐC: Lấy đúng message ===
-                const loi = e?.message || String(e) || "Lỗi không xác định";
-                addMsg(`❌ Lỗi: ${loi}`);
-                console.error("Lỗi:", e);
+                anDangGoi();
+                hienTinNhan(cauTraLoi, false);
+                statusText.textContent = "Sẵn sàng 💚";
+
+            } catch (loi) {
+                anDangGoi();
+                const thongBaoLoi = loi?.message || String(loi) || "Lỗi không xác định";
+                hienTinNhan(`❌ Lỗi: ${thongBaoLoi}`, false);
+                statusText.textContent = "Có lỗi ❌";
+                console.error("Chi tiết lỗi:", loi);
             }
-            
-            sendBtn.disabled = false;
+
+            inputBox.disabled = false;
+            sendButton.disabled = false;
+            inputBox.focus(); // Trở lại ô gõ ngay ✅
         }
 
-        sendBtn.onclick = go;
-        inp.onkeypress = e => e.key === 'Enter' && go();
+        // === NÚT GỬI & PHÍM ENTER ===
+        sendButton.addEventListener('click', guiTinNhan);
+        inputBox.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                guiTinNhan();
+            }
+        });
     </script>
 </body>
 </html>
