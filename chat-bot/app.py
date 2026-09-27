@@ -1,26 +1,18 @@
 from flask import Flask, request, jsonify, send_from_directory
 import requests
+import json
 
 app = Flask(__name__)
 
-# === THÔNG TIN TỪ CV.LEPHIPHI.COM — BOT SẼ DỰA VÀO ĐÂY ĐỂ TRẢ LỜI ===
+# === THÔNG TIN CV ===
 THONG_TIN_CV = """
 THÔNG TIN VỀ LÊ PHI PHI:
-
 - Tên: Lê Phi Phi
 - Lĩnh vực: Công nghệ, Tự động hóa, Lập trình, Thiết kế web
-- Kỹ năng chính:
-  • Lập trình: Python, HTML/CSS/JavaScript, Google Apps Script
-  • Tự động hóa điều khiển thiết bị điện, hệ thống thông minh
-  • Thiết kế trang web, cổng liên hệ, công cụ tổ chức sự kiện
-  • Quản trị tài chính, quy trình làm việc hiệu quả
-- Dự án đã thực hiện:
-  • Trang giới thiệu cá nhân cv.lephiphi.com
-  • Hệ thống tự động hóa, điều khiển từ xa
-  • Công cụ hỗ trợ tổ chức đám cưới, quản lý thông tin
-  • Mẫu giao diện hiện đại, tương thích di động
-- Đặc điểm: Làm việc thực tế, giải pháp đơn giản hiệu quả, hỗ trợ tận tình
-- Liên hệ: Thông qua biểu mẫu tại lephiphi.com hoặc cv.lephiphi.com
+- Kỹ năng: Python, HTML/CSS/JS, Google Apps Script, Tự động hóa, Thiết kế giao diện
+- Dự án: cv.lephiphi.com, hệ thống tự động hóa, công cụ tổ chức sự kiện
+- Liên hệ: qua trang lephiphi.com hoặc cv.lephiphi.com 0922332243
+- Số điện thoại: 0922332243
 """
 
 @app.route('/chat-bot/')
@@ -31,6 +23,45 @@ def index():
 def static_files(path):
     return send_from_directory('.', path)
 
+def goi_pollinations(prompt, model_ten):
+    """Gọi Pollinations với kiểm tra lỗi đầy đủ"""
+    url = "https://text.pollinations.ai/"
+    try:
+        res = requests.post(
+            url,
+            json={
+                "model": model_ten,
+                "messages": [{"role": "user", "content": prompt}],
+                "stream": False
+            },
+            timeout=40
+        )
+        
+        # Kiểm tra mã trạng thái
+        if res.status_code != 200:
+            print(f"[{model_ten}] Mã lỗi: {res.status_code}")
+            return None
+        
+        # Kiểm tra nội dung trống
+        if not res.text or res.text.strip() == "":
+            print(f"[{model_ten}] Phản hồi trống")
+            return None
+        
+        # Kiểm tra JSON hợp lệ
+        try:
+            du_lieu = res.json()
+        except json.JSONDecodeError as e:
+            print(f"[{model_ten}] JSON không hợp lệ: {str(e)}")
+            print(f"Nội dung: {res.text[:200]}")
+            return None
+        
+        # Trích xuất câu trả lời
+        return du_lieu.get("choices", [{}])[0].get("message", {}).get("content", "")
+        
+    except Exception as e:
+        print(f"[{model_ten}] Lỗi kết nối: {str(e)}")
+        return None
+
 @app.route('/chat-bot/ask', methods=['POST'])
 def ask():
     data = request.get_json()
@@ -39,60 +70,23 @@ def ask():
     if not cau_hoi:
         return jsonify({"reply": "Bạn chưa nhập câu hỏi ạ!"})
 
-    # Xây dựng nội dung gửi AI: thông tin CV + câu hỏi
-    prompt = f"""Dưới đây là thông tin về Lê Phi Phi:
+    prompt = f"""Dựa trên thông tin sau đây, trả lời câu hỏi một cách tự nhiên bằng tiếng Việt:
 
 {THONG_TIN_CV}
 
-Hãy trả lời câu hỏi dựa trên thông tin trên. Nếu không có thông tin, trả lời lịch sự và nói bạn không biết hoặc hướng dẫn liên hệ.
-Nếu câu hỏi không liên quan đến thông tin trên, trả lời một cách hữu ích và thân thiện.
+Nếu không có thông tin, trả lời lịch sự. Nếu câu hỏi không liên quan, trả lời hữu ích.
+Câu hỏi: {cau_hoi}"""
 
-Câu hỏi: {cau_hoi}
-Trả lời bằng tiếng Việt ngắn gọn, tự nhiên, dễ hiểu.
-"""
+    # Thử lần lượt từng mô hình
+    for mo_hinh in ["mistral", "openai", "llama"]:
+        cau_tra_loi = goi_pollinations(prompt, mo_hinh)
+        if cau_tra_loi and len(cau_tra_loi.strip()) > 3:
+            return jsonify({"reply": cau_tra_loi.strip()})
 
-    # === Dùng Pollinations — MIỄN PHÍ, KHÔNG CẦN KHÓA ===
-    try:
-        res = requests.post(
-            "https://text.pollinations.ai/",
-            json={
-                "model": "mistral",
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
-                "stream": False,
-                "seed": 42
-            },
-            timeout=35
-        )
-
-        if res.ok:
-            ket_qua = res.json()
-            cau_tra_loi = ket_qua.get("choices", [{}])[0].get("message", {}).get("content", "")
-            if cau_tra_loi:
-                return jsonify({"reply": cau_tra_loi.strip()})
-
-        # Dự phòng: mô hình khác
-        res2 = requests.post(
-            "https://text.pollinations.ai/",
-            json={
-                "model": "openai",
-                "messages": [{"role": "user", "content": prompt}],
-                "stream": False
-            },
-            timeout=35
-        )
-        if res2.ok:
-            kq2 = res2.json()
-            tl2 = kq2.get("choices", [{}])[0].get("message", {}).get("content", "")
-            if tl2:
-                return jsonify({"reply": tl2.strip()})
-
-        return jsonify({"reply": "⏳ Hệ thống đang bận, vui lòng gửi lại sau vài giây nhé!"})
-
-    except Exception as e:
-        print(f"Lỗi: {str(e)}")
-        return jsonify({"reply": f"❌ Lỗi: {str(e)} — vui lòng thử lại"})
+    # Nếu tất cả đều lỗi
+    return jsonify({
+        "reply": "⏳ Hệ thống AI đang bận nhẹ. Bạn vui lòng gửi lại sau vài giây nhé! Hoặc hỏi lại với nội dung đơn giản hơn."
+    })
 
 if __name__ == "__main__":
     app.run(port=5000)
