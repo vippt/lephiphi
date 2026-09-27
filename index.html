@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lê Phi Phi - LePhiPhi.Com</title>
     
-    <!-- === PWA ĐẦY ĐỦ === -->
+    <!-- === PWA === -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00ff41">
     <meta name="msapplication-TileColor" content="#00ff41">
@@ -43,19 +43,44 @@
             background: #000500; 
         }
 
-        /* === NÚT PWA === */
+        /* ======================================
+           NÚT PWA — SÁT ĐÁY CHÍNH GIỮA, KHÔNG BỊ CHE
+           ====================================== */
         .pwa-install-btn {
-            position: fixed; bottom: 1px; left: 50%; transform: translateX(-50%);
-            z-index: 99997; padding: 12px 24px; background: #00ff41; color: #000;
-            border: none; border-radius: 50px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 20px rgba(0,255,65,.5); font-size: 8px; display: none;
+            position: fixed; 
+            bottom: 2px; /* Sát đáy — đổi số này nếu muốn cao hơn/thấp hơn */
+            left: 50%; 
+            transform: translateX(-50%);
+            z-index: 99999; /* Cao nhất — không bị đè */
+            padding: 10px 20px; 
+            background: #00ff41; 
+            color: #000;
+            border: none; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0,255,65,.5); 
+            font-size: 8px; 
+            display: none;
         }
-        .pwa-install-btn:hover { transform: translateX(-50%) scale(1.05); }
+        .pwa-install-btn:hover { 
+            transform: translateX(-50%) scale(1.05);
+        }
         .pwa-hint-ios {
-            position: fixed; bottom: 1px; left: 50%; transform: translateX(-50%);
-            z-index: 99997; padding: 10px 18px; background: rgba(0,0,0,.85);
-            color: #00ff41; border: 1px solid #00ff41; border-radius: 8px;
-            font-size: 8px; text-align: center; max-width: 90%; display: none;
+            position: fixed; 
+            bottom: 2px; /* Cùng vị trí nút PWA */
+            left: 50%; 
+            transform: translateX(-50%);
+            z-index: 99999; 
+            padding: 10px 16px; 
+            background: rgba(0,0,0,.85);
+            color: #00ff41; 
+            border: 1px solid #00ff41; 
+            border-radius: 8px;
+            font-size: 8px; 
+            text-align: center; 
+            max-width: 90%; 
+            display: none;
         }
 
         /* KHUNG LOADING */
@@ -113,23 +138,31 @@
         }
         @keyframes fall { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(120vh);opacity:0} }
 
-        /* === NÚT & KHUNG CHAT BOT === */
+        /* ======================================
+           NÚT CHAT BOT — ĐỂ KHÔNG ĐÈ NÚT PWA
+           ====================================== */
         .chat-bot-toggle {
-            position: fixed; bottom: 20px; right: 20px;
+            position: fixed; 
+            bottom: 70px; /* Đẩy lên trên nút PWA */
+            right: 20px;
             width: 56px; height: 56px; border-radius: 50%;
             background: linear-gradient(135deg, #00ff41, #00cc34);
             box-shadow: 0 4px 20px rgba(0,255,65,0.4);
-            cursor: pointer; z-index: 99999;
+            cursor: pointer; z-index: 99998; /* Thấp hơn PWA */
             display: flex; align-items: center; justify-content: center;
             border: none; transition: transform 0.3s ease;
         }
         .chat-bot-toggle:hover { transform: scale(1.08); }
         .chat-bot-toggle i { font-size: 24px; color: #000; }
 
+        /* KHUNG CHAT — THẤY LUÔN Ô NHẬP TIN NHẮN */
         .chat-bot-window {
-            position: fixed; bottom: 90px; right: 20px;
-            width: 360px; height: 480px;
-            max-height: calc(120vh - 160px);
+            position: fixed; 
+            bottom: 10px; /* Đặt trên nút chat */
+            right: 20px;
+            width: 360px; 
+            height: 480px;
+            max-height: calc(100vh - 200px); /* Không tràn màn hình */
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
             background: #fff; z-index: 99998; overflow: hidden;
@@ -257,15 +290,14 @@
             .avatar { width: 100px; height: 100px; }
             .qr-img { max-width: 140px; }
             
+            /* Điện thoại: khung chat thấy luôn ô nhập */
             .chat-bot-window {
                 width: calc(100vw - 32px);
-                height: calc(100vh - 120px);
-                max-height: calc(100vh - 120px);
-                right: 16px; bottom: 85px;
+                height: calc(120vh - 140px);
+                max-height: calc(120vh - 140px);
+                right: 16px; bottom: 130px;
             }
-            .chat-bot-toggle { right: 16px; bottom: 16px; }
-            .pwa-install-btn { bottom: 90px; }
-            .pwa-hint-ios { bottom: 90px; }
+            .chat-bot-toggle { right: 16px; bottom: 70px; }
             .main { padding: 1rem 0.5rem; }
         }
     </style>
@@ -306,7 +338,7 @@
                                 <div class="lbl">Nơi sinh sống</div>
                                 <div class="val type-text" data-text="Phan Thiết - Bình Thuận"></div>
                             </div>
-                            <p class="intro type-text" data-text="Chào bạn! 👋 Tôi là Phi Phi — Tôi là anh thợ điện lành nghề thích chơi game, xem phim và du lịch."></p>
+                            <p class="intro type-text" data-text="Chào bạn! 👋 Tôi là Phi Phi — Tôi thích xem phim và du lịch."></p>
                         </div>
                     </div>
                 </div>
@@ -347,7 +379,7 @@
 
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
 
-    <!-- === NÚT PWA - THÊM VÀO MÀN HÌNH CHÍNH === -->
+    <!-- === NÚT PWA — THÊM VÀO MÀN HÌNH CHÍNH === -->
     <button class="pwa-install-btn" id="pwaInstallBtn">➕ Thêm vào màn hình chính</button>
     <div class="pwa-hint-ios" id="pwaHintIOS">
         💡 Nhấn <strong>Chia sẻ</strong> → <strong>Thêm vào màn hình chính</strong>
@@ -375,7 +407,7 @@
     </div>
 
 <script>
-// === PWA - NÚT THÊM VÀO MÀN HÌNH CHÍNH ===
+// === PWA ===
 const installBtn = document.getElementById('pwaInstallBtn');
 const iosHint = document.getElementById('pwaHintIOS');
 let deferredPrompt = null;
