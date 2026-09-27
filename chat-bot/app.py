@@ -10,7 +10,7 @@ GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
 # Chỉ dùng mô hình CHẮC CHẮN tồn tại & ổn định
 MODEL_LIST = [
     "gemini-1.5-flash",
-    "gemini-1.5-flash-8b"
+    "gemini-1.5-pro"
 ]
 
 @app.route('/chat-bot/')
@@ -22,7 +22,7 @@ def static_files(path):
     return send_from_directory('.', path)
 
 def goi_ai(cau_hoi, model_ten):
-    url = f"https://generativelanguage.googleapis.com/v1/models/{model_ten}:generateContent?key={GEMINI_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_ten}:generateContent?key={GEMINI_KEY}"
     payload = {
         "contents": [{
             "parts": [{"text": "Bạn là trợ lý thông minh, thân thiện, trả lời tiếng Việt ngắn gọn tự nhiên. Câu hỏi: " + cau_hoi}]
