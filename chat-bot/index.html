@@ -5,32 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Của Phi</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
-        body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-        .chat{width:100%;max-width:420px;height:700px;background:#fff;border-radius:24px;box-shadow:0 12px 40px rgba(26,145,255,.15);display:flex;flex-direction:column;overflow:hidden}
-        .hd{background:linear-gradient(90deg,#1a91ff,#00c6ff);color:#fff;padding:18px 20px;display:flex;align-items:center;gap:12px}
-        .avt{width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#1a91ff;font-weight:bold;font-size:20px}
-        .hd-info{flex:1}
-        .hd-info h3{font-size:16px}
-        .msgs{flex:1;padding:20px;overflow-y:auto;background:#f8fafc;display:flex;flex-direction:column;gap:16px}
-        .msg{max-width:78%}
-        .bot{align-self:flex-start}
-        .user{align-self:flex-end}
-        .bubble{padding:14px 18px;border-radius:20px;line-height:1.6;white-space:pre-wrap}
-        .bot .bubble{background:#fff;border:1px solid #e2e8f0;border-radius:20px 20px 20px 6px}
-        .user .bubble{background:linear-gradient(90deg,#1a91ff,#00c6ff);color:#fff;border-radius:20px 20px 6px 20px}
-        .time{font-size:10px;opacity:.6;margin-top:6px;text-align:right}
-        .input-area{padding:18px 20px;background:#fff;border-top:1px solid #e2e8f0;display:flex;gap:10px}
-        #inp{flex:1;padding:14px 20px;border:1px solid #e2e8f0;border-radius:25px;outline:none;font-size:15px}
-        #inp:focus{border-color:#1a91ff;box-shadow:0 0 0 3px rgba(26,145,255,.1)}
-        .send{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(90deg,#1a91ff,#00c6ff);color:#fff;cursor:pointer;font-size:18px}
-        .send:disabled{opacity:.5;cursor:not-allowed}
-        .typing{display:flex;gap:4px;padding:14px 18px}
-        .dot{width:8px;height:8px;background:#cbd5e1;border-radius:50%;animation:typing 1.4s infinite}
-        .dot:nth-child(2){animation-delay:.2s}
-        .dot:nth-child(3){animation-delay:.4s}
-        @keyframes typing{0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)}}
-    </style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+    html, body{
+        background:linear-gradient(135deg,#f0f4f8,#d9e2ec);
+        min-height:100vh;
+        min-height:100dvh; /* Hỗ trợ trình duyệt di động hiện đại */
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:12px;
+    }
+    .chat{
+        width:100%;
+        max-width:420px;
+        /* === SỬA CHIỀU CAO TỰ ĐỘNG === */
+        height:95vh;
+        height:95dvh; /* Chiếm 95% màn hình — vừa vặn */
+        max-height:750px; /* Giới hạn tối đa trên màn hình lớn */
+        min-height:500px; /* Giới hạn tối thiểu trên màn hình nhỏ */
+        background:#fff;
+        border-radius:24px;
+        box-shadow:0 12px 40px rgba(26,145,255,.15);
+        display:flex;
+        flex-direction:column;
+        overflow:hidden
+    }
+    .hd{
+        background:linear-gradient(90deg,#1a91ff,#00c6ff);
+        color:#fff;
+        padding:16px 20px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        flex-shrink:0; /* Không co lại */
+    }
+    .avt{
+        width:40px;
+        height:40px;
+        border-radius:50%;
+        background:#fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#1a91ff;
+        font-weight:bold;
+        font-size:18px;
+        flex-shrink:0;
+    }
+    .hd-info{flex:1}
+    .hd-info h3{font-size:16px;margin:0}
+    .msgs{
+        flex:1; /* Tự chiếm không gian còn lại */
+        padding:16px 20px;
+        overflow-y:auto;
+        background:#f8fafc;
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+        min-height:0; /* Quan trọng — cho phép co giãn đúng */
+    }
+    .msg{max-width:78%}
+    .bot{align-self:flex-start}
+    .user{align-self:flex-end}
+    .bubble{
+        padding:12px 16px;
+        border-radius:20px;
+        line-height:1.5;
+        white-space:pre-wrap;
+        font-size:14.5px
+    }
+    .bot .bubble{
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:20px 20px 20px 6px
+    }
+    .user .bubble{
+        background:linear-gradient(90deg,#1a91ff,#00c6ff);
+        color:#fff;
+        border-radius:20px 20px 6px 20px
+    }
+    .time{font-size:10px;opacity:.6;margin-top:4px;text-align:right}
+    .input-area{
+        padding:14px 18px;
+        background:#fff;
+        border-top:1px solid #e2e8f0;
+        display:flex;
+        gap:10px;
+        flex-shrink:0; /* Giữ cố định phía dưới */
+    }
+    #inp{
+        flex:1;
+        padding:12px 18px;
+        border:1px solid #e2e8f0;
+        border-radius:25px;
+        outline:none;
+        font-size:15px
+    }
+    #inp:focus{border-color:#1a91ff;box-shadow:0 0 0 3px rgba(26,145,255,.1)}
+    .send{
+        width:40px;
+        height:40px;
+        border-radius:50%;
+        border:none;
+        background:linear-gradient(90deg,#1a91ff,#00c6ff);
+        color:#fff;
+        cursor:pointer;
+        font-size:16px;
+        flex-shrink:0
+    }
+    .send:disabled{opacity:.5;cursor:not-allowed}
+    .typing{display:flex;gap:4px;padding:12px 16px}
+    .dot{
+        width:7px;
+        height:7px;
+        background:#cbd5e1;
+        border-radius:50%;
+        animation:typing 1.4s infinite
+    }
+    .dot:nth-child(2){animation-delay:.2s}
+    .dot:nth-child(3){animation-delay:.4s}
+    @keyframes typing{
+        0%,60%,100%{transform:translateY(0)}
+        30%{transform:translateY(-4px)}
+    }
+    /* Thanh cuộn mảnh mai */
+    .msgs::-webkit-scrollbar{width:4px}
+    .msgs::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+    
+    /* Điện thoại nhỏ */
+    @media (max-height: 600px) {
+        .chat{height:98vh;height:98dvh;max-height:none;border-radius:16px}
+        .hd{padding:12px 16px}
+        .msgs{padding:12px 16px}
+        .input-area{padding:10px 16px}
+    }
+</style>
 </head>
 <body>
     <div class="chat">
