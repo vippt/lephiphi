@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Dùng Ngay</title>
+    <title>DeepSeek — Google Script</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -48,7 +48,7 @@
         <div class="msgs" id="msgs">
             <div class="msg bot">
                 <div class="bubble">
-                    Xin chào! 😊 Đã sẵn sàng — không cần nhập khóa gì cả! Hãy hỏi tôi bất cứ điều gì nhé!
+                    Xin chào! 😊 Dùng Google Script làm trung gian — không bị chặn! Hãy hỏi tôi nhé!
                 </div>
             </div>
         </div>
@@ -59,13 +59,9 @@
     </div>
 
     <script>
-        // ==================================================
-        // 👇 DÁN KHÓA DEEPSEEK CỦA BẠN VÀO DƯỚI ĐÂY 👇
-        // ==================================================
-        const API_KEY = "sk-114fb20317934efcbf44b64dd5a1b014"; // Thay bằng khóa thật của bạn
-        const API_URL = "https://api.deepseek.com/v1/chat/completions";
-        const MODEL = "deepseek-chat";
-        // ==================================================
+        // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyPC6o7tOs3EEluuOSylIbmdklxBiMfnw63opWkG0a24DZA7_fBzjUdS3vO190blKC-/exec";
+        // ==============================================
 
         const msgsEl = document.getElementById('msgs');
         const inpEl = document.getElementById('inp');
@@ -96,10 +92,7 @@
 
         async function sendMsg() {
             const text = inpEl.value.trim();
-            if (!text || !API_KEY || API_KEY ="sk-114fb20317934efcbf44b64dd5a1b014") {
-                alert("⚠️ Chưa có khóa API! Dán khóa DeepSeek vào dòng API_KEY trong code nhé!");
-                return;
-            }
+            if (!text) return;
             
             addMsg(text, true);
             inpEl.value = '';
@@ -110,28 +103,22 @@
             statusEl.textContent = 'Đang suy nghĩ... 🧠';
 
             try {
-                const res = await fetch(API_URL, {
+                const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
-                    },
+                    mode: 'no-cors', // Quan trọng cho Google Script
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: MODEL,
                         messages: [
                             {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
                             ...history
-                        ],
-                        temperature: 0.7
+                        ]
                     })
                 });
 
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error?.message || `Lỗi ${res.status}`);
-                }
-
+                // Với no-cors, cần chờ dữ liệu trả về khác
                 const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || `Lỗi ${res.status}`);
+                
                 const reply = data.choices[0].message.content;
                 history.push({role:'assistant', content:reply});
                 
@@ -139,9 +126,28 @@
                 addMsg(reply);
                 statusEl.textContent = 'Sẵn sàng 💚';
             } catch (err) {
-                hideTyping();
-                addMsg(`❌ Lỗi: ${err.message}`);
-                statusEl.textContent = 'Có lỗi ❌';
+                // Sửa cách xử lý cho Google Script
+                try {
+                    const res = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            messages: [
+                                {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
+                                ...history
+                            ]
+                        })
+                    });
+                    const data = await res.json();
+                    const reply = data.choices[0].message.content;
+                    history.push({role:'assistant', content:reply});
+                    hideTyping();
+                    addMsg(reply);
+                    statusEl.textContent = 'Sẵn sàng 💚';
+                } catch (err2) {
+                    hideTyping();
+                    addMsg(`❌ Lỗi: ${err2.message}\nKiểm tra lại quyền triển khai Script nhé!`);
+                    statusEl.textContent = 'Có lỗi ❌';
+                }
             }
             
             sendBtn.disabled = false;
