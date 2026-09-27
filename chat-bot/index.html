@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Sửa Lỗi Cuối</title>
+    <title>DeepSeek — Sửa Gốc Lỗi</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -59,8 +59,8 @@
     </div>
 
     <script>
-        // 👇 DÁN URL GOOGLE SCRIPT MỚI VÀO ĐÂY 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMUj48QOEl39IpdKfrHtDhNEtTt2dU1nqPoHukqaLGLr-QQUfmW2VVNszNFTusHV-l/exec";
+        // 👇 DÁN URL GOOGLE SCRIPT MỚI VÀO DƯỚI ĐÂY 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNpq0HiyssNxk0PWBAYItJ-X1ygzzziEzVN0lwpUL6_5wZOCtoSMKNTxVvbS5EcPLA/exec";
         // ==============================================
 
         const msgsEl = document.getElementById('msgs');
@@ -69,8 +69,17 @@
         const statusEl = document.getElementById('status');
         let history = [];
 
+        // === HÀM SỬA LỖI HIỂN THỊ — KHÔNG BAO GIỜ [object Object] ===
+        function layLoi(err) {
+            if (!err) return "Lỗi không xác định";
+            if (typeof err === 'string') return err;
+            if (err.message && typeof err.message === 'string') return err.message;
+            try { return JSON.stringify(err); }
+            catch { return "Đối tượng lỗi không đọc được"; }
+        }
+
         function addMsg(text, isUser=false) {
-            const safeText = String(text || ""); // Ép kiểu CHUỖI — KHÔNG BAO GIỜ [object Object]
+            const safeText = String(text || "");
             const time = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
             const div = document.createElement('div');
             div.className = `msg ${isUser?'user':'bot'}`;
@@ -135,7 +144,7 @@
                 if (data.error) throw new Error(data.error);
                 
                 if (!data.choices || !data.choices[0]?.message?.content) {
-                    throw new Error("API không trả về kết quả");
+                    throw new Error("API không trả về kết quả mong đợi");
                 }
                 
                 const reply = data.choices[0].message.content;
@@ -147,11 +156,10 @@
                 
             } catch (err) {
                 hideTyping();
-                // Luôn hiển thị chuỗi rõ ràng
-                const msg = err?.message || String(err) || "Lỗi không xác định";
-                addMsg(`❌ Lỗi: ${msg}`);
+                // === DÙNG HÀM layLoi ĐỂ LẤY CHUỖI ĐÚNG ===
+                addMsg(`❌ Lỗi: ${layLoi(err)}`);
                 statusEl.textContent = 'Có lỗi ❌';
-                console.error(err);
+                console.error("Chi tiết lỗi:", err);
             }
             
             sendBtn.disabled = false;
