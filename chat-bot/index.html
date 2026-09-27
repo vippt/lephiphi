@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek — Đã Sửa Fetch</title>
+    <title>DeepSeek — Bản Cuối</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
         body{background:linear-gradient(135deg,#f0f4f8,#d9e2ec);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -48,7 +48,7 @@
         <div class="msgs" id="msgs">
             <div class="msg bot">
                 <div class="bubble">
-                    Xin chào! 😊 Đã sửa lỗi "Failed to fetch"! Hãy thử hỏi tôi nhé!
+                    Xin chào! 😊 Bản cuối đã hoàn chỉnh! Hãy hỏi tôi nhé!
                 </div>
             </div>
         </div>
@@ -59,8 +59,8 @@
     </div>
 
     <script>
-        // 👇 DÁN URL GOOGLE SCRIPT MỚI CỦA BẠN VÀO ĐÂY 👇
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9fNZPt9I6m-EbNZELj8oAh5yqsVpNgq4QxPcezsyDyuQfmInyg2FQndJYXYxldQbL/exec";
+        // 👇 DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO DƯỚI ĐÂY 👇
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgWUM5Kuukf54qWkqDiNcD1nVPbCBmztf6QYKJoPw-zOWF9CFCX9yIfeHCEGEPNBJQ/exec";
         // ==============================================
 
         const msgsEl = document.getElementById('msgs');
@@ -74,7 +74,7 @@
             const time = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
             const div = document.createElement('div');
             div.className = `msg ${isUser?'user':'bot'}`;
-            div.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>')}<div class="time">${time}</div></div>`;
+            div.innerHTML = `<div class="bubble">${String(text).replace(/\n/g,'<br>')}<div class="time">${time}</div></div>`;
             msgsEl.appendChild(div);
             msgsEl.scrollTop = msgsEl.scrollHeight;
         }
@@ -94,7 +94,7 @@
             const text = inpEl.value.trim();
             if (!text) return;
             if (SCRIPT_URL.includes("THAY_URL")) {
-                alert("⚠️ Dán URL Google Script vào dòng SCRIPT_URL nhé!");
+                alert("⚠️ Vui lòng dán URL Google Script vào dòng SCRIPT_URL!");
                 return;
             }
             
@@ -104,27 +104,40 @@
             
             showTyping();
             sendBtn.disabled = true;
-            statusEl.textContent = 'Đang gửi... 📤';
+            statusEl.textContent = 'Đang xử lý... ⏳';
 
             try {
-                // === Cách gọi đúng cho Google Script ===
-                const formData = new FormData();
-                formData.append("data", JSON.stringify({
+                // Dùng FormData để tránh lỗi CORS với Google Script
+                const payload = {
                     messages: [
                         {role:'system', content:'Trả lời bằng tiếng Việt tự nhiên, dễ hiểu, ngắn gọn.'},
                         ...history
                     ]
-                }));
+                };
+
+                const formData = new FormData();
+                formData.append("data", JSON.stringify(payload));
 
                 const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: formData
                 });
 
-                const textResp = await res.text();
-                const data = JSON.parse(textResp);
+                if (!res.ok) throw new Error(`Lỗi kết nối: ${res.status}`);
+                
+                const rawText = await res.text();
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch {
+                    throw new Error("Dữ liệu trả về không đúng định dạng");
+                }
                 
                 if (data.error) throw new Error(data.error);
+                
+                if (!data.choices || !data.choices[0]) {
+                    throw new Error("API không trả về kết quả mong đợi");
+                }
                 
                 const reply = data.choices[0].message.content;
                 history.push({role:'assistant', content:reply});
@@ -132,9 +145,12 @@
                 hideTyping();
                 addMsg(reply);
                 statusEl.textContent = 'Sẵn sàng 💚';
+                
             } catch (err) {
                 hideTyping();
-                addMsg(`❌ Lỗi: ${err.message}`);
+                // Hiển thị rõ lỗi, không bao giờ hiện [object Object]
+                const errorMsg = err && err.message ? String(err.message) : "Lỗi không xác định";
+                addMsg(`❌ Lỗi: ${errorMsg}`);
                 statusEl.textContent = 'Có lỗi ❌';
                 console.error(err);
             }
