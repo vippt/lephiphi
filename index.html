@@ -58,7 +58,7 @@
            ====================================== */
         .pwa-install-btn {
             position: fixed; 
-            bottom: 8px;
+            bottom: 2px;
             left: 50%; 
             transform: translateX(-50%);
             z-index: 999999; /* Cao nhất */
@@ -70,7 +70,7 @@
             font-weight: bold; 
             cursor: pointer;
             box-shadow: 0 0 25px rgba(0,255,65,.7); 
-            font-size: 14px; 
+            font-size: 8px; 
             display: block !important; /* LUÔN HIỆN */
             animation: pulse-pwa 2s infinite;
         }
@@ -83,7 +83,7 @@
         }
         .pwa-hint-ios {
             position: fixed; 
-            bottom: 60px;
+            bottom: 2px;
             left: 50%; 
             transform: translateX(-50%);
             z-index: 999998; 
@@ -92,7 +92,7 @@
             color: #00ff41; 
             border: 1px solid #00ff41; 
             border-radius: 8px;
-            font-size: 12px; 
+            font-size: 8px; 
             text-align: center; 
             max-width: 90%; 
             display: block;
@@ -155,7 +155,7 @@
            ====================================== */
         .chat-bot-toggle {
             position: fixed; 
-            bottom: 70px; /* Đẩy lên cao hơn nút PWA */
+            bottom: 2px; /* Đẩy lên cao hơn nút PWA */
             right: 20px;
             width: 56px; height: 56px; border-radius: 50%;
             background: linear-gradient(135deg, #00ff41, #00cc34);
@@ -169,10 +169,10 @@
         /* KHUNG CHAT — TĂNG CHIỀU CAO */
         .chat-bot-window {
             position: fixed; 
-            bottom: 140px;
+            bottom: 52px;
             right: 20px;
             width: 360px; 
-            height: 560px;
+            height: 580px;
             max-height: calc(100vh - 200px);
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
@@ -297,9 +297,9 @@
             
             .chat-bot-window {
                 width: calc(100vw - 32px);
-                height: calc(90vh - 90px);
-                max-height: calc(100vh - 120px);
-                right: 16px; bottom: 80px;
+                height: calc(110vh - 110px);
+                max-height: calc(120vh - 140px);
+                right: 16px; bottom: 50px;
             }
             .chat-bot-toggle { right: 16px; bottom: 80px; }
             .pwa-install-btn { font-size: 13px; padding: 9px 20px; }
@@ -383,9 +383,7 @@
     
     <!-- === NÚT PWA — LUÔN HIỆN === -->
     <button class="pwa-install-btn" id="pwaInstallBtn">➕ Thêm vào màn hình chính</button>
-    <div class="pwa-hint-ios" id="pwaHintIOS">
-        💡 Trên iPhone/iPad: Nhấn Chia sẻ → Thêm vào màn hình chính
-    </div>
+    
     
     <!-- === NÚT CHAT BOT === -->
     <button class="chat-bot-toggle" id="chatBotToggle" title="Mở AI Chat">
