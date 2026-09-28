@@ -19,7 +19,6 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700&family=Noto+Sans:wght@400;500;600;700&display=swap');
-
         :root {
             --neon-green: #00ff41;
             --neon-green-soft: rgba(0,255,65,0.35);
@@ -33,7 +32,6 @@
             --accent-love: #e85d75;
             --accent-cv: #4a90d9;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Noto Sans', sans-serif; 
@@ -42,16 +40,15 @@
             overflow-y: auto;
             background: #000500; 
         }
-
         /* ======================================
-           NÚT PWA — SÁT ĐÁY CHÍNH GIỮA, KHÔNG BỊ CHE
+           NÚT PWA — SÁT ĐÁY CHÍNH GIỮA, bottom: 2px
            ====================================== */
         .pwa-install-btn {
             position: fixed; 
-            bottom: 2px; /* Sát đáy — đổi số này nếu muốn cao hơn/thấp hơn */
+            bottom: 2px; /* Sát đáy 2px */
             left: 50%; 
             transform: translateX(-50%);
-            z-index: 99999; /* Cao nhất — không bị đè */
+            z-index: 99999; /* Cao nhất */
             padding: 10px 20px; 
             background: #00ff41; 
             color: #000;
@@ -60,15 +57,17 @@
             font-weight: bold; 
             cursor: pointer;
             box-shadow: 0 0 20px rgba(0,255,65,.5); 
-            font-size: 8px; 
+            font-size: 13px; /* ✅ Fix cỡ chữ */
             display: none;
+            white-space: nowrap;
         }
+        .pwa-install-btn.show { display: block; }
         .pwa-install-btn:hover { 
             transform: translateX(-50%) scale(1.05);
         }
         .pwa-hint-ios {
             position: fixed; 
-            bottom: 2px; /* Cùng vị trí nút PWA */
+            bottom: 42px; /* Đẩy lên trên nút PWA */
             left: 50%; 
             transform: translateX(-50%);
             z-index: 99999; 
@@ -77,12 +76,12 @@
             color: #00ff41; 
             border: 1px solid #00ff41; 
             border-radius: 8px;
-            font-size: 8px; 
+            font-size: 13px; /* ✅ Đồng bộ cỡ chữ */
             text-align: center; 
             max-width: 90%; 
             display: none;
         }
-
+        .pwa-hint-ios.show { display: block; }
         /* KHUNG LOADING */
         .access-screen {
             position: fixed; top: 50%; left: 50%;
@@ -123,7 +122,6 @@
             animation: pulse 1.5s infinite;
         }
         @keyframes pulse { 0%,100%{opacity:.7} 50%{opacity:1;box-shadow:0 0 20px rgba(0,255,65,.6)} }
-
         /* MƯA NHỊ PHÂN */
         .binary-rain {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -137,13 +135,12 @@
             white-space: nowrap; line-height: 18px; animation: fall linear infinite;
         }
         @keyframes fall { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(120vh);opacity:0} }
-
         /* ======================================
-           NÚT CHAT BOT — ĐỂ KHÔNG ĐÈ NÚT PWA
+           NÚT CHAT BOT — Sát đáy bên phải 2px
            ====================================== */
         .chat-bot-toggle {
             position: fixed; 
-            bottom: 70px; /* Đẩy lên trên nút PWA */
+            bottom: 2px; /* ✅ Sát đáy 2px */
             right: 20px;
             width: 56px; height: 56px; border-radius: 50%;
             background: linear-gradient(135deg, #00ff41, #00cc34);
@@ -154,24 +151,24 @@
         }
         .chat-bot-toggle:hover { transform: scale(1.08); }
         .chat-bot-toggle i { font-size: 24px; color: #000; }
-
-        /* KHUNG CHAT — THẤY LUÔN Ô NHẬP TIN NHẮN */
+        /* KHUNG CHAT — ✅ Xóa thanh cuộn */
         .chat-bot-window {
             position: fixed; 
-            bottom: 130px; /* Đặt trên nút chat */
+            bottom: 65px; /* Đặt trên nút chat */
             right: 20px;
             width: 360px; 
             height: 480px;
-            max-height: calc(100vh - 200px); /* Không tràn màn hình */
+            max-height: calc(100vh - 100px);
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
-            background: #fff; z-index: 99998; overflow: hidden;
+            background: #fff; z-index: 99998; 
             transform: scale(0); transform-origin: bottom right;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0; pointer-events: none; display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none; 
+            display: flex; flex-direction: column;
+            overflow: hidden; /* ✅ Xóa thanh cuộn ngoài */
         }
         .chat-bot-window.open { transform: scale(1); opacity: 1; pointer-events: auto; }
-
         .chat-bot-header {
             background: linear-gradient(135deg, #00ff41, #00cc34);
             color: #000; padding: 10px 14px;
@@ -187,9 +184,12 @@
         }
         .chat-bot-controls button:hover { background: rgba(0,0,0,0.2); }
         .chat-bot-iframe { 
-            flex: 1; border: none; width: 100%; min-height: 0; display: block;
+            flex: 1; 
+            border: none; 
+            width: 100%; 
+            display: block;
+            overflow: hidden; /* ✅ Xóa thanh cuộn trong iframe */
         }
-
         /* DASHBOARD */
         .main {
             position: fixed; top: 0; left: 0; 
@@ -200,7 +200,6 @@
             opacity: 0; transition: opacity .8s ease;
         }
         .main.show { opacity: 1; }
-
         .type-text { overflow: hidden; white-space: pre-wrap; width: 0; transition: width .05s ease; display: inline-block; }
         .notebook { max-width: 780px; margin: 0 auto; padding: 2rem 0; }
         .book {
@@ -210,7 +209,6 @@
             transition: opacity .8s ease .3s, transform .8s ease .3s;
         }
         .main.show .book { opacity: 1; transform: translateY(0); }
-
         .page { width: 50%; padding: 2rem 1.5rem; position: relative; min-height: auto; }
         .p-l { background: var(--paper); border-right: 1px dashed rgba(139,105,20,.15); }
         .p-r { background: var(--cream); }
@@ -241,7 +239,6 @@
         .lbl { font-size: .8rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: .25rem; }
         .val { font-size: 1rem; color: var(--text-dark); font-weight: 600; min-height: 1.5rem; }
         .intro { margin-top: 1.5rem; line-height: 1.8; color: var(--text-dark); font-size: .95rem; min-height: auto; }
-
         .btn {
             display: flex; align-items: center; text-decoration: none;
             border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.2rem;
@@ -257,7 +254,6 @@
         .btn-p { font-size: .85rem; opacity: .9; }
         .btn-arrow { transition: transform .3s; flex-shrink: 0; }
         .btn:hover .btn-arrow { transform: translateX(4px); }
-
         .qr-box {
             margin-top: 1rem; text-align: center; opacity: 0; transform: scale(.9);
             transition: opacity .5s ease 1s, transform .5s ease 1s;
@@ -265,13 +261,11 @@
         .qr-box.show { opacity: 1; transform: scale(1); }
         .qr-img { max-width: 160px; width: 100%; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.1); }
         .qr-note { margin-top: .5rem; font-size: .8rem; color: var(--text-soft); }
-
         .foot {
             text-align: center; margin-top: 2rem; font-size: .8rem; color: var(--text-soft);
             opacity: 0; transition: opacity .5s ease 1.5s;
         }
         .main.show .foot { opacity: 1; }
-
         .close {
             position: fixed; top: 1rem; right: 1rem;
             background: rgba(255,255,255,.9); border: none;
@@ -281,7 +275,6 @@
             z-index: 20; opacity: 0; transition: opacity .3s;
         }
         .main.show .close { opacity: 1; }
-
         /* === TỐI ƯU ĐIỆN THOẠI === */
         @media (max-width: 640px) {
             .book { flex-direction: column; }
@@ -290,14 +283,35 @@
             .avatar { width: 100px; height: 100px; }
             .qr-img { max-width: 140px; }
             
-            /* Điện thoại: khung chat thấy luôn ô nhập */
-            .chat-bot-window {
-                width: calc(100vw - 32px);
-                height: calc(100vh - 120px);
-                max-height: calc(120vh - 140px);
-                right: 16px; bottom: 50px;
+            /* Điện thoại: nút PWA thu gọn */
+            .pwa-install-btn {
+                font-size: 11px;
+                padding: 8px 14px;
+                bottom: 2px;
             }
-            .chat-bot-toggle { right: 16px; bottom: 1px; }
+            .pwa-hint-ios {
+                font-size: 11px;
+                bottom: 42px;
+            }
+            
+            /* Điện thoại: nút chat sát đáy 2px */
+            .chat-bot-toggle { 
+                right: 12px; 
+                bottom: 2px; /* ✅ Sát đáy 2px */
+                width: 48px;
+                height: 48px;
+            }
+            .chat-bot-toggle i { font-size: 20px; }
+            
+            /* Điện thoại: khung chat */
+            .chat-bot-window {
+                width: calc(100vw - 24px);
+                height: calc(100vh - 90px);
+                max-height: calc(100vh - 90px);
+                right: 12px; 
+                bottom: 55px;
+                overflow: hidden; /* ✅ Xóa thanh cuộn trên di động */
+            }
             .main { padding: 1rem 0.5rem; }
         }
     </style>
@@ -314,10 +328,8 @@
             </button>
         </div>
     </div>
-
     <!-- MƯA NHỊ PHÂN -->
     <div class="binary-rain" id="binaryRain"></div>
-
     <!-- DASHBOARD -->
     <div class="main" id="main">
         <div class="notebook">
@@ -376,20 +388,16 @@
         </div>
         <p class="foot">✨ Copy Right 2026 v3 by Lê Phi Phi</p>
     </div>
-
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
-
     <!-- === NÚT PWA — THÊM VÀO MÀN HÌNH CHÍNH === -->
     <button class="pwa-install-btn" id="pwaInstallBtn">➕ Thêm vào màn hình chính</button>
     <div class="pwa-hint-ios" id="pwaHintIOS">
         💡 Nhấn <strong>Chia sẻ</strong> → <strong>Thêm vào màn hình chính</strong>
     </div>
-
     <!-- === NÚT CHAT BOT === -->
     <button class="chat-bot-toggle" id="chatBotToggle" title="Mở AI Chat">
         <i class="fa fa-commenting-o"></i>
     </button>
-
     <!-- === KHUNG CHAT BOT === -->
     <div class="chat-bot-window" id="chatBotWindow">
         <div class="chat-bot-header">
@@ -403,41 +411,56 @@
             class="chat-bot-iframe" 
             src="https://www.lephiphi.com/chat-bot/"
             loading="lazy"
+            scrolling="no" <!-- ✅ Tắt thanh cuộn iframe -->
         ></iframe>
     </div>
-
 <script>
-// === PWA ===
+// === PWA — Fix hiển thị ===
 const installBtn = document.getElementById('pwaInstallBtn');
 const iosHint = document.getElementById('pwaHintIOS');
 let deferredPrompt = null;
 
-window.addEventListener('beforeinstallprompt', e => {
+// Hiển thị ngay nếu có thể
+window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    setTimeout(() => {
-        if (deferredPrompt && installBtn) installBtn.style.display = 'block';
-    }, 2000);
+    console.log('✅ Sẵn sàng cài đặt PWA');
+    // Hiển thị ngay không đợi
+    installBtn.classList.add('show');
 });
+
+// Fallback: Hiển thị nút sau 1s nếu chưa có sự kiện
+setTimeout(() => {
+    if (!deferredPrompt && /Chrome|Edge/.test(navigator.userAgent) && !/EdgA/.test(navigator.userAgent)) {
+        installBtn.classList.add('show');
+    }
+}, 1000);
 
 installBtn?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+        alert('💡 Trình duyệt không hỗ trợ thêm vào màn hình chính hoặc đã cài đặt rồi');
+        return;
+    }
     installBtn.disabled = true;
     const { outcome } = await deferredPrompt.prompt();
+    console.log(`Kết quả cài đặt: ${outcome}`);
     deferredPrompt = null;
-    installBtn.style.display = 'none';
+    installBtn.classList.remove('show');
 });
 
+// iOS
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 if (isIOS && iosHint) {
     setTimeout(() => {
-        iosHint.style.display = 'block';
-        setTimeout(() => iosHint.style.display = 'none', 12000);
-    }, 3000);
+        iosHint.classList.add('show');
+        setTimeout(() => iosHint.classList.remove('show'), 12000);
+    }, 2000);
 }
 
 window.addEventListener('appinstalled', () => {
-    if (installBtn) installBtn.style.display = 'none';
+    installBtn.classList.remove('show');
+    iosHint.classList.remove('show');
+    deferredPrompt = null;
 });
 
 // === ĐIỀU KHIỂN CHAT ===
@@ -449,6 +472,7 @@ let isChatOpen = false;
 
 function openChat() { chatWindow.classList.add('open'); isChatOpen = true; }
 function closeChatWindow() { chatWindow.classList.remove('open'); isChatOpen = false; }
+
 toggleBtn.addEventListener('click', () => isChatOpen ? closeChatWindow() : openChat());
 chatMinimize.addEventListener('click', closeChatWindow);
 chatClose.addEventListener('click', closeChatWindow);
