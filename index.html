@@ -157,8 +157,9 @@
             bottom: 55px; /* Đặt trên nút chat */
             right: 20px;
             width: 360px; 
-            height: 400px;
-            max-height: calc(100vh - 90px);
+            min-height: 400px;           /* Đảm bảo không quá nhỏ */
+            max-height: 600px;           /* heig hạn cao nhất trên màn hình lớn */
+            max-height: calc(100vh - 130px);
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
             background: #fff; z-index: 99998; 
@@ -188,7 +189,6 @@
         .chat-bot-iframe { 
             flex: 1; 
             border: none; 
-            height: 90%;
             width: 100%; 
            overflow: auto;    /* ✅ Đổi từ hidden → auto, không cắt nội dung */
             min-height: 0;  
