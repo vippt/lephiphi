@@ -187,7 +187,8 @@
         }
         .chat-bot-controls button:hover { background: rgba(0,0,0,0.2); }
         .chat-bot-iframe { 
-            flex: 1; 
+            flex: none; 
+            height: calc(100% - 48px); /* ✅ Trừ chính chiều cao thanh tiêu đề */
             border: none; 
             width: 100%; 
            overflow: auto;    /* ✅ Đổi từ hidden → auto, không cắt nội dung */
