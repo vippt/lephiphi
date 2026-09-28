@@ -28,8 +28,6 @@
             --soft-brown: #b8860b;
             --text-dark: #3a3a3a;
             --text-soft: #6b6b6b;
-            --accent-love: #e85d75;
-            --accent-cv: #4a90d9;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -69,7 +67,7 @@
             font-weight: bold; 
             cursor: pointer;
             box-shadow: 0 0 20px rgba(0,255,65,.5); 
-            font-size: 8px; /* ✅ Đúng yêu cầu */
+            font-size: 8px;
             display: block;
             transition: all .25s ease;
         }
@@ -102,7 +100,7 @@
         .chat-bot-toggle:hover { transform: scale(1.08); }
         .chat-bot-toggle i { font-size: 22px; color: #000; }
 
-        /* KHUNG CHAT — ĐỦ CHIỀU CAO HIỂN THỊ Ô NHẬP */
+        /* KHUNG CHAT */
         .chat-bot-window {
             position: fixed; 
             bottom: 60px;
@@ -136,36 +134,20 @@
             flex-shrink: 0;
         }
         .chat-bot-controls button {
-            background: rgba(0,0,0,0.1); 
-            border: none;
-            width: 26px; 
-            height: 26px; 
-            border-radius: 50%;
-            cursor: pointer; 
-            margin-left: 5px; 
-            font-size: 13px;
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
+            background: rgba(0,0,0,0.1); border: none;
+            width: 26px; height: 26px; border-radius: 50%;
+            cursor: pointer; margin-left: 5px; font-size: 13px;
+            display: inline-flex; align-items: center; justify-content: center;
             color: #000;
         }
         .chat-bot-controls button:hover { background: rgba(0,0,0,0.2); }
-        .chat-bot-iframe { 
-            flex: 1; 
-            border: none; 
-            width: 100%; 
-            min-height: 0; 
-            display: block;
-            overflow: hidden;
-        }
-        /* DASHBOARD */
+        .chat-bot-iframe { flex: 1; border: none; width: 100%; min-height: 0; display: block; overflow: hidden; }
+
+        /* DASHBOARD & KHÁC — GIỮ NGUYÊN */
         .main {
-            position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%;
-            overflow-y: auto; overflow-x: hidden;
-            padding: 2rem 1rem 80px;
-            z-index: 10;
-            background: linear-gradient(135deg, #f5f0e1 0%, #e8dfc9 100%);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            overflow-y: auto; overflow-x: hidden; padding: 2rem 1rem 80px;
+            z-index: 10; background: linear-gradient(135deg, #f5f0e1 0%, #e8dfc9 100%);
             opacity: 0; transition: opacity .8s ease;
         }
         .main.show { opacity: 1; }
@@ -174,11 +156,10 @@
         .book {
             display: flex; flex-wrap: wrap; background: var(--cream); border-radius: 12px;
             box-shadow: 0 10px 40px rgba(139,105,20,.2); overflow: hidden;
-            opacity: 0; transform: translateY(30px);
-            transition: opacity .8s ease .3s, transform .8s ease .3s;
+            opacity: 0; transform: translateY(30px); transition: opacity .8s ease .3s, transform .8s ease .3s;
         }
         .main.show .book { opacity: 1; transform: translateY(0); }
-        .page { width: 50%; padding: 2rem 1.5rem; position: relative; min-height: auto; }
+        .page { width: 50%; padding: 2rem 1.5rem; position: relative; }
         .p-l { background: var(--paper); border-right: 1px dashed rgba(139,105,20,.15); }
         .p-r { background: var(--cream); }
         .lines {
@@ -197,8 +178,7 @@
             display: flex; align-items: center; justify-content: center;
             margin-bottom: 1.2rem; box-shadow: 0 4px 15px rgba(139,105,20,.3);
             overflow: hidden; border: 3px solid white;
-            opacity: 0; transform: scale(.8);
-            transition: opacity .7s ease .5s, transform .7s ease .5s;
+            opacity: 0; transform: scale(.8); transition: opacity .7s ease .5s, transform .7s ease .5s;
         }
         .main.show .avatar { opacity: 1; transform: scale(1); }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -207,11 +187,11 @@
         .row { margin-bottom: 1rem; }
         .lbl { font-size: .8rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: .25rem; }
         .val { font-size: 1rem; color: var(--text-dark); font-weight: 600; min-height: 1.5rem; }
-        .intro { margin-top: 1.5rem; line-height: 1.8; color: var(--text-dark); font-size: .95rem; min-height: auto; }
+        .intro { margin-top: 1.5rem; line-height: 1.8; color: var(--text-dark); font-size: .95rem; }
         .btn {
-            display: flex; align-items: center; text-decoration: none;
-            border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.2rem;
-            transition: all .3s ease; width: 100%; opacity: 0; transform: translateX(-20px);
+            display: flex; align-items: center; text-decoration: none; border-radius: 12px;
+            padding: 1.3rem 1.5rem; margin-bottom: 1.2rem; transition: all .3s ease;
+            width: 100%; opacity: 0; transform: translateX(-20px);
         }
         .btn.show { opacity: 1; transform: translateX(0); }
         .btn:hover { transform: translateY(-3px); }
@@ -230,37 +210,15 @@
         .qr-box.show { opacity: 1; transform: scale(1); }
         .qr-img { max-width: 160px; width: 100%; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.1); }
         .qr-note { margin-top: .5rem; font-size: .8rem; color: var(--text-soft); }
-        .foot {
-            text-align: center; margin-top: 2rem; font-size: .8rem; color: var(--text-soft);
-            opacity: 0; transition: opacity .5s ease 1.5s;
-        }
+        .foot { text-align: center; margin-top: 2rem; font-size: .8rem; color: var(--text-soft); opacity: 0; transition: opacity .5s ease 1.5s; }
         .main.show .foot { opacity: 1; }
         .close {
-            position: fixed; top: 1rem; right: 1rem;
-            background: rgba(255,255,255,.9); border: none;
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; color: var(--text-soft); cursor: pointer;
-            z-index: 20; opacity: 0; transition: opacity .3s;
+            position: fixed; top: 1rem; right: 1rem; background: rgba(255,255,255,.9); border: none;
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: var(--text-soft); cursor: pointer; z-index: 20; opacity: 0; transition: opacity .3s;
         }
         .main.show .close { opacity: 1; }
-        /* === TỐI ƯU DIỆN THOẠI === */
-        @media (max-width: 640px) {
-            .book { flex-direction: column; }
-            .page { width: 100%; min-height: auto; padding: 1.5rem 1.2rem; }
-            .p-l { border-right: none; border-bottom: 1px dashed rgba(139,105,20,.15); }
-            .avatar { width: 100px; height: 100px; }
-            .qr-img { max-width: 140px; }
-            
-            .chat-bot-window {
-                width: calc(100vw - 32px);
-                height: calc(90vh - 80px);
-                max-height: calc(100vh - 100px);
-                right: 16px; bottom: 60px;
-            }
-            .main { padding: 1rem 0.5rem 80px; }
-        }
-        /* MƯA NHỊ PHÂN & LOADING */
+        /* Loading & Mưa nhị phân */
         .binary-rain {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 50; pointer-events: none; opacity: 0; transition: opacity .3s ease;
@@ -274,16 +232,13 @@
         }
         @keyframes fall { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(120vh);opacity:0} }
         .access-screen {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); z-index: 100;
-            width: 90%; max-width: 520px; text-align: center;
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100;
+            width: 90%; max-width: 520px; text-align: center; transition: opacity 0.4s ease;
         }
         .access-screen.hidden { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.9); }
         .terminal {
             border: 2px solid var(--neon-green); box-shadow: 0 0 30px var(--neon-green-glow);
-            background: rgba(0,0,0,0.85); border-radius: 8px; 
-            padding: 2rem 1.5rem; position: relative; z-index: 101;
+            background: rgba(0,0,0,0.85); border-radius: 8px; padding: 2rem 1.5rem; position: relative; z-index: 101;
             width: 100%;
         }
         .status {
@@ -295,23 +250,31 @@
             background: rgba(0,0,0,0.6); margin-bottom: 0.8rem; overflow: hidden;
         }
         .progress-fill {
-            height: 100%; width: 0;
-            background: linear-gradient(90deg, #00cc34, var(--neon-green), #00cc34);
+            height: 100%; width: 0; background: linear-gradient(90deg, #00cc34, var(--neon-green), #00cc34);
             transition: width 0.25s ease; box-shadow: 0 0 12px rgba(0,255,65,0.8);
         }
-        .progress-pct { 
-            font-family: 'Share Tech Mono', monospace; color: var(--neon-green); 
-            font-size: 0.9rem; margin-bottom: 1.5rem; 
-        }
+        .progress-pct { font-family: 'Share Tech Mono', monospace; color: var(--neon-green); font-size: 0.9rem; margin-bottom: 1.5rem; }
         .enter-btn {
-            font-family: 'Share Tech Mono', monospace; color: var(--neon-green); 
-            font-size: 1rem; padding: 0.8rem 2rem; 
-            border: 1px dashed rgba(0,255,65,0.8); border-radius: 6px;
-            background: rgba(0,255,65,0.08); cursor: pointer; 
-            display: none; margin: 0 auto; text-align: center;
+            font-family: 'Share Tech Mono', monospace; color: var(--neon-green); font-size: 1rem;
+            padding: 0.8rem 2rem; border: 1px dashed rgba(0,255,65,0.8); border-radius: 6px;
+            background: rgba(0,255,65,0.08); cursor: pointer; display: none; margin: 0 auto;
             animation: pulse 1.5s infinite;
         }
         @keyframes pulse { 0%,100%{opacity:.7} 50%{opacity:1;box-shadow:0 0 20px rgba(0,255,65,.6)} }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .book { flex-direction: column; }
+            .page { width: 100%; padding: 1.5rem 1.2rem; }
+            .p-l { border-right: none; border-bottom: 1px dashed rgba(139,105,20,.15); }
+            .avatar { width: 100px; height: 100px; }
+            .qr-img { max-width: 140px; }
+            .chat-bot-window {
+                width: calc(100vw - 32px); height: calc(90vh - 80px);
+                max-height: calc(100vh - 100px); right: 16px; bottom: 60px;
+            }
+            .main { padding: 1rem 0.5rem 80px; }
+        }
     </style>
 </head>
 <body>
@@ -414,27 +377,49 @@
     </div>
 
 <script>
-// === PWA ===
+// === PWA — ĐÃ SỬA: có kiểm tra + thông báo rõ ràng ===
 const installBtn = document.getElementById('pwaInstallBtn');
 let deferredPrompt = null;
 
+console.log('✅ PWA script đã chạy');
+
 window.addEventListener('beforeinstallprompt', e => {
+    console.log('✅ beforeinstallprompt được kích hoạt');
     e.preventDefault();
     deferredPrompt = e;
     installBtn.style.display = 'block';
 });
 
 installBtn?.addEventListener('click', async () => {
-    if (!deferredPrompt) return; // Không hiện thông báo, chỉ gọi hộp thoại gốc
+    console.log('🖱️ Đã nhấn nút PWA, deferredPrompt =', !!deferredPrompt);
+    
+    if (!deferredPrompt) {
+        // Hướng dẫn dựa trên thiết bị
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) {
+            alert('📱 Trên iPhone/iPad:\nNhấn nút Chia sẻ ↗️ ở dưới → chọn "Thêm vào màn hình chính"');
+        } else {
+            alert('💡 Trình duyệt chưa sẵn sàng cài đặt.\n\nKiểm tra:\n1. Đã tải lên hosting (https) chứ không phải file cục bộ\n2. Có file manifest.json đúng định dạng\n3. Mở trên Chrome/Edge mới nhất\n\n→ Nhấn biểu tượng ⬇️/🔒 trên thanh địa chỉ trình duyệt để cài đặt');
+        }
+        return;
+    }
+    
     installBtn.disabled = true;
-    const { outcome } = await deferredPrompt.prompt();
-    if (outcome === 'accepted') {
-        installBtn.style.display = 'none';
+    try {
+        const { outcome } = await deferredPrompt.prompt();
+        console.log('Kết quả cài đặt:', outcome);
+        if (outcome === 'accepted') {
+            installBtn.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Lỗi cài đặt:', err);
+        alert('⚠️ Lỗi: ' + err.message);
     }
     deferredPrompt = null;
 });
 
 window.addEventListener('appinstalled', () => {
+    console.log('✅ Đã cài PWA thành công!');
     installBtn.style.display = 'none';
 });
 
