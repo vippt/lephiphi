@@ -19,7 +19,6 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700&family=Noto+Sans:wght@400;500;600;700&display=swap');
-
         :root {
             --neon-green: #00ff41;
             --neon-green-soft: rgba(0,255,65,0.35);
@@ -33,7 +32,6 @@
             --accent-love: #e85d75;
             --accent-cv: #4a90d9;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Noto Sans', sans-serif; 
@@ -42,16 +40,27 @@
             overflow-y: auto;
             background: #000500; 
         }
-
+        /* === ẨN THANH CUỘN === */
+        .chat-bot-window,
+        .chat-bot-iframe {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .chat-bot-window::-webkit-scrollbar,
+        .chat-bot-iframe::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
         /* ======================================
-           NÚT PWA — SÁT ĐÁY CHÍNH GIỮA, KHÔNG BỊ CHE
+           NÚT PWA
            ====================================== */
         .pwa-install-btn {
             position: fixed; 
-            bottom: 2px; /* Sát đáy — đổi số này nếu muốn cao hơn/thấp hơn */
+            bottom: 2px;
             left: 50%; 
             transform: translateX(-50%);
-            z-index: 99999; /* Cao nhất — không bị đè */
+            z-index: 99999;
             padding: 10px 20px; 
             background: #00ff41; 
             color: #000;
@@ -68,7 +77,7 @@
         }
         .pwa-hint-ios {
             position: fixed; 
-            bottom: 2px; /* Cùng vị trí nút PWA */
+            bottom: 2px;
             left: 50%; 
             transform: translateX(-50%);
             z-index: 99999; 
@@ -82,7 +91,6 @@
             max-width: 90%; 
             display: none;
         }
-
         /* KHUNG LOADING */
         .access-screen {
             position: fixed; top: 50%; left: 50%;
@@ -123,7 +131,6 @@
             animation: pulse 1.5s infinite;
         }
         @keyframes pulse { 0%,100%{opacity:.7} 50%{opacity:1;box-shadow:0 0 20px rgba(0,255,65,.6)} }
-
         /* MƯA NHỊ PHÂN */
         .binary-rain {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -137,32 +144,30 @@
             white-space: nowrap; line-height: 18px; animation: fall linear infinite;
         }
         @keyframes fall { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(120vh);opacity:0} }
-
         /* ======================================
            NÚT CHAT BOT — ĐỂ KHÔNG ĐÈ NÚT PWA
            ====================================== */
         .chat-bot-toggle {
             position: fixed; 
-            bottom: 70px; /* Đẩy lên trên nút PWA */
+            bottom: 70px;
             right: 20px;
             width: 56px; height: 56px; border-radius: 50%;
             background: linear-gradient(135deg, #00ff41, #00cc34);
             box-shadow: 0 4px 20px rgba(0,255,65,0.4);
-            cursor: pointer; z-index: 99998; /* Thấp hơn PWA */
+            cursor: pointer; z-index: 99998;
             display: flex; align-items: center; justify-content: center;
             border: none; transition: transform 0.3s ease;
         }
         .chat-bot-toggle:hover { transform: scale(1.08); }
         .chat-bot-toggle i { font-size: 24px; color: #000; }
-
-        /* KHUNG CHAT — THẤY LUÔN Ô NHẬP TIN NHẮN */
+        /* KHUNG CHAT — TĂNG CHIỀU CAO ĐỂ HIỂN THỊ ĐẦY ĐỦ Ô NHẬP */
         .chat-bot-window {
             position: fixed; 
-            bottom: 130px; /* Đặt trên nút chat */
+            bottom: 130px;
             right: 20px;
             width: 360px; 
-            height: 480px;
-            max-height: calc(100vh - 240px); /* Không tràn màn hình */
+            height: 560px; /* Tăng từ 480 → 560 */
+            max-height: calc(100vh - 200px); /* Giảm khoảng trống trên → cao hơn */
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
             background: #fff; z-index: 99998; overflow: hidden;
@@ -171,7 +176,6 @@
             opacity: 0; pointer-events: none; display: flex; flex-direction: column;
         }
         .chat-bot-window.open { transform: scale(1); opacity: 1; pointer-events: auto; }
-
         .chat-bot-header {
             background: linear-gradient(135deg, #00ff41, #00cc34);
             color: #000; padding: 10px 14px;
@@ -188,8 +192,8 @@
         .chat-bot-controls button:hover { background: rgba(0,0,0,0.2); }
         .chat-bot-iframe { 
             flex: 1; border: none; width: 100%; min-height: 0; display: block;
+            overflow: hidden;
         }
-
         /* DASHBOARD */
         .main {
             position: fixed; top: 0; left: 0; 
@@ -200,7 +204,6 @@
             opacity: 0; transition: opacity .8s ease;
         }
         .main.show { opacity: 1; }
-
         .type-text { overflow: hidden; white-space: pre-wrap; width: 0; transition: width .05s ease; display: inline-block; }
         .notebook { max-width: 780px; margin: 0 auto; padding: 2rem 0; }
         .book {
@@ -210,7 +213,6 @@
             transition: opacity .8s ease .3s, transform .8s ease .3s;
         }
         .main.show .book { opacity: 1; transform: translateY(0); }
-
         .page { width: 50%; padding: 2rem 1.5rem; position: relative; min-height: auto; }
         .p-l { background: var(--paper); border-right: 1px dashed rgba(139,105,20,.15); }
         .p-r { background: var(--cream); }
@@ -241,7 +243,6 @@
         .lbl { font-size: .8rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: .25rem; }
         .val { font-size: 1rem; color: var(--text-dark); font-weight: 600; min-height: 1.5rem; }
         .intro { margin-top: 1.5rem; line-height: 1.8; color: var(--text-dark); font-size: .95rem; min-height: auto; }
-
         .btn {
             display: flex; align-items: center; text-decoration: none;
             border-radius: 12px; padding: 1.3rem 1.5rem; margin-bottom: 1.2rem;
@@ -257,7 +258,6 @@
         .btn-p { font-size: .85rem; opacity: .9; }
         .btn-arrow { transition: transform .3s; flex-shrink: 0; }
         .btn:hover .btn-arrow { transform: translateX(4px); }
-
         .qr-box {
             margin-top: 1rem; text-align: center; opacity: 0; transform: scale(.9);
             transition: opacity .5s ease 1s, transform .5s ease 1s;
@@ -265,13 +265,11 @@
         .qr-box.show { opacity: 1; transform: scale(1); }
         .qr-img { max-width: 160px; width: 100%; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.1); }
         .qr-note { margin-top: .5rem; font-size: .8rem; color: var(--text-soft); }
-
         .foot {
             text-align: center; margin-top: 2rem; font-size: .8rem; color: var(--text-soft);
             opacity: 0; transition: opacity .5s ease 1.5s;
         }
         .main.show .foot { opacity: 1; }
-
         .close {
             position: fixed; top: 1rem; right: 1rem;
             background: rgba(255,255,255,.9); border: none;
@@ -281,7 +279,6 @@
             z-index: 20; opacity: 0; transition: opacity .3s;
         }
         .main.show .close { opacity: 1; }
-
         /* === TỐI ƯU ĐIỆN THOẠI === */
         @media (max-width: 640px) {
             .book { flex-direction: column; }
@@ -290,11 +287,11 @@
             .avatar { width: 100px; height: 100px; }
             .qr-img { max-width: 140px; }
             
-            /* Điện thoại: khung chat thấy luôn ô nhập */
+            /* Điện thoại: khung chat cao hơn */
             .chat-bot-window {
                 width: calc(100vw - 32px);
-                height: calc(90vh - 110px);
-                max-height: calc(100vh - 120px);
+                height: calc(90vh - 80px); /* Tăng chiều cao trên di động */
+                max-height: calc(100vh - 100px);
                 right: 16px; bottom: 50px;
             }
             .chat-bot-toggle { right: 16px; bottom: 1px; }
@@ -314,10 +311,8 @@
             </button>
         </div>
     </div>
-
     <!-- MƯA NHỊ PHÂN -->
     <div class="binary-rain" id="binaryRain"></div>
-
     <!-- DASHBOARD -->
     <div class="main" id="main">
         <div class="notebook">
@@ -376,20 +371,16 @@
         </div>
         <p class="foot">✨ Copy Right 2026 v3 by Lê Phi Phi</p>
     </div>
-
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
-
-    <!-- === NÚT PWA — THÊM VÀO MÀN HÌNH CHÍNH === -->
+    <!-- === NÚT PWA === -->
     <button class="pwa-install-btn" id="pwaInstallBtn">➕ Thêm vào màn hình chính</button>
     <div class="pwa-hint-ios" id="pwaHintIOS">
         💡 Nhấn <strong>Chia sẻ</strong> → <strong>Thêm vào màn hình chính</strong>
     </div>
-
     <!-- === NÚT CHAT BOT === -->
     <button class="chat-bot-toggle" id="chatBotToggle" title="Mở AI Chat">
         <i class="fa fa-commenting-o"></i>
     </button>
-
     <!-- === KHUNG CHAT BOT === -->
     <div class="chat-bot-window" id="chatBotWindow">
         <div class="chat-bot-header">
@@ -403,15 +394,14 @@
             class="chat-bot-iframe" 
             src="https://www.lephiphi.com/chat-bot/"
             loading="lazy"
+            scrolling="no"
         ></iframe>
     </div>
-
 <script>
 // === PWA ===
 const installBtn = document.getElementById('pwaInstallBtn');
 const iosHint = document.getElementById('pwaHintIOS');
 let deferredPrompt = null;
-
 window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
@@ -419,7 +409,6 @@ window.addEventListener('beforeinstallprompt', e => {
         if (deferredPrompt && installBtn) installBtn.style.display = 'block';
     }, 2000);
 });
-
 installBtn?.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     installBtn.disabled = true;
@@ -427,7 +416,6 @@ installBtn?.addEventListener('click', async () => {
     deferredPrompt = null;
     installBtn.style.display = 'none';
 });
-
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 if (isIOS && iosHint) {
     setTimeout(() => {
@@ -435,24 +423,20 @@ if (isIOS && iosHint) {
         setTimeout(() => iosHint.style.display = 'none', 12000);
     }, 3000);
 }
-
 window.addEventListener('appinstalled', () => {
     if (installBtn) installBtn.style.display = 'none';
 });
-
 // === ĐIỀU KHIỂN CHAT ===
 const toggleBtn = document.getElementById('chatBotToggle');
 const chatWindow = document.getElementById('chatBotWindow');
 const chatMinimize = document.getElementById('chatMinimize');
 const chatClose = document.getElementById('chatClose');
 let isChatOpen = false;
-
 function openChat() { chatWindow.classList.add('open'); isChatOpen = true; }
 function closeChatWindow() { chatWindow.classList.remove('open'); isChatOpen = false; }
 toggleBtn.addEventListener('click', () => isChatOpen ? closeChatWindow() : openChat());
 chatMinimize.addEventListener('click', closeChatWindow);
 chatClose.addEventListener('click', closeChatWindow);
-
 // === LOGIC CHÍNH ===
 function typeWriter(element, text, speed = 50) {
     let i = 0;
@@ -469,7 +453,6 @@ function typeWriter(element, text, speed = 50) {
         }, speed);
     });
 }
-
 const statusTexts = ["Đang khởi tạo...", "Đang xác minh danh tính...", "Đang sẵn sàng...", "Đã sẵn sàng ✨"];
 let progress = 0, ready = false;
 const fill = document.getElementById('fill');
@@ -479,7 +462,6 @@ const enterBtn = document.getElementById('enterBtn');
 const access = document.getElementById('access');
 const binaryRain = document.getElementById('binaryRain');
 const main = document.getElementById('main');
-
 const timer = setInterval(() => {
     progress += Math.random() * 8 + 2;
     if (progress >= 100) {
@@ -496,7 +478,6 @@ const timer = setInterval(() => {
     pct.textContent = `${Math.floor(progress)}%`;
     status.textContent = statusTexts[Math.min(Math.floor(progress / 25), 3)];
 }, 80);
-
 function createBinaryRain() {
     binaryRain.innerHTML = '';
     const cols = Math.floor(window.innerWidth / 18);
@@ -512,7 +493,6 @@ function createBinaryRain() {
         binaryRain.appendChild(col);
     }
 }
-
 function startBinaryRain() {
     if (!ready) return;
     access.classList.add('hidden');
@@ -524,7 +504,6 @@ function startBinaryRain() {
         setTimeout(startTyping, 400);
     }, 2500);
 }
-
 async function startTyping() {
     document.getElementById('infoGroup').classList.add('show');
     const els = document.querySelectorAll('.type-text');
@@ -537,7 +516,6 @@ async function startTyping() {
     setTimeout(() => document.getElementById('contactGroup').classList.add('show'), 900);
     setTimeout(() => document.getElementById('qrBox').classList.add('show'), 1200);
 }
-
 function closeDashboard() {
     main.classList.remove('show');
     setTimeout(() => {
@@ -546,8 +524,4 @@ function closeDashboard() {
         access.classList.remove('hidden');
     }, 500);
 }
-
-document.addEventListener('keydown', e => e.key === 'Enter' && ready && startBinaryRain());
-</script>
-</body>
-</html>
+document.addEventListener('keydown', e => e.key === 'Enter'
