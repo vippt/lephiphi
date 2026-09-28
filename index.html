@@ -39,6 +39,7 @@
             overflow-x: hidden; 
             overflow-y: auto;
             background: #000500; 
+            padding-bottom: 60px; /* Chừa chỗ cho nút PWA */
         }
         /* === ẨN THANH CUỘN KHUNG CHAT === */
         .chat-bot-window,
@@ -53,43 +54,48 @@
             height: 0;
         }
         /* ======================================
-           NÚT PWA — SÁT ĐÁY CHÍNH GIỮA, KHÔNG BỊ CHE
+           NÚT PWA — LUÔN HIỆN, CAO NHẤT, KHÔNG BỊ CHE
            ====================================== */
         .pwa-install-btn {
             position: fixed; 
-            bottom: 5px;
+            bottom: 8px;
             left: 50%; 
             transform: translateX(-50%);
-            z-index: 99999;
-            padding: 10px 20px; 
+            z-index: 999999; /* Cao nhất */
+            padding: 10px 24px; 
             background: #00ff41; 
             color: #000;
-            border: none; 
+            border: 2px solid #00cc34;
             border-radius: 50px; 
             font-weight: bold; 
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0,255,65,.5); 
-            font-size: 13px; 
-            display: none;
+            box-shadow: 0 0 25px rgba(0,255,65,.7); 
+            font-size: 14px; 
+            display: block !important; /* LUÔN HIỆN */
+            animation: pulse-pwa 2s infinite;
+        }
+        @keyframes pulse-pwa {
+            0%, 100% { box-shadow: 0 0 25px rgba(0,255,65,.7); }
+            50% { box-shadow: 0 0 35px rgba(0,255,65,1); }
         }
         .pwa-install-btn:hover { 
             transform: translateX(-50%) scale(1.05);
         }
         .pwa-hint-ios {
             position: fixed; 
-            bottom: 5px;
+            bottom: 60px;
             left: 50%; 
             transform: translateX(-50%);
-            z-index: 99999; 
+            z-index: 999998; 
             padding: 10px 16px; 
-            background: rgba(0,0,0,.85);
+            background: rgba(0,0,0,.9);
             color: #00ff41; 
             border: 1px solid #00ff41; 
             border-radius: 8px;
             font-size: 12px; 
             text-align: center; 
             max-width: 90%; 
-            display: none;
+            display: block;
         }
         /* KHUNG LOADING */
         .access-screen {
@@ -149,7 +155,7 @@
            ====================================== */
         .chat-bot-toggle {
             position: fixed; 
-            bottom: 55px; /* Đẩy lên trên nút PWA */
+            bottom: 70px; /* Đẩy lên cao hơn nút PWA */
             right: 20px;
             width: 56px; height: 56px; border-radius: 50%;
             background: linear-gradient(135deg, #00ff41, #00cc34);
@@ -160,17 +166,18 @@
         }
         .chat-bot-toggle:hover { transform: scale(1.08); }
         .chat-bot-toggle i { font-size: 24px; color: #000; }
-        /* KHUNG CHAT — TĂNG CHIỀU CAO ĐỂ HIỂN THỊ ĐẦY ĐỦ Ô NHẬP */
+        /* KHUNG CHAT — TĂNG CHIỀU CAO */
         .chat-bot-window {
             position: fixed; 
-            bottom: 120px;
+            bottom: 140px;
             right: 20px;
             width: 360px; 
-            height: 560px; /* Tăng chiều cao */
-            max-height: calc(100vh - 180px);
+            height: 560px;
+            max-height: calc(100vh - 200px);
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
-            background: #fff; z-index: 99998; overflow: hidden;
+            background: #fff; z-index: 99997; /* Thấp hơn nút PWA */
+            overflow: hidden;
             transform: scale(0); transform-origin: bottom right;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0; pointer-events: none; display: flex; flex-direction: column;
@@ -199,7 +206,8 @@
             position: fixed; top: 0; left: 0; 
             width: 100%; height: 100%;
             overflow-y: auto; overflow-x: hidden;
-            padding: 2rem 1rem; z-index: 10;
+            padding: 2rem 1rem 80px; /* Chừa chỗ dưới */
+            z-index: 10;
             background: linear-gradient(135deg, #f5f0e1 0%, #e8dfc9 100%);
             opacity: 0; transition: opacity .8s ease;
         }
@@ -287,16 +295,15 @@
             .avatar { width: 100px; height: 100px; }
             .qr-img { max-width: 140px; }
             
-            /* Điện thoại: khung chat cao hơn */
             .chat-bot-window {
                 width: calc(100vw - 32px);
-                height: calc(90vh - 70px);
-                max-height: calc(100vh - 90px);
-                right: 16px; bottom: 60px;
+                height: calc(90vh - 90px);
+                max-height: calc(100vh - 120px);
+                right: 16px; bottom: 80px;
             }
-            .chat-bot-toggle { right: 16px; bottom: 60px; }
-            .pwa-install-btn { font-size: 11px; padding: 8px 16px; }
-            .main { padding: 1rem 0.5rem; }
+            .chat-bot-toggle { right: 16px; bottom: 80px; }
+            .pwa-install-btn { font-size: 13px; padding: 9px 20px; }
+            .main { padding: 1rem 0.5rem 90px; }
         }
     </style>
 </head>
@@ -374,10 +381,10 @@
     </div>
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
     
-    <!-- === NÚT PWA — ĐẦY ĐỦ === -->
+    <!-- === NÚT PWA — LUÔN HIỆN === -->
     <button class="pwa-install-btn" id="pwaInstallBtn">➕ Thêm vào màn hình chính</button>
     <div class="pwa-hint-ios" id="pwaHintIOS">
-        💡 Nhấn <strong>Chia sẻ</strong> → <strong>Thêm vào màn hình chính</strong>
+        💡 Trên iPhone/iPad: Nhấn Chia sẻ → Thêm vào màn hình chính
     </div>
     
     <!-- === NÚT CHAT BOT === -->
@@ -403,37 +410,45 @@
     </div>
 
 <script>
-// === PWA — ĐẦY ĐỦ ===
+// === PWA ===
 const installBtn = document.getElementById('pwaInstallBtn');
 const iosHint = document.getElementById('pwaHintIOS');
 let deferredPrompt = null;
 
+// Luôn hiển thị nút trước — sau đó ẩn chỉ khi đã cài xong
+installBtn.style.display = 'block';
+
 window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
-    setTimeout(() => {
-        if (deferredPrompt && installBtn) installBtn.style.display = 'block';
-    }, 2000);
+    console.log('✅ Sẵn sàng cài PWA');
+    installBtn.style.display = 'block'; // Hiện khi trình duyệt hỗ trợ
 });
 
 installBtn?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+        alert('💡 Trên iPhone/iPad: Nhấn biểu tượng Chia sẻ → "Thêm vào màn hình chính"\nTrên máy tính/Android: Trình duyệt sẽ hiện nút cài đặt trên thanh địa chỉ');
+        return;
+    }
     installBtn.disabled = true;
     const { outcome } = await deferredPrompt.prompt();
+    console.log('Kết quả cài đặt:', outcome);
+    if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
+        iosHint.style.display = 'none';
+    }
     deferredPrompt = null;
-    installBtn.style.display = 'none';
 });
 
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 if (isIOS && iosHint) {
-    setTimeout(() => {
-        iosHint.style.display = 'block';
-        setTimeout(() => iosHint.style.display = 'none', 12000);
-    }, 3000);
+    iosHint.style.display = 'block'; // Luôn hiện hướng dẫn trên iOS
 }
 
 window.addEventListener('appinstalled', () => {
-    if (installBtn) installBtn.style.display = 'none';
+    console.log('✅ Đã cài PWA thành công!');
+    installBtn.style.display = 'none';
+    iosHint.style.display = 'none';
 });
 
 // === ĐIỀU KHIỂN CHAT ===
