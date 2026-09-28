@@ -9,7 +9,7 @@
     html, body{
         background:linear-gradient(135deg,#f0f4f8,#d9e2ec);
         min-height:60vh;
-        min-height:60dvh; /* Hỗ trợ trình duyệt di động hiện đại */
+        min-height:60dvh;
         display:flex;
         align-items:center;
         justify-content:center;
@@ -18,11 +18,10 @@
     .chat{
         width:100%;
         max-width:420px;
-        /* === SỬA CHIỀU CAO TỰ ĐỘNG === */
         height:85vh;
-        height:85dvh; /* Chiếm 95% màn hình — vừa vặn */
-        max-height:750px; /* Giới hạn tối đa trên màn hình lớn */
-        min-height:400px; /* Giới hạn tối thiểu trên màn hình nhỏ */
+        height:85dvh;
+        max-height:750px;
+        min-height:400px;
         background:#fff;
         border-radius:24px;
         box-shadow:0 12px 40px rgba(26,145,255,.15);
@@ -30,39 +29,16 @@
         flex-direction:column;
         overflow:hidden
     }
-    .hd{
-        background:linear-gradient(90deg,#1a91ff,#00c6ff);
-        color:#fff;
-        padding:16px 20px;
-        display:flex;
-        align-items:center;
-        gap:12px;
-        flex-shrink:0; /* Không co lại */
-    }
-    .avt{
-        width:40px;
-        height:40px;
-        border-radius:50%;
-        background:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        color:#1a91ff;
-        font-weight:bold;
-        font-size:18px;
-        flex-shrink:0;
-    }
-    .hd-info{flex:1}
-    .hd-info h3{font-size:16px;margin:0}
+    /* === ĐÃ BỎ PHẦN TIÊU ĐỀ .hd === */
     .msgs{
-        flex:1; /* Tự chiếm không gian còn lại */
+        flex:1;
         padding:16px 20px;
         overflow-y:auto;
         background:#f8fafc;
         display:flex;
         flex-direction:column;
         gap:14px;
-        min-height:0; /* Quan trọng — cho phép co giãn đúng */
+        min-height:0;
     }
     .msg{max-width:78%}
     .bot{align-self:flex-start}
@@ -91,7 +67,7 @@
         border-top:1px solid #e2e8f0;
         display:flex;
         gap:10px;
-        flex-shrink:0; /* Giữ cố định phía dưới */
+        flex-shrink:0;
     }
     #inp{
         flex:1;
@@ -128,14 +104,11 @@
         0%,60%,100%{transform:translateY(0)}
         30%{transform:translateY(-4px)}
     }
-    /* Thanh cuộn mảnh mai */
     .msgs::-webkit-scrollbar{width:4px}
     .msgs::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
     
-    /* Điện thoại nhỏ */
     @media (max-height: 600px) {
         .chat{height:98vh;height:98dvh;max-height:none;border-radius:16px}
-        .hd{padding:12px 16px}
         .msgs{padding:12px 16px}
         .input-area{padding:10px 16px}
     }
@@ -143,10 +116,7 @@
 </head>
 <body>
     <div class="chat">
-        <div class="hd">
-            <div class="avt">🧠</div>
-            <div class="hd-info"><h3>AI Của Phi</h3></div>
-        </div>
+        <!-- === ĐÃ BỎ TOÀN BỘ KHỐI TIÊU ĐỀ Ở ĐÂY === -->
         <div class="msgs" id="msgs">
             <div class="msg bot"><div class="bubble">Sẵn sàng! 😊 Hãy hỏi tôi nhé!</div></div>
         </div>
@@ -155,19 +125,14 @@
             <button class="send" id="sendBtn">➤</button>
         </div>
     </div>
-
     <script>
-        // =============================================
-        // === DÁN URL GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY ===
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJbSyAO_XbEBu4gbaxJTAMkmFZSYFFj6qDLAjJXAyQxtCFhEHWNYozkSgEA-UhK6Ss/exec";
-        // =============================================
-
+        
         const msgsBox = document.getElementById('msgs');
         const inputBox = document.getElementById('inp');
         const sendBtn = document.getElementById('sendBtn');
         let history = [];
-
-        // === CHUYỂN MỌI THÀNH CHUỖI — KHÔNG BAO GIỜ [object Object] ===
+        
         function asString(giTri) {
             if (giTri === null || giTri === undefined) return "";
             if (typeof giTri === 'string') return giTri;
@@ -178,7 +143,7 @@
             }
             return String(giTri);
         }
-
+        
         function themTin(noiDung, laNguoiDung) {
             const text = asString(noiDung) || "Nội dung trống";
             const gio = new Date().toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
@@ -188,7 +153,7 @@
             msgsBox.appendChild(div);
             msgsBox.scrollTop = msgsBox.scrollHeight;
         }
-
+        
         function hienDangXuLy() {
             const div = document.createElement('div');
             div.className = 'msg bot'; div.id = 'dangxuly';
@@ -196,11 +161,12 @@
             msgsBox.appendChild(div);
             msgsBox.scrollTop = msgsBox.scrollHeight;
         }
+        
         function anDangXuLy() {
             const el = document.getElementById('dangxuly');
             if (el) el.remove();
         }
-
+        
         async function guiTin() {
             const cauHoi = inputBox.value.trim();
             if (!cauHoi) return;
@@ -209,15 +175,13 @@
                 alert("⚠️ Chưa điền URL Google Script!\nMở file HTML → dán URL vào chỗ THAY_URL_CUA_BAN");
                 return;
             }
-
-            // Hiển thị tin nhắn ngay
+            
             themTin(cauHoi, true);
             inputBox.value = "";
             sendBtn.disabled = true;
             
             history.push({role:'user', content:cauHoi});
             hienDangXuLy();
-
             try {
                 const formData = new FormData();
                 formData.append("data", JSON.stringify({
@@ -225,7 +189,6 @@
   {
     role: 'system',
     content: `Bạn là trợ lý AI của Lê Phi Phi. Dưới đây là thông tin về tôi, hãy trả lời dựa trên nội dung này:
-
 === THÔNG TIN CÁ NHÂN ===
 Tên: Lê Phi Phi
 Giới tinh: Nam
@@ -233,35 +196,27 @@ Sinh năm: 1994
 Website: lephiphi.com
 Nghề nghiệp: Điện CN & Dân Dụng
 Địa điểm: Phan Thiết - Bình Thuận
-
 === KINH NGHIỆM ===
 - 2022 đến nay — Bảo Trì Công ty Intersnack tại Phan Thiết
-
-
 === KỸ NĂNG ===
 - Điện, hệ thông điện, máy móc
 - Lập trình: HTML, CSS, JavaScript, Google Apps Script, Python...
 - Tự động hóa, thiết kế giao diện, quản lý dự án...
-
 === tính tình ===
 - hòa đồng, vui vẻ, dễ tiếp xúc.
-
 === sở thích ===
 - chơi game
 - xem phim
 - du lịch
-
 === liên hệ ===
 - số điện thoại: 0922332243
 - Mail: lephiphi.com.2017@gmail.com
 - Zalo: 0922332243
 - Facebook: http://fb.me/lephiphi1202
-
 === ủng hộ cho tiền số tài khoản ===
 - Bạn muốn ủng hộ hãy chuyển khoản cho tôi vào số tài khoản: 0922332243 Ngân hàng MB Bank. cảm ơn bạn nhé
 === Hôn nhân ===
 - Đã có vợ và con
-
 Hướng dẫn trả lời:
 - Trả lời bằng tiếng Việt tự nhiên, thân thiện, ngắn gọn
 - AI đóng vai trò là tôi "Lê Phi Phi", hỏi thông tin người chat để dễ xưng hô. không để lộ năm sinh của tôi.
@@ -276,16 +231,13 @@ Hướng dẫn trả lời:
   ...history
 ]
                 }));
-
                 const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: formData
                 });
-
                 if (!res.ok) {
                     throw new Error(`Lỗi kết nối: ${res.status}`);
                 }
-
                 const textTraVe = await res.text();
                 let json;
                 try {
@@ -293,31 +245,25 @@ Hướng dẫn trả lời:
                 } catch (parseErr) {
                     throw new Error(`Phản hồi không phải JSON: ${textTraVe.substring(0, 80)}`);
                 }
-
                 if (json.error !== undefined) {
                     throw new Error(asString(json.error));
                 }
-
                 if (!json.choices || !json.choices[0] || !json.choices[0].message) {
                     throw new Error("API không trả về định dạng mong đợi");
                 }
-
                 const cauTraLoi = asString(json.choices[0].message.content);
                 history.push({role:'assistant', content:cauTraLoi});
                 anDangXuLy();
                 themTin(cauTraLoi, false);
-
             } catch (e) {
                 anDangXuLy();
                 const thongBao = asString(e);
                 themTin(`❌ Lỗi: ${thongBao}`, false);
                 console.error("Chi tiết lỗi đầy đủ:", e);
             }
-
             sendBtn.disabled = false;
             inputBox.focus();
         }
-
         sendBtn.addEventListener('click', guiTin);
         inputBox.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
