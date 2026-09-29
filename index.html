@@ -151,26 +151,33 @@
         }
         .chat-bot-toggle:hover { transform: scale(1.08); }
         .chat-bot-toggle i { font-size: 24px; color: #000; }
-        /* KHUNG CHAT — ✅ Xóa thanh cuộn */
-        .chat-bot-window {
-            position: fixed; 
-            bottom: 55px; /* Đặt trên nút chat */
-            right: 20px;
-            width: 360px; 
-            min-height: 400px;           /* Đảm bảo không quá nhỏ */
-            max-height: 600px;           /* heig hạn cao nhất trên màn hình lớn */
-            max-height: calc(90vh - 100px);
-            border-radius: 16px;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.25);
-            background: #fff; z-index: 99998; 
-            transform: scale(0); transform-origin: bottom right;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0; pointer-events: none; 
-            display: flex; flex-direction: column;
-            overflow: hidden; /* ✅ Xóa thanh cuộn ngoài */
-            flex-direction: column; 
-            box-sizing: border-box;
-        }
+        /* ======================================
+   KHUNG CHAT — MÁY TÍNH / MÀN HÌNH LỚN
+   ====================================== */
+.chat-bot-window {
+    position: fixed; 
+    bottom: 65px;       /* Khoảng cách từ đáy màn hình lên */
+    right: 20px;
+    width: 360px; 
+    height: 600px;       /* Chiều cao cố định, ổn định trên PC */
+    max-height: 85vh;    /* Giới hạn trên màn hình nhỏ */
+    min-height: 450px;
+    
+    border-radius: 16px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.25);
+    background: #fff;
+    z-index: 99998; 
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    pointer-events: none; 
+    
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
         .chat-bot-window.open { transform: scale(1); opacity: 1; pointer-events: auto; }
         .chat-bot-header {
             background: linear-gradient(135deg, #00ff41, #00cc34);
@@ -186,15 +193,15 @@
             color: #000;
         }
         .chat-bot-controls button:hover { background: rgba(0,0,0,0.2); }
-        .chat-bot-iframe { 
-            flex: 1; 
-            border: none; 
-            width: 100%; 
-           overflow: auto;    /* ✅ Đổi từ hidden → auto, không cắt nội dung */
-            min-height: 0;  
-            display: block;
-            overflow: hidden; /* ✅ Xóa thanh cuộn trong iframe */
-        }
+        .chat-bot-iframe {
+    flex: 1; /* Tự chiếm hết phần còn lại */
+    border: none;
+    width: 100%;
+    display: block;
+    overflow: auto;
+    min-height: 0;
+    box-sizing: border-box;
+}
         /* DASHBOARD */
         .main {
             position: fixed; top: 0; left: 0; 
@@ -281,12 +288,18 @@
         }
         .main.show .close { opacity: 1; }
         /* === TỐI ƯU ĐIỆN THOẠI === */
-        @media (max-width: 640px) {
-            .book { flex-direction: column; }
-            .page { width: 100%; min-height: auto; padding: 1.5rem 1.2rem; }
-            .p-l { border-right: none; border-bottom: 1px dashed rgba(139,105,20,.15); }
-            .avatar { width: 100px; height: 100px; }
-            .qr-img { max-width: 140px; }
+       @media (max-width: 640px) {
+    .chat-bot-window {
+        width: calc(100vw - 24px);
+        right: 12px;
+        bottom: 55px; /* Cách đáy 55px → trên nút chat */
+        
+        /* ✅ Dùng dvh + tính chính xác, không bị cắt */
+        height: calc(100dvh - 75px); /* 100% màn hình trừ khoảng dưới */
+        max-height: calc(100dvh - 75px);
+        min-height: 400px;
+    }
+}
             
             /* Điện thoại: nút PWA thu gọn */
             .pwa-install-btn {
