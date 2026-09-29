@@ -156,11 +156,13 @@
    ====================================== */
 .chat-bot-window {
     position: fixed; 
-    bottom: 65px;       /* Khoảng cách từ đáy màn hình lên */
+    bottom: 65px;       /* Khoảng cách từ đáy màn hình lên nút chat */
     right: 20px;
-    width: 360px; 
-    height: 600px;       /* Chiều cao cố định, ổn định trên PC */
-    max-height: 85vh;    /* Giới hạn trên màn hình nhỏ */
+    
+    /* ✅ Kích thước gọn lại trên máy tính */
+    width: 380px;       /* Chiều rộng vừa phải */
+    height: 520px;      /* Chiều cao cố định, không quá lớn */
+    max-height: 75vh;   /* Giới hạn trên màn hình nhỏ */
     min-height: 450px;
     
     border-radius: 16px;
@@ -175,7 +177,7 @@
     
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: hidden; /* ✅ Xóa thanh cuộn ngoài */
     box-sizing: border-box;
 }
         .chat-bot-window.open { transform: scale(1); opacity: 1; pointer-events: auto; }
