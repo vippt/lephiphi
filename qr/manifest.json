@@ -1,6 +1,6 @@
 {
-  "name": "Lê Phi Phi QR",
-  "short_name": "Phi Phi QR",
+  "name": "Tạo Mã QR MB",
+  "short_name": "Tạo Mã QR MB",
    "start_url": "/qr/index.html",
   "scope": "/qr/",
   "display": "standalone",
