@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Thanh Toán MB Bank</title>
+<style>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body{
+    min-height: 100vh;
+    scroll-behavior: smooth;
+}
+body{
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: flex-start; /* Đẩy khung lên trên thay vì center */
+    justify-content: center;
+    padding: 10% 20px 20px; /* Thêm padding trên để khung không dính sát mép */
+}
+.container{
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px 24px; /* Giảm padding để khung không quá cao */
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    text-align: center;
+}
+h2{
+    color: #2d3748;
+    margin-bottom: 20px; /* Giảm khoảng dưới tiêu đề */
+    font-size: 21px;
+    font-weight: 700;
+}
+.form-group{
+    margin-bottom: 18px; /* Giữ các ô gần nhau nhưng vẫn thoáng */
+    text-align: left;
+}
+label{
+    display: block;
+    margin-bottom: 6px;
+    color: #4a5568;
+    font-weight: 500;
+    font-size: 14px;
+}
+input{
+    width: 100%;
+    padding: 12px 14px; /* Ô nhập vừa phải, không cao quá */
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+input:focus{
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102,126,234,0.2);
+}
+.note{
+    font-size: 12px;
+    color: #718096;
+    margin-top: 4px;
+    text-align: left;
+}
+button{
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 5px;
+}
+button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+}
+button:active{
+    transform: translateY(0);
+}
+.qr-container{
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8f0;
+    display: none;
+    width: 100%;
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+.qr-container.show{
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+#qr{
+    max-width: 260px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin: 0 auto;
+    display: block;
+}
+.error-msg{
+    color: #e53e3e;
+    margin-top: 10px;
+    font-size: 14px;
+    display: none;
+    padding: 10px;
+    background: #fff5f5;
+    border-radius: 8px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>💳 Tạo QR Thanh Toán MB Bank</h2>
+<div class="form-group">
+    <label>Số tiền (nghìn đồng)</label>
+    <input type="number" id="sotien" placeholder="VD: Nhập 200 → 200.000đ" min="1">
+    <div class="note">Tự động thêm .000 vào số tiền</div>
+</div>
+<div class="form-group">
+    <label>Nội dung chuyển khoản</label>
+    <input type="text" id="noidung" placeholder="VD: Thanh toán đơn hàng">
+</div>
+<button onclick="taoQR()">✨ Tạo Mã QR Ngay</button>
+<div class="error-msg" id="errorBox"></div>
+<div class="qr-container" id="qrBox">
+    <img id="qr" alt="Mã QR thanh toán">
+</div>
+</div>
+
+<script>
+function taoQR(){
+    // ====== SỬA SỐ TÀI KHOẢN Ở ĐÂY ======
+    const stk = "0347226299";
+    // ===================================
+    
+    const sotienInput = document.getElementById("sotien");
+    const noidungInput = document.getElementById("noidung");
+    const qrBox = document.getElementById("qrBox");
+    const qrImg = document.getElementById("qr");
+    const errorBox = document.getElementById("errorBox");
+    
+    qrBox.classList.remove("show");
+    errorBox.style.display = "none";
+    
+    const sotien = sotienInput.value.trim();
+    const noidung = noidungInput.value.trim() || "Thanh toan";
+    
+    if(!sotien || Number(sotien) <= 0){
+        errorBox.textContent = "⚠️ Vui lòng nhập số tiền hợp lệ!";
+        errorBox.style.display = "block";
+        return;
+    }
+    
+    const sotienDayDu = sotien + "000";
+    const urlNoidung = encodeURIComponent(noidung);
+    const qrUrl = `https://img.vietqr.io/image/MB-${stk}-compact2.png?amount=${sotienDayDu}&addInfo=${urlNoidung}`;
+    
+    qrImg.src = qrUrl;
+    
+    qrImg.onload = function(){
+        qrBox.classList.add("show");
+        setTimeout(() => {
+            qrBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 50);
+    };
+    
+    qrImg.onerror = function(){
+        errorBox.innerHTML = "❌ Không tạo được QR!<br>Kiểm tra số tài khoản MB Bank đúng chưa?";
+        errorBox.style.display = "block";
+    };
+}
+</script>
+</body>
+</html>
