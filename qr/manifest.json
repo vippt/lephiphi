@@ -1,7 +1,8 @@
 {
   "name": "QR Thanh Toán",
   "short_name": "QR Thanh Toán",
-  "start_url": "https://lephiphi.com/thuan.html",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#FFFFFF",
