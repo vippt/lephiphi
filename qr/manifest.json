@@ -1,32 +1,12 @@
 {
   "name": "QR Thanh Toán",
   "short_name": "QR Thanh Toán",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/qr/index.html",
+  "scope": "/qr/",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#FFFFFF",
   "icons": [
-    {
-      "src": "icon-48.png",
-      "sizes": "48x48",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-96.png",
-      "sizes": "96x96",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png"
-    },
     {
       "src": "icon-192.png",
       "sizes": "192x192",
