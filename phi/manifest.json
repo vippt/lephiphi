@@ -1,7 +1,7 @@
 {
-  "name": "QR MB Bank",
-  "short_name": "QR MB",
-  "start_url": "/phi/index.html",
+  "name": "Tạo Mã QR MB",
+  "short_name": "Tạo Mã QR MB",
+   "start_url": "/phi/index.html",
   "scope": "/phi/",
   "display": "standalone",
   "background_color": "#FFFFFF",
