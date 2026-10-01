@@ -1,7 +1,7 @@
 {
-  "name": "QR Thanh Toán MB Bank",
-  "short_name": "QR MB",
-  "start_url": "/qr/index.html",
+  "name": "Lê Phi Phi QR",
+  "short_name": "Phi Phi QR",
+   "start_url": "/qr/index.html",
   "scope": "/qr/",
   "display": "standalone",
   "background_color": "#FFFFFF",
