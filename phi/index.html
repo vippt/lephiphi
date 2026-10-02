@@ -200,26 +200,46 @@ function taoQR(){
 </script>
 
     <script>
-let deferredPrompt;
+// === PWA ===
+const installBtn = document.getElementById('pwaInstallBtn');
+const iosHint = document.getElementById('pwaHintIOS');
+let deferredPrompt = null;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.add('show');
+});
 
-  const btn = document.createElement('button');
-  btn.textContent = 'Cài đặt App';
-  btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;background:#d00;padding:12px 20px;color:white;border:none;border-radius:8px;font-size:16px;';
-  document.body.appendChild(btn);
+setTimeout(() => {
+    if (!deferredPrompt && /Chrome|Edge/.test(navigator.userAgent) && !/EdgA/.test(navigator.userAgent)) {
+        installBtn.classList.add('show');
+    }
+}, 1000);
 
-  btn.addEventListener('click', () => {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choiceResult => {
-      if (choiceResult.outcome === 'accepted') {
-        alert('Đã cài đặt app thành công!');
-      }
-      deferredPrompt = null;
-    });
-  });
+installBtn?.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+        alert('💡 Trình duyệt không hỗ trợ hoặc đã cài đặt rồi');
+        return;
+    }
+    installBtn.disabled = true;
+    const { outcome } = await deferredPrompt.prompt();
+    deferredPrompt = null;
+    installBtn.classList.remove('show');
+});
+
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+if (isIOS && iosHint) {
+    setTimeout(() => {
+        iosHint.classList.add('show');
+        setTimeout(() => iosHint.classList.remove('show'), 12000);
+    }, 2000);
+}
+
+window.addEventListener('appinstalled', () => {
+    installBtn.classList.remove('show');
+    iosHint.classList.remove('show');
+    deferredPrompt = null;
 });
 </script>
 
