@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanh toán QR - MB Bank</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, #0b3d91 0%, #1565c0 50%, #1e88e5 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.3);
+    width: 100%;
+    max-width: 420px;
+    overflow: hidden;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0b3d91, #1565c0);
+    color: #fff;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo {
+    width: 46px; height: 46px;
+    background: #fff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #0b3d91;
+    font-size: 15px;
+    letter-spacing: -.5px;
+  }
+
+  .header h1 { font-size: 17px; font-weight: 700; }
+  .header p  { font-size: 12.5px; opacity: .85; margin-top: 2px; }
+
+  .body { padding: 22px 24px 26px; }
+
+  .qr-box {
+    background: #f7f9fc;
+    border: 1px solid #e3e9f2;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  #qrImg {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+  }
+
+  .spinner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f9fc;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .spinner.hide { display: none; }
+
+  .bank-info {
+    background: #f7f9fc;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-size: 14px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+  }
+  .row + .row { border-top: 1px dashed #dfe6f0; }
+
+  .row .label { color: #64748b; font-size: 13px; }
+  .row .value { font-weight: 700; color: #0f172a; text-align: right; }
+
+  .copy-btn {
+    background: #e8f0fe;
+    color: #1565c0;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: .2s;
+  }
+  .copy-btn:hover { background: #d3e2fb; }
+  .copy-btn:active { transform: scale(.95); }
+
+  .field { margin-bottom: 14px; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #dbe3ee;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+    transition: .2s;
+    font-family: inherit;
+  }
+  .field input:focus {
+    border-color: #1565c0;
+    box-shadow: 0 0 0 3px rgba(21,101,192,.12);
+  }
+
+  .actions { display: flex; gap: 10px; margin-top: 18px; }
+
+  .btn {
+    flex: 1;
+    padding: 13px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+    font-family: inherit;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1565c0, #1e88e5);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(21,101,192,.32);
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:active { transform: translateY(1px); }
+
+  .btn-outline {
+    background: #fff;
+    color: #1565c0;
+    border: 1.5px solid #c9dcf5;
+  }
+  .btn-outline:hover { background: #f2f7fe; }
+
+  .note {
+    text-align: center;
+    font-size: 11.5px;
+    color: #94a3b8;
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #0f172a;
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 30px;
+    font-size: 13.5px;
+    font-weight: 600;
+    opacity: 0;
+    transition: .3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="logo">MB</div>
+    <div>
+      <h1>Thanh toán bằng QR</h1>
+      <p>Ngân hàng TMCP Quân Đội (MB Bank)</p>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <div class="qr-box">
+      <div class="spinner" id="spinner">Đang tạo mã QR...</div>
+      <img id="qrImg" alt="Mã QR thanh toán MB Bank" />
+    </div>
+
+    <div class="bank-info">
+      <div class="row">
+        <span class="label">Ngân hàng</span>
+        <span class="value">MB Bank</span>
+      </div>
+      <div class="row">
+        <span class="label">Số tài khoản</span>
+        <span class="value">
+          0922332243
+          <button class="copy-btn" onclick="copyText('0922332243','Đã copy số tài khoản')">Copy</button>
+        </span>
+      </div>
+      <div class="row">
+        <span class="label">Chủ tài khoản</span>
+        <span class="value" id="ownerName">—</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="amount">Số tiền (VNĐ)</label>
+      <input id="amount" type="text" inputmode="numeric" placeholder="Ví dụ: 100000" value="">
+    </div>
+
+    <div class="field">
+      <label for="desc">Nội dung chuyển khoản</label>
+      <input id="desc" type="text" placeholder="Ví dụ: Thanh toan don hang" value="">
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="buildQR()">Tạo mã QR</button>
+      <button class="btn btn-outline" onclick="downloadQR()">Tải QR</button>
+    </div>
+
+    <p class="note">
+      Quét mã bằng ứng dụng ngân hàng bất kỳ để chuyển khoản.<br>
+      Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
+    </p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   CẤU HÌNH — chỉnh sửa tại đây
+   ============================================================ */
+const CONFIG = {
+  bankCode:    "MB",              // Mã ngân hàng MB Bank (VietQR)
+  accountNo:   "0922332243",      // Số tài khoản
+  accountName: "",                // Tên chủ tài khoản (viết không dấu, IN HOA). Để trống nếu không muốn hiện
+  template:    "compact2"         // compact | compact2 | qr_only | print
+};
+/* ============================================================ */
+
+const qrImg   = document.getElementById('qrImg');
+const spinner = document.getElementById('spinner');
+
+// Hiển thị tên chủ tài khoản nếu có cấu hình
+document.getElementById('ownerName').textContent =
+  CONFIG.accountName ? CONFIG.accountName : '—';
+
+// Format tiền tệ khi nhập
+const amountInput = document.getElementById('amount');
+amountInput.addEventListener('input', function () {
+  let raw = this.value.replace(/\D/g, '');
+  this.value = raw ? Number(raw).toLocaleString('vi-VN') : '';
+});
+
+function getAmount() {
+  return amountInput.value.replace(/\D/g, '');
+}
+
+function buildQRUrl() {
+  const amount = getAmount();
+  const desc   = document.getElementById('desc').value.trim();
+
+  let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.png`;
+  const params = [];
+
+  if (amount) params.push('amount=' + encodeURIComponent(amount));
+  if (desc)   params.push('addInfo=' + encodeURIComponent(desc));
+  if (CONFIG.accountName) params.push('accountName=' + encodeURIComponent(CONFIG.accountName));
+
+  if (params.length) url += '?' + params.join('&');
+
+  // Chống cache để QR luôn mới
+  url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+
+  return url;
+}
+
+function buildQR() {
+  spinner.classList.remove('hide');
+  spinner.textContent = 'Đang tạo mã QR...';
+
+  const url = buildQRUrl();
+  const img = new Image();
+
+  img.onload = () => {
+    qrImg.src = url;
+    spinner.classList.add('hide');
+  };
+  img.onerror = () => {
+    spinner.textContent = '⚠️ Không tải được QR. Kiểm tra kết nối mạng.';
+  };
+  img.src = url;
+}
+
+function downloadQR() {
+  const amount = getAmount();
+  const desc   = document.getElementById('desc').value.trim();
+
+  let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.png`;
+  const params = [];
+  if (amount) params.push('amount=' + encodeURIComponent(amount));
+  if (desc)   params.push('addInfo=' + encodeURIComponent(desc));
+  if (CONFIG.accountName) params.push('accountName=' + encodeURIComponent(CONFIG.accountName));
+  if (params.length) url += '?' + params.join('&');
+
+  fetch(url)
+    .then(r => r.blob())
+    .then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `QR-MB-${CONFIG.accountNo}${amount ? '-' + amount : ''}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      showToast('Đã tải mã QR');
+    })
+    .catch(() => showToast('Không tải được, vui lòng thử lại'));
+}
+
+function copyText(text, msg) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showToast(msg));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(msg);
+  }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Nhấn Enter để tạo QR
+document.querySelectorAll('input').forEach(el => {
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') buildQR(); });
+});
+
+// Khởi tạo
+buildQR();
+</script>
+
+</body>
+</html>
