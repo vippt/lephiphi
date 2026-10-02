@@ -46,6 +46,7 @@
     color: #0b3d91;
     font-size: 15px;
     letter-spacing: -.5px;
+    flex-shrink: 0;
   }
 
   .header h1 { font-size: 17px; font-weight: 700; }
@@ -53,72 +54,7 @@
 
   .body { padding: 22px 24px 26px; }
 
-  .qr-box {
-    background: #f7f9fc;
-    border: 1px solid #e3e9f2;
-    border-radius: 16px;
-    padding: 16px;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 18px;
-    position: relative;
-  }
-
-  #qrImg {
-    width: 100%;
-    max-width: 300px;
-    height: auto;
-    border-radius: 8px;
-    display: block;
-  }
-
-  .spinner {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f7f9fc;
-    border-radius: 16px;
-    font-size: 13px;
-    color: #64748b;
-  }
-  .spinner.hide { display: none; }
-
-  .bank-info {
-    background: #f7f9fc;
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 18px;
-    font-size: 14px;
-  }
-
-  .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 7px 0;
-  }
-  .row + .row { border-top: 1px dashed #dfe6f0; }
-
-  .row .label { color: #64748b; font-size: 13px; }
-  .row .value { font-weight: 700; color: #0f172a; text-align: right; }
-
-  .copy-btn {
-    background: #e8f0fe;
-    color: #1565c0;
-    border: none;
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-left: 8px;
-    transition: .2s;
-  }
-  .copy-btn:hover { background: #d3e2fb; }
-  .copy-btn:active { transform: scale(.95); }
-
+  /* ---------- Ô nhập liệu (đặt phía trên) ---------- */
   .field { margin-bottom: 14px; }
 
   .field label {
@@ -127,6 +63,12 @@
     font-weight: 600;
     color: #334155;
     margin-bottom: 6px;
+  }
+
+  .label-sub {
+    font-weight: 500;
+    font-size: 11.5px;
+    color: #94a3b8;
   }
 
   .field input {
@@ -138,13 +80,35 @@
     outline: none;
     transition: .2s;
     font-family: inherit;
+    background: #fff;
   }
   .field input:focus {
     border-color: #1565c0;
     box-shadow: 0 0 0 3px rgba(21,101,192,.12);
   }
 
-  .actions { display: flex; gap: 10px; margin-top: 18px; }
+  #amount {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: .3px;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 6px;
+    min-height: 16px;
+    transition: .2s;
+  }
+  .hint.active {
+    color: #1565c0;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* ---------- Nút ---------- */
+  .actions { display: flex; gap: 10px; margin: 18px 0 20px; }
 
   .btn {
     flex: 1;
@@ -175,6 +139,78 @@
   }
   .btn-outline:hover { background: #f2f7fe; }
 
+  /* ---------- QR ---------- */
+  .qr-box {
+    background: #f7f9fc;
+    border: 1px solid #e3e9f2;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+    position: relative;
+    min-height: 200px;
+  }
+
+  #qrImg {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    object-fit: contain;
+  }
+
+  .spinner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f9fc;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #64748b;
+    text-align: center;
+    padding: 20px;
+  }
+  .spinner.hide { display: none; }
+
+  /* ---------- Thông tin ngân hàng ---------- */
+  .bank-info {
+    background: #f7f9fc;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+  }
+  .row + .row { border-top: 1px dashed #dfe6f0; }
+
+  .row .label { color: #64748b; font-size: 13px; }
+  .row .value { font-weight: 700; color: #0f172a; text-align: right; }
+
+  .copy-btn {
+    background: #e8f0fe;
+    color: #1565c0;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: .2s;
+    font-family: inherit;
+  }
+  .copy-btn:hover { background: #d3e2fb; }
+  .copy-btn:active { transform: scale(.95); }
+
   .note {
     text-align: center;
     font-size: 11.5px;
@@ -198,6 +234,8 @@
     transition: .3s;
     pointer-events: none;
     z-index: 999;
+    max-width: 90vw;
+    text-align: center;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 </style>
@@ -215,11 +253,34 @@
 
   <div class="body">
 
-    <div class="qr-box">
-      <div class="spinner" id="spinner">Đang tạo mã QR...</div>
-      <img id="qrImg" alt="Mã QR thanh toán MB Bank" />
+    <!-- ===== NHẬP TIỀN & NỘI DUNG (ĐẶT TRÊN) ===== -->
+    <div class="field">
+      <label for="amount">
+        Số tiền <span class="label-sub">(nhập theo đơn vị nghìn đồng)</span>
+      </label>
+      <input id="amount" type="text" inputmode="numeric" autocomplete="off"
+             placeholder="Ví dụ: 200 → 200.000 VNĐ">
+      <div class="hint" id="amountHint">Nhập số tiền để mã QR có sẵn số tiền cần chuyển</div>
     </div>
 
+    <div class="field">
+      <label for="desc">Nội dung chuyển khoản</label>
+      <input id="desc" type="text" autocomplete="off"
+             placeholder="Ví dụ: Thanh toan don hang">
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="buildQR()">Tạo mã QR</button>
+      <button class="btn btn-outline" onclick="downloadQR()">Tải QR</button>
+    </div>
+
+    <!-- ===== MÃ QR ===== -->
+    <div class="qr-box">
+      <div class="spinner" id="spinner">Đang tạo mã QR...</div>
+      <img id="qrImg" alt="Mã QR thanh toán MB Bank">
+    </div>
+
+    <!-- ===== THÔNG TIN TÀI KHOẢN ===== -->
     <div class="bank-info">
       <div class="row">
         <span class="label">Ngân hàng</span>
@@ -238,21 +299,6 @@
       </div>
     </div>
 
-    <div class="field">
-      <label for="amount">Số tiền (VNĐ)</label>
-      <input id="amount" type="text" inputmode="numeric" placeholder="Ví dụ: 100000" value="">
-    </div>
-
-    <div class="field">
-      <label for="desc">Nội dung chuyển khoản</label>
-      <input id="desc" type="text" placeholder="Ví dụ: Thanh toan don hang" value="">
-    </div>
-
-    <div class="actions">
-      <button class="btn btn-primary" onclick="buildQR()">Tạo mã QR</button>
-      <button class="btn btn-outline" onclick="downloadQR()">Tải QR</button>
-    </div>
-
     <p class="note">
       Quét mã bằng ứng dụng ngân hàng bất kỳ để chuyển khoản.<br>
       Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
@@ -269,44 +315,129 @@
 const CONFIG = {
   bankCode:    "MB",              // Mã ngân hàng MB Bank (VietQR)
   accountNo:   "0922332243",      // Số tài khoản
-  accountName: "",                // Tên chủ tài khoản (viết không dấu, IN HOA). Để trống nếu không muốn hiện
+  accountName: "",                // Tên chủ tài khoản (không dấu, IN HOA). Để trống nếu không dùng
   template:    "compact2"         // compact | compact2 | qr_only | print
 };
 /* ============================================================ */
 
-const qrImg   = document.getElementById('qrImg');
-const spinner = document.getElementById('spinner');
+const qrImg      = document.getElementById('qrImg');
+const spinner    = document.getElementById('spinner');
+const amountInput= document.getElementById('amount');
+const amountHint = document.getElementById('amountHint');
+const descInput  = document.getElementById('desc');
 
-// Hiển thị tên chủ tài khoản nếu có cấu hình
+/* Hiển thị tên chủ tài khoản */
 document.getElementById('ownerName').textContent =
   CONFIG.accountName ? CONFIG.accountName : '—';
 
-// Format tiền tệ khi nhập
-const amountInput = document.getElementById('amount');
-amountInput.addEventListener('input', function () {
-  let raw = this.value.replace(/\D/g, '');
-  this.value = raw ? Number(raw).toLocaleString('vi-VN') : '';
-});
+/* ============================================================
+   XỬ LÝ SỐ TIỀN: nhập 200  ->  200.000
+   Người dùng nhập theo "nghìn đồng", hệ thống tự thêm 3 số 0
+   ============================================================ */
+let rawAmount = "";          // chuỗi số người dùng nhập (đơn vị: nghìn đồng)
+let skipInput = false;       // cờ chống xử lý trùng giữa beforeinput và input
 
-function getAmount() {
-  return amountInput.value.replace(/\D/g, '');
+function formatVND(n) {
+  return n.toLocaleString('vi-VN');
 }
 
-function buildQRUrl() {
+function renderAmount() {
+  // bỏ số 0 vô nghĩa ở đầu (05 -> 5) nhưng giữ nguyên "0"
+  if (rawAmount) rawAmount = rawAmount.replace(/^0+(?=\d)/, '');
+
+  if (!rawAmount) {
+    amountInput.value = '';
+    amountHint.textContent = 'Nhập số tiền để mã QR có sẵn số tiền cần chuyển';
+    amountHint.classList.remove('active');
+    return;
+  }
+
+  const value = Number(rawAmount) * 1000;   // ⬅️ TỰ THÊM 3 SỐ 0
+  amountInput.value = formatVND(value);
+  amountHint.textContent = '= ' + formatVND(value) + ' VNĐ';
+  amountHint.classList.add('active');
+}
+
+/* Lấy số tiền thật (đã nhân 1000) để đưa vào QR */
+function getAmount() {
+  return rawAmount ? String(Number(rawAmount) * 1000) : '';
+}
+
+/* ---- Bắt sự kiện nhập/xóa chuẩn xác bằng beforeinput ---- */
+amountInput.addEventListener('beforeinput', function (e) {
+  const type = e.inputType;
+  if (!type) return;
+
+  const allSelected = amountInput.value.length > 0 &&
+                      amountInput.selectionStart === 0 &&
+                      amountInput.selectionEnd === amountInput.value.length;
+
+  if (type === 'insertText' || type === 'insertFromPaste' ||
+      type === 'insertFromDrop' || type === 'insertCompositionText') {
+
+    let data = e.data;
+    if (data == null && e.dataTransfer) data = e.dataTransfer.getData('text');
+    if (data == null && e.clipboardData) data = e.clipboardData.getData('text');
+    const digits = String(data || '').replace(/\D/g, '');
+
+    if (allSelected) rawAmount = '';
+    if (digits) rawAmount = (rawAmount + digits).slice(0, 15); // tối đa 15 chữ số
+
+    e.preventDefault();
+  }
+  else if (type === 'deleteContentBackward' || type === 'deleteWordBackward') {
+    rawAmount = allSelected ? '' : rawAmount.slice(0, -1);
+    e.preventDefault();
+  }
+  else if (type === 'deleteContentForward') {
+    rawAmount = allSelected ? '' : rawAmount.slice(1);
+    e.preventDefault();
+  }
+  else if (type === 'deleteByCut' || type === 'deleteByDrag') {
+    rawAmount = '';
+    e.preventDefault();
+  }
+  else {
+    return; // để sự kiện input xử lý dự phòng
+  }
+
+  skipInput = true;
+  setTimeout(() => { skipInput = false; }, 0);
+
+  renderAmount();
+  scheduleQR();
+});
+
+/* ---- Dự phòng cho trình duyệt cũ không hỗ trợ beforeinput ---- */
+amountInput.addEventListener('input', function () {
+  if (skipInput) return;
+
+  let digits = amountInput.value.replace(/\D/g, '');
+  if (digits.length > 3 && digits.slice(-3) === '000') {
+    rawAmount = digits.slice(0, -3);
+  } else {
+    rawAmount = digits;
+  }
+  renderAmount();
+  scheduleQR();
+});
+
+/* ============================================================
+   TẠO MÃ QR
+   ============================================================ */
+function buildQRUrl(withCacheBuster) {
   const amount = getAmount();
-  const desc   = document.getElementById('desc').value.trim();
+  const desc   = descInput.value.trim();
 
   let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.png`;
   const params = [];
 
-  if (amount) params.push('amount=' + encodeURIComponent(amount));
-  if (desc)   params.push('addInfo=' + encodeURIComponent(desc));
+  if (amount)             params.push('amount='      + encodeURIComponent(amount));
+  if (desc)               params.push('addInfo='     + encodeURIComponent(desc));
   if (CONFIG.accountName) params.push('accountName=' + encodeURIComponent(CONFIG.accountName));
 
   if (params.length) url += '?' + params.join('&');
-
-  // Chống cache để QR luôn mới
-  url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  if (withCacheBuster) url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
 
   return url;
 }
@@ -315,36 +446,45 @@ function buildQR() {
   spinner.classList.remove('hide');
   spinner.textContent = 'Đang tạo mã QR...';
 
-  const url = buildQRUrl();
+  const url = buildQRUrl(true);
   const img = new Image();
 
-  img.onload = () => {
+  img.onload = function () {
     qrImg.src = url;
     spinner.classList.add('hide');
   };
-  img.onerror = () => {
-    spinner.textContent = '⚠️ Không tải được QR. Kiểm tra kết nối mạng.';
+  img.onerror = function () {
+    spinner.classList.remove('hide');
+    spinner.textContent = '⚠️ Không tải được mã QR. Vui lòng kiểm tra kết nối mạng.';
   };
   img.src = url;
 }
 
-function downloadQR() {
-  const amount = getAmount();
-  const desc   = document.getElementById('desc').value.trim();
+/* Tự động cập nhật QR sau khi ngừng gõ 450ms */
+let qrTimer;
+function scheduleQR() {
+  clearTimeout(qrTimer);
+  qrTimer = setTimeout(buildQR, 450);
+}
 
-  let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.png`;
-  const params = [];
-  if (amount) params.push('amount=' + encodeURIComponent(amount));
-  if (desc)   params.push('addInfo=' + encodeURIComponent(desc));
-  if (CONFIG.accountName) params.push('accountName=' + encodeURIComponent(CONFIG.accountName));
-  if (params.length) url += '?' + params.join('&');
+descInput.addEventListener('input', scheduleQR);
+
+/* ============================================================
+   TẢI MÃ QR
+   ============================================================ */
+function downloadQR() {
+  const url = buildQRUrl(false);
 
   fetch(url)
-    .then(r => r.blob())
+    .then(r => {
+      if (!r.ok) throw new Error('network');
+      return r.blob();
+    })
     .then(blob => {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `QR-MB-${CONFIG.accountNo}${amount ? '-' + amount : ''}.png`;
+      a.download = 'QR-MB-' + CONFIG.accountNo +
+                   (getAmount() ? '-' + getAmount() : '') + '.png';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -354,6 +494,9 @@ function downloadQR() {
     .catch(() => showToast('Không tải được, vui lòng thử lại'));
 }
 
+/* ============================================================
+   TIỆN ÍCH
+   ============================================================ */
 function copyText(text, msg) {
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(text).then(() => showToast(msg));
@@ -379,12 +522,15 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-// Nhấn Enter để tạo QR
+/* Nhấn Enter để tạo QR ngay */
 document.querySelectorAll('input').forEach(el => {
-  el.addEventListener('keydown', e => { if (e.key === 'Enter') buildQR(); });
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); buildQR(); }
+  });
 });
 
-// Khởi tạo
+/* Khởi tạo */
+renderAmount();
 buildQR();
 </script>
 
