@@ -199,48 +199,121 @@ function taoQR(){
 }
 </script>
 
-    <script>
-// === PWA ===
+   <script>
+// === PWA Install Manager - Đã cải thiện ===
 const installBtn = document.getElementById('pwaInstallBtn');
 const iosHint = document.getElementById('pwaHintIOS');
 let deferredPrompt = null;
+let isInstalled = false;
 
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
+// Kiểm tra đã cài đặt PWA trước đó
+const isStandalone = () => {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches ||
+    window.navigator.standalone === true // iOS
+  );
+};
+
+// Phát hiện trình duyệt hỗ trợ PWA
+const isPWASupportedBrowser = () => {
+  const ua = navigator.userAgent;
+  // Loại trừ các trình duyệt không hỗ trợ
+  if (/EdgA|FxiOS|OPiOS|CriOS/.test(ua)) return false;
+  // Chrome, Edge trên máy tính để bàn
+  return /Chrome/.test(ua) && /Google Inc/.test(navigator.vendor) || 
+         /Edg/.test(ua) && !/EdgA/.test(ua);
+};
+
+// Kiểm tra iOS chính xác hơn
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS 15+
+};
+
+// Hiển thị nút cài đặt
+const showInstallButton = () => {
+  if (installBtn && !isInstalled) {
     installBtn.classList.add('show');
+  }
+};
+
+// Ẩn nút cài đặt
+const hideInstallButton = () => {
+  installBtn?.classList.remove('show');
+  iosHint?.classList.remove('show');
+};
+
+// Đã cài đặt thành công
+const handleInstalled = () => {
+  isInstalled = true;
+  deferredPrompt = null;
+  hideInstallButton();
+  console.log('✅ PWA đã được cài đặt');
+};
+
+// Sự kiện sẵn sàng cài đặt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallButton();
 });
 
+// Dự phòng cho các trường hợp không kích hoạt beforeinstallprompt
 setTimeout(() => {
-    if (!deferredPrompt && /Chrome|Edge/.test(navigator.userAgent) && !/EdgA/.test(navigator.userAgent)) {
-        installBtn.classList.add('show');
-    }
-}, 1000);
+  if (isStandalone()) {
+    handleInstalled();
+    return;
+  }
+  if (!deferredPrompt && isPWASupportedBrowser()) {
+    showInstallButton();
+  }
+}, 800);
 
+// Xử lý nhấn nút cài đặt
 installBtn?.addEventListener('click', async () => {
-    if (!deferredPrompt) {
-        alert('💡 Trình duyệt không hỗ trợ hoặc đã cài đặt rồi');
-        return;
-    }
-    installBtn.disabled = true;
+  if (!deferredPrompt) {
+    alert('💡 Trình duyệt không hỗ trợ hoặc bạn đã cài đặt ứng dụng rồi!\n\nNếu dùng Safari trên iPhone/iPad: Nhấn nút Chia sẻ → Thêm vào Màn hình chính');
+    return;
+  }
+
+  installBtn.disabled = true;
+  
+  try {
     const { outcome } = await deferredPrompt.prompt();
-    deferredPrompt = null;
-    installBtn.classList.remove('show');
+    
+    if (outcome === 'accepted') {
+      console.log('🎉 Người dùng chấp nhận cài đặt');
+    } else {
+      console.log('⏸️ Người dùng từ chối cài đặt, giữ cơ hội hiển thị lại sau');
+      // KHÔNG xóa deferredPrompt để có thể hiển thị lại
+      installBtn.disabled = false;
+      return;
+    }
+  } catch (err) {
+    console.warn('❌ Lỗi quá trình cài đặt:', err);
+    installBtn.disabled = false;
+    alert('⚠️ Có lỗi xảy ra, vui lòng thử lại sau');
+    return;
+  }
+
+  // Chỉ xóa khi hoàn tất thành công
+  deferredPrompt = null;
+  hideInstallButton();
+  installBtn.disabled = false;
 });
 
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-if (isIOS && iosHint) {
-    setTimeout(() => {
-        iosHint.classList.add('show');
-        setTimeout(() => iosHint.classList.remove('show'), 12000);
-    }, 2000);
+// Hiển thị hướng dẫn cho iOS
+if (isIOS() && iosHint && !isStandalone()) {
+  setTimeout(() => {
+    iosHint.classList.add('show');
+    // Tự động ẩn sau 12 giây
+    setTimeout(() => iosHint.classList.remove('show'), 12000);
+  }, 1500);
 }
 
-window.addEventListener('appinstalled', () => {
-    installBtn.classList.remove('show');
-    iosHint.classList.remove('show');
-    deferredPrompt = null;
-});
+// Khi cài đặt xong từ bất kỳ đâu
+window.addEventListener('appinstalled', handleInstalled);
 </script>
 
 </body>
