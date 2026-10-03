@@ -2,17 +2,28 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Thanh toán QR - MB Bank</title>
+
+<!-- ===== PWA META ===== -->
+<meta name="theme-color" content="#0b3d91">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="QR MB Bank">
+<link id="appleIcon" rel="apple-touch-icon">
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     background: linear-gradient(135deg, #0b3d91 0%, #1565c0 50%, #1e88e5 100%);
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 16px;
   }
@@ -24,6 +35,7 @@
     width: 100%;
     max-width: 420px;
     overflow: hidden;
+    margin: auto;
   }
 
   .header {
@@ -54,7 +66,7 @@
 
   .body { padding: 22px 24px 26px; }
 
-  /* ---------- Ô nhập liệu (đặt phía trên) ---------- */
+  /* ---------- Ô nhập liệu ---------- */
   .field { margin-bottom: 14px; }
 
   .field label {
@@ -122,6 +134,10 @@
     font-family: inherit;
     text-align: center;
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
   }
 
   .btn-primary {
@@ -150,6 +166,12 @@
     margin-bottom: 18px;
     position: relative;
     min-height: 200px;
+    scroll-margin-top: 16px;
+    transition: box-shadow .5s;
+  }
+
+  .qr-box.flash {
+    box-shadow: 0 0 0 4px rgba(21,101,192,.35);
   }
 
   #qrImg {
@@ -219,6 +241,51 @@
     line-height: 1.5;
   }
 
+  /* ---------- Nút "Thêm vào màn hình chính" ---------- */
+  .install-wrap {
+    margin-top: 18px;
+    display: none;
+  }
+  .install-wrap.show { display: block; }
+
+  .btn-install {
+    width: 100%;
+    padding: 14px;
+    border: 1.5px dashed #1565c0;
+    border-radius: 14px;
+    background: #f2f7fe;
+    color: #1565c0;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: .2s;
+  }
+  .btn-install:hover { background: #e3eefc; }
+  .btn-install:active { transform: scale(.98); }
+
+  .btn-install svg {
+    width: 20px; height: 20px; flex-shrink: 0;
+  }
+
+  .install-note {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: #fff8e6;
+    border: 1px solid #f5dfa6;
+    border-radius: 12px;
+    font-size: 12.5px;
+    color: #7a5c00;
+    line-height: 1.55;
+  }
+  .install-note.show { display: block; }
+  .install-note b { color: #5c4500; }
+
   .toast {
     position: fixed;
     bottom: 24px;
@@ -253,7 +320,7 @@
 
   <div class="body">
 
-    <!-- ===== NHẬP TIỀN & NỘI DUNG (ĐẶT TRÊN) ===== -->
+    <!-- ===== NHẬP TIỀN & NỘI DUNG ===== -->
     <div class="field">
       <label for="amount">
         Số tiền <span class="label-sub">(nhập theo đơn vị nghìn đồng)</span>
@@ -270,12 +337,12 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-primary" onclick="buildQR()">Tạo mã QR</button>
+      <button class="btn btn-primary" id="btnCreate" onclick="buildQR(true)">Tạo mã QR</button>
       <button class="btn btn-outline" onclick="downloadQR()">Tải QR</button>
     </div>
 
     <!-- ===== MÃ QR ===== -->
-    <div class="qr-box">
+    <div class="qr-box" id="qrBox">
       <div class="spinner" id="spinner">Đang tạo mã QR...</div>
       <img id="qrImg" alt="Mã QR thanh toán MB Bank">
     </div>
@@ -299,6 +366,20 @@
       </div>
     </div>
 
+    <!-- ===== THÊM VÀO MÀN HÌNH CHÍNH ===== -->
+    <div class="install-wrap" id="installWrap">
+      <button class="btn-install" id="btnInstall" onclick="installApp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v12"></path>
+          <path d="M8 11l4 4 4-4"></path>
+          <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>
+        </svg>
+        Thêm vào màn hình chính
+      </button>
+      <div class="install-note" id="installNote"></div>
+    </div>
+
     <p class="note">
       Quét mã bằng ứng dụng ngân hàng bất kỳ để chuyển khoản.<br>
       Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
@@ -315,34 +396,31 @@
 const CONFIG = {
   bankCode:    "MB",              // Mã ngân hàng MB Bank (VietQR)
   accountNo:   "0922332243",      // Số tài khoản
-  accountName: "",                // Tên chủ tài khoản (không dấu, IN HOA). Để trống nếu không dùng
-  template:    "compact2"         // compact | compact2 | qr_only | print
+  accountName: "",                // Tên chủ tài khoản (không dấu, IN HOA)
+  template:    "compact2",        // compact | compact2 | qr_only | print
+  appName:     "QR MB Bank"       // Tên hiển thị khi cài ra màn hình chính
 };
 /* ============================================================ */
 
-const qrImg      = document.getElementById('qrImg');
-const spinner    = document.getElementById('spinner');
-const amountInput= document.getElementById('amount');
-const amountHint = document.getElementById('amountHint');
-const descInput  = document.getElementById('desc');
+const qrImg       = document.getElementById('qrImg');
+const qrBox       = document.getElementById('qrBox');
+const spinner     = document.getElementById('spinner');
+const amountInput = document.getElementById('amount');
+const amountHint  = document.getElementById('amountHint');
+const descInput   = document.getElementById('desc');
 
-/* Hiển thị tên chủ tài khoản */
 document.getElementById('ownerName').textContent =
   CONFIG.accountName ? CONFIG.accountName : '—';
 
 /* ============================================================
-   XỬ LÝ SỐ TIỀN: nhập 200  ->  200.000
-   Người dùng nhập theo "nghìn đồng", hệ thống tự thêm 3 số 0
+   1. XỬ LÝ SỐ TIỀN: nhập 200  ->  200.000
    ============================================================ */
-let rawAmount = "";          // chuỗi số người dùng nhập (đơn vị: nghìn đồng)
-let skipInput = false;       // cờ chống xử lý trùng giữa beforeinput và input
+let rawAmount = "";
+let skipInput = false;
 
-function formatVND(n) {
-  return n.toLocaleString('vi-VN');
-}
+function formatVND(n) { return n.toLocaleString('vi-VN'); }
 
 function renderAmount() {
-  // bỏ số 0 vô nghĩa ở đầu (05 -> 5) nhưng giữ nguyên "0"
   if (rawAmount) rawAmount = rawAmount.replace(/^0+(?=\d)/, '');
 
   if (!rawAmount) {
@@ -358,12 +436,10 @@ function renderAmount() {
   amountHint.classList.add('active');
 }
 
-/* Lấy số tiền thật (đã nhân 1000) để đưa vào QR */
 function getAmount() {
   return rawAmount ? String(Number(rawAmount) * 1000) : '';
 }
 
-/* ---- Bắt sự kiện nhập/xóa chuẩn xác bằng beforeinput ---- */
 amountInput.addEventListener('beforeinput', function (e) {
   const type = e.inputType;
   if (!type) return;
@@ -381,7 +457,7 @@ amountInput.addEventListener('beforeinput', function (e) {
     const digits = String(data || '').replace(/\D/g, '');
 
     if (allSelected) rawAmount = '';
-    if (digits) rawAmount = (rawAmount + digits).slice(0, 15); // tối đa 15 chữ số
+    if (digits) rawAmount = (rawAmount + digits).slice(0, 15);
 
     e.preventDefault();
   }
@@ -398,20 +474,18 @@ amountInput.addEventListener('beforeinput', function (e) {
     e.preventDefault();
   }
   else {
-    return; // để sự kiện input xử lý dự phòng
+    return;
   }
 
   skipInput = true;
   setTimeout(() => { skipInput = false; }, 0);
 
   renderAmount();
-  scheduleQR();
+  scheduleQR(false);
 });
 
-/* ---- Dự phòng cho trình duyệt cũ không hỗ trợ beforeinput ---- */
 amountInput.addEventListener('input', function () {
   if (skipInput) return;
-
   let digits = amountInput.value.replace(/\D/g, '');
   if (digits.length > 3 && digits.slice(-3) === '000') {
     rawAmount = digits.slice(0, -3);
@@ -419,11 +493,11 @@ amountInput.addEventListener('input', function () {
     rawAmount = digits;
   }
   renderAmount();
-  scheduleQR();
+  scheduleQR(false);
 });
 
 /* ============================================================
-   TẠO MÃ QR
+   2. TẠO MÃ QR + TỰ ĐỘNG TRƯỢT XUỐNG
    ============================================================ */
 function buildQRUrl(withCacheBuster) {
   const amount = getAmount();
@@ -442,7 +516,25 @@ function buildQRUrl(withCacheBuster) {
   return url;
 }
 
-function buildQR() {
+/* Tự động cuộn xuống khung QR mượt mà */
+function scrollToQR() {
+  const rect = qrBox.getBoundingClientRect();
+  const fullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+  if (!fullyVisible) {
+    qrBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Nhấp nháy viền để người dùng biết QR vừa được cập nhật
+  qrBox.classList.add('flash');
+  setTimeout(() => qrBox.classList.remove('flash'), 900);
+}
+
+/**
+ * @param {boolean} userAction - true khi người dùng bấm nút "Tạo mã QR"
+ *                               (sẽ tự cuộn xuống), false khi tự động cập nhật.
+ */
+function buildQR(userAction) {
   spinner.classList.remove('hide');
   spinner.textContent = 'Đang tạo mã QR...';
 
@@ -452,6 +544,14 @@ function buildQR() {
   img.onload = function () {
     qrImg.src = url;
     spinner.classList.add('hide');
+
+    // ⬇️ TỰ ĐỘNG TRƯỢT XUỐNG KHI BẤM NÚT
+    if (userAction) {
+      // đợi 1 nhịp để ảnh render xong rồi mới cuộn
+      requestAnimationFrame(() => {
+        setTimeout(scrollToQR, 60);
+      });
+    }
   };
   img.onerror = function () {
     spinner.classList.remove('hide');
@@ -460,17 +560,17 @@ function buildQR() {
   img.src = url;
 }
 
-/* Tự động cập nhật QR sau khi ngừng gõ 450ms */
+/* Tự động cập nhật QR khi ngừng gõ (không cuộn trang) */
 let qrTimer;
-function scheduleQR() {
+function scheduleQR(userAction) {
   clearTimeout(qrTimer);
-  qrTimer = setTimeout(buildQR, 450);
+  qrTimer = setTimeout(() => buildQR(!!userAction), 450);
 }
 
-descInput.addEventListener('input', scheduleQR);
+descInput.addEventListener('input', () => scheduleQR(false));
 
 /* ============================================================
-   TẢI MÃ QR
+   3. TẢI MÃ QR
    ============================================================ */
 function downloadQR() {
   const url = buildQRUrl(false);
@@ -495,7 +595,7 @@ function downloadQR() {
 }
 
 /* ============================================================
-   TIỆN ÍCH
+   4. TIỆN ÍCH
    ============================================================ */
 function copyText(text, msg) {
   if (navigator.clipboard && window.isSecureContext) {
@@ -519,19 +619,175 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-/* Nhấn Enter để tạo QR ngay */
 document.querySelectorAll('input').forEach(el => {
   el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); buildQR(); }
+    if (e.key === 'Enter') { e.preventDefault(); buildQR(true); }
   });
 });
 
-/* Khởi tạo */
+/* ============================================================
+   5. PWA — THÊM VÀO MÀN HÌNH CHÍNH
+   ============================================================ */
+
+/* --- 5.1 Tạo icon động (SVG -> PNG data URL) --- */
+function makeIcon(size) {
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 192 192">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0b3d91"/>
+          <stop offset="100%" stop-color="#1e88e5"/>
+        </linearGradient>
+      </defs>
+      <rect width="192" height="192" rx="42" fill="url(#g)"/>
+      <rect x="52" y="58" width="88" height="76" rx="10" fill="#fff" opacity=".95"/>
+      <text x="96" y="110" font-family="Arial,Helvetica,sans-serif"
+            font-size="44" font-weight="bold" fill="#0b3d91"
+            text-anchor="middle">MB</text>
+    </svg>`;
+  return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+}
+
+/* --- 5.2 Nhúng manifest động --- */
+function injectManifest() {
+  const manifest = {
+    name: CONFIG.appName + " - Thanh toán",
+    short_name: CONFIG.appName,
+    description: "Tạo mã QR thanh toán MB Bank " + CONFIG.accountNo,
+    start_url: location.href.split('#')[0],
+    scope: "./",
+    display: "standalone",
+    orientation: "portrait",
+    background_color: "#0b3d91",
+    theme_color: "#0b3d91",
+    lang: "vi",
+    icons: [
+      { src: makeIcon(192), sizes: "192x192", type: "image/svg+xml", purpose: "any" },
+      { src: makeIcon(512), sizes: "512x512", type: "image/svg+xml", purpose: "any" },
+      { src: makeIcon(512), sizes: "512x512", type: "image/svg+xml", purpose: "maskable" }
+    ]
+  };
+
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = URL.createObjectURL(blob);
+  document.head.appendChild(link);
+
+  // Icon cho iOS
+  document.getElementById('appleIcon').href = makeIcon(180);
+}
+
+/* --- 5.3 Service Worker tối giản (bắt buộc để cài PWA) --- */
+function injectServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+
+  const swCode = `
+    self.addEventListener('install', e => self.skipWaiting());
+    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+
+  navigator.serviceWorker.register(swUrl).catch(() => {
+    /* Bỏ qua nếu môi trường không hỗ trợ (file:// hoặc http) */
+  });
+}
+
+/* --- 5.4 Logic nút "Thêm vào màn hình chính" --- */
+let deferredPrompt = null;
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function showInstallUI() {
+  const wrap = document.getElementById('installWrap');
+  if (isStandalone()) return;   // đã cài rồi thì ẩn
+  wrap.classList.add('show');
+}
+
+function installApp() {
+  const note = document.getElementById('installNote');
+
+  // Android / Chrome / Edge: có sự kiện cài đặt gốc
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        showToast('Đang thêm vào màn hình chính...');
+      } else {
+        showToast('Bạn đã hủy cài đặt');
+      }
+      deferredPrompt = null;
+      document.getElementById('installWrap').classList.remove('show');
+    });
+    return;
+  }
+
+  // iOS Safari: hướng dẫn thủ công
+  if (isIOS()) {
+    note.innerHTML =
+      '<b>Trên iPhone / iPad (Safari):</b><br>' +
+      '1. Nhấn nút <b>Chia sẻ</b> (hình vuông có mũi tên ↑) ở thanh dưới.<br>' +
+      '2. Cuộn xuống và chọn <b>Thêm vào màn hình chính</b>.<br>' +
+      '3. Nhấn <b>Thêm</b> để hoàn tất.';
+    note.classList.toggle('show');
+    return;
+  }
+
+  // Trình duyệt khác (Firefox, Safari desktop...)
+  note.innerHTML =
+    '<b>Trình duyệt của bạn chưa hỗ trợ cài trực tiếp.</b><br>' +
+    'Hãy mở trang này bằng <b>Chrome</b> (Android) hoặc <b>Safari</b> (iPhone), ' +
+    'rồi chọn <b>Thêm vào màn hình chính</b> trong menu trình duyệt.';
+  note.classList.toggle('show');
+}
+
+/* Bắt sự kiện cài đặt gốc */
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallUI();
+});
+
+/* Ẩn nút sau khi cài xong */
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installWrap').classList.remove('show');
+  showToast('Đã thêm vào màn hình chính');
+});
+
+/* ============================================================
+   6. KHỞI TẠO
+   ============================================================ */
+injectManifest();
+injectServiceWorker();
 renderAmount();
-buildQR();
+buildQR(false);
+
+// Hiện nút cài đặt nếu trình duyệt hỗ trợ hoặc là iOS
+if (!isStandalone() && (isIOS() || window.matchMedia('(display-mode: browser)').matches)) {
+  // Với iOS hiện ngay, với Android chờ beforeinstallprompt (đã bắt ở trên)
+  if (isIOS()) showInstallUI();
+  else setTimeout(() => {
+    if (deferredPrompt) showInstallUI();
+  }, 1200);
+}
 </script>
 
 </body>
