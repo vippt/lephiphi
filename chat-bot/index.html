@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat với AI Phi</title>
+    <title>Chat với AI Phi Phi</title>
     <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
     html, body{
         background:linear-gradient(135deg,#f0f4f8,#d9e2ec);
-        min-height:60vh;
-        min-height:60dvh;
+        min-height:100vh;
+        min-height:100dvh;
         display:flex;
         align-items:center;
         justify-content:center;
@@ -29,7 +29,6 @@
         flex-direction:column;
         overflow:hidden
     }
-    /* === ĐÃ BỎ PHẦN TIÊU ĐỀ .hd === */
     .msgs{
         flex:1;
         padding:16px 20px;
@@ -107,22 +106,43 @@
     .msgs::-webkit-scrollbar{width:4px}
     .msgs::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
     
+    /* === FOOTER === */
+    .footer{
+        padding:8px 16px;
+        text-align:center;
+        background:#fff;
+        border-top:1px solid #f1f5f9;
+        font-size:12px;
+        color:#64748b;
+        flex-shrink:0;
+    }
+    .footer a{
+        color:#1a91ff;
+        text-decoration:none;
+        font-weight:500;
+    }
+    .footer a:hover{text-decoration:underline}
+    
     @media (max-height: 600px) {
         .chat{height:98vh;height:98dvh;max-height:none;border-radius:16px}
         .msgs{padding:12px 16px}
         .input-area{padding:10px 16px}
+        .footer{padding:6px 12px;font-size:11px}
     }
 </style>
 </head>
 <body>
     <div class="chat">
-        <!-- === ĐÃ BỎ TOÀN BỘ KHỐI TIÊU ĐỀ Ở ĐÂY === -->
         <div class="msgs" id="msgs">
             <div class="msg bot"><div class="bubble">Chào bạn! 😊 Mình là AI Phi Phi. Bạn muốn hỏi gì?</div></div>
         </div>
         <div class="input-area">
             <input type="text" id="inp" placeholder="Nhập tin nhắn..." autocomplete="off">
             <button class="send" id="sendBtn">➤</button>
+        </div>
+        <!-- FOOTER ĐƯỢC THÊM VÀO -->
+        <div class="footer">
+            <a href="https://lephiphi.com" target="_blank">lephiphi.com</a> © 2026
         </div>
     </div>
     <script>
@@ -278,6 +298,5 @@ Hướng dẫn trả lời:
             }
         });
     </script>
-    
 </body>
 </html>
