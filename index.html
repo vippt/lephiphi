@@ -63,26 +63,31 @@
         }
         .pwa-hint-ios.show { display: block; }
 
-        /* ========== LOADING (căn giữa bằng flex, không bị tràn) ========== */
+        /* ========== LOADING ========== */
         .access-screen {
             position: fixed;
             top: 0; left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 16px;
-            gap: 12px;
             z-index: 100;
             overflow-y: auto;
+            overflow-x: hidden;
             transition: opacity .4s ease;
         }
         .access-screen.hidden {
             opacity: 0;
             pointer-events: none;
         }
+        .access-inner {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px 16px;
+        }
+
         .terminal {
             width: 100%;
             max-width: 520px;
@@ -92,6 +97,7 @@
             border-radius: 8px;
             padding: 2rem 1.5rem;
         }
+
         .status {
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green);
@@ -100,12 +106,20 @@
             text-align: center;
             text-shadow: 0 0 8px var(--neon-green-glow);
         }
+
+        /* ✅ THANH LOADING + % CÙNG 1 HÀNG → KHÔNG BAO GIỜ LỆCH */
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
         .progress-bar {
-            width: 100%; height: 24px;
+            flex: 1;
+            height: 24px;
             border: 1px solid var(--neon-green);
             border-radius: 4px;
             background: rgba(0,0,0,0.6);
-            margin-bottom: 0.8rem;
             overflow: hidden;
         }
         .progress-fill {
@@ -115,14 +129,15 @@
             box-shadow: 0 0 12px rgba(0,255,65,0.8);
         }
         .progress-pct {
-            display: block;
-            width: 100%;
-            text-align: center;
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green);
             font-size: 0.9rem;
-            margin-bottom: 1.5rem;
+            min-width: 48px;
+            text-align: right;
+            flex-shrink: 0;
+            text-shadow: 0 0 8px var(--neon-green-glow);
         }
+
         .enter-btn {
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green);
@@ -475,37 +490,47 @@
 
     <!-- ========== LOADING + PLAYER NHẠC ========== -->
     <div class="access-screen" id="access">
+        <div class="access-inner">
 
-        <div class="terminal">
-            <p class="status" id="status">Đang khởi tạo...</p>
-            <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
-            <p class="progress-pct" id="pct">0%</p>
-            <button class="enter-btn" id="enterBtn" onclick="startBinaryRain()">
-                ⌨️ <strong>TRUY CẬP</strong>
-            </button>
-        </div>
+            <div class="terminal">
+                <p class="status" id="status">Đang khởi tạo...</p>
 
-        <!-- PLAYER NHẠC -->
-        <div class="music-player">
-            <div class="music-top">
-                <span class="music-note">🎵</span>
-                <div class="music-title">
-                    <span>Nhạc nền — Lê Phi Phi · Playlist thư giãn 🎧</span>
+                <!-- ✅ THANH LOADING + % CÙNG HÀNG -->
+                <div class="progress-row">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="fill"></div>
+                    </div>
+                    <span class="progress-pct" id="pct">0%</span>
+                </div>
+
+                <button class="enter-btn" id="enterBtn" onclick="startBinaryRain()">
+                    ⌨️ <strong>TRUY CẬP</strong>
+                </button>
+            </div>
+
+            <!-- PLAYER NHẠC -->
+            <div class="music-player">
+                <div class="music-top">
+                    <span class="music-note">🎵</span>
+                    <div class="music-title">
+                        <span>Nhạc nền — Lê Phi Phi · Playlist thư giãn 🎧</span>
+                    </div>
+                </div>
+                <div class="music-bar">
+                    <button class="music-btn" id="musicPlayBtn">▶</button>
+                    <div class="music-track" id="musicTrack">
+                        <div class="music-track-fill" id="musicFill"></div>
+                    </div>
+                    <span class="music-time" id="musicTime">0:00 / 0:00</span>
                 </div>
             </div>
-            <div class="music-bar">
-                <button class="music-btn" id="musicPlayBtn">▶</button>
-                <div class="music-track" id="musicTrack">
-                    <div class="music-track-fill" id="musicFill"></div>
-                </div>
-                <span class="music-time" id="musicTime">0:00 / 0:00</span>
-            </div>
-        </div>
 
-        <!-- AUDIO: muted + autoplay để được phép phát, unmute khi có tương tác -->
-        <audio id="bgMusic" loop preload="auto" autoplay muted>
-            <source src="/LePhiPhi.Com.mp3" type="audio/mpeg">
-        </audio>
+            <!-- AUDIO -->
+            <audio id="bgMusic" loop preload="auto" autoplay muted>
+                <source src="/LePhiPhi.Com.mp3" type="audio/mpeg">
+            </audio>
+
+        </div>
     </div>
 
     <!-- MƯA NHỊ PHÂN -->
@@ -666,14 +691,12 @@ function updateMusicUI() {
     musicTime.textContent = fmtTime(cur) + ' / ' + fmtTime(dur);
 }
 
-// ✅ Bước 1: phát nhạc ở chế độ MUTED ngay khi tải trang
 function startMuted() {
     bgMusic.muted = true;
     bgMusic.volume = 1.0;
     bgMusic.play().then(() => setMusicIcon(true)).catch(()=>{});
 }
 
-// ✅ Bước 2: lần tương tác đầu tiên → bật âm thanh 100%
 function unmuteOnFirstGesture() {
     bgMusic.muted = false;
     bgMusic.volume = 1.0;
@@ -690,7 +713,6 @@ setTimeout(startMuted, 200);
 ['click','touchstart','touchend','keydown','scroll']
     .forEach(ev => document.addEventListener(ev, unmuteOnFirstGesture, { once: true, passive: true }));
 
-// Nút play / mini toggle
 function toggleMusic() {
     if (bgMusic.paused) {
         bgMusic.muted = false;
@@ -708,7 +730,6 @@ bgMusic.addEventListener('pause', () => setMusicIcon(false));
 bgMusic.addEventListener('timeupdate', updateMusicUI);
 bgMusic.addEventListener('loadedmetadata', updateMusicUI);
 
-// Tua nhạc
 musicTrack.addEventListener('click', (e) => {
     if (!bgMusic.duration) return;
     const rect = musicTrack.getBoundingClientRect();
@@ -794,7 +815,6 @@ function createBinaryRain() {
 function startBinaryRain() {
     if (!ready) return;
 
-    // Đảm bảo nhạc đang phát và đã unmute
     bgMusic.muted = false;
     bgMusic.volume = 1.0;
     if (bgMusic.paused) bgMusic.play().catch(()=>{});
