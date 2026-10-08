@@ -107,19 +107,13 @@
             text-shadow: 0 0 8px var(--neon-green-glow);
         }
 
-        /* ✅ THANH LOADING + % CÙNG 1 HÀNG → KHÔNG BAO GIỜ LỆCH */
-        .progress-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 1rem;
-        }
         .progress-bar {
-            flex: 1;
+            width: 100%;
             height: 24px;
             border: 1px solid var(--neon-green);
             border-radius: 4px;
             background: rgba(0,0,0,0.6);
+            margin-bottom: 0.6rem;
             overflow: hidden;
         }
         .progress-fill {
@@ -128,13 +122,15 @@
             transition: width .25s ease;
             box-shadow: 0 0 12px rgba(0,255,65,0.8);
         }
+        /* ✅ 100% NẰM GIỮA, DƯỚI THANH LOADING */
         .progress-pct {
+            display: block;
+            width: 100%;
+            text-align: center;
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green);
-            font-size: 0.9rem;
-            min-width: 48px;
-            text-align: right;
-            flex-shrink: 0;
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
             text-shadow: 0 0 8px var(--neon-green-glow);
         }
 
@@ -495,13 +491,11 @@
             <div class="terminal">
                 <p class="status" id="status">Đang khởi tạo...</p>
 
-                <!-- ✅ THANH LOADING + % CÙNG HÀNG -->
-                <div class="progress-row">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="fill"></div>
-                    </div>
-                    <span class="progress-pct" id="pct">0%</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="fill"></div>
                 </div>
+                <!-- ✅ 100% NẰM GIỮA, DƯỚI THANH -->
+                <span class="progress-pct" id="pct">0%</span>
 
                 <button class="enter-btn" id="enterBtn" onclick="startBinaryRain()">
                     ⌨️ <strong>TRUY CẬP</strong>
