@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lê Phi Phi - LePhiPhi.Com</title>
 
-    <!-- === PWA === -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#00ff41">
     <meta name="msapplication-TileColor" content="#00ff41">
@@ -40,7 +39,6 @@
             background: #000500;
         }
 
-        /* ========== PWA ========== */
         .pwa-install-btn {
             position: fixed; bottom: 2px; left: 50%;
             transform: translateX(-50%);
@@ -63,7 +61,6 @@
         }
         .pwa-hint-ios.show { display: block; }
 
-        /* ========== LOADING ========== */
         .access-screen {
             position: fixed;
             top: 0; left: 0;
@@ -113,7 +110,7 @@
             border: 1px solid var(--neon-green);
             border-radius: 4px;
             background: rgba(0,0,0,0.6);
-            margin-bottom: 0.6rem;
+            margin-bottom: 1.5rem;
             overflow: hidden;
         }
         .progress-fill {
@@ -121,17 +118,6 @@
             background: linear-gradient(90deg,#00cc34,var(--neon-green),#00cc34);
             transition: width .25s ease;
             box-shadow: 0 0 12px rgba(0,255,65,0.8);
-        }
-        /* ✅ 100% NẰM GIỮA, DƯỚI THANH LOADING */
-        .progress-pct {
-            display: block;
-            width: 100%;
-            text-align: center;
-            font-family: 'Share Tech Mono', monospace;
-            color: var(--neon-green);
-            font-size: 0.95rem;
-            margin-bottom: 1.2rem;
-            text-shadow: 0 0 8px var(--neon-green-glow);
         }
 
         .enter-btn {
@@ -152,7 +138,6 @@
             50%{opacity:1;box-shadow:0 0 20px rgba(0,255,65,.6)}
         }
 
-        /* ========== PLAYER NHẠC ========== */
         .music-player {
             width: 100%;
             max-width: 420px;
@@ -230,7 +215,6 @@
             flex-shrink: 0;
         }
 
-        /* ========== NÚT NHẠC NỔI ========== */
         .music-mini {
             position: fixed; bottom: 2px; left: 20px;
             width: 48px; height: 48px;
@@ -252,7 +236,6 @@
             50%{box-shadow:0 4px 32px rgba(0,255,65,0.95)}
         }
 
-        /* ========== MƯA NHỊ PHÂN ========== */
         .binary-rain {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
@@ -275,7 +258,6 @@
             100%{transform:translateY(120vh);opacity:0}
         }
 
-        /* ========== CHAT BOT ========== */
         .chat-bot-toggle {
             position: fixed; bottom: 2px; right: 20px;
             width: 56px; height: 56px;
@@ -329,7 +311,6 @@
             display: block; overflow: hidden; min-height: 0;
         }
 
-        /* ========== DASHBOARD ========== */
         .main {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -451,7 +432,6 @@
         }
         .main.show .close { opacity: 1; }
 
-        /* ========== MOBILE ========== */
         @media (max-width: 640px) {
             .book { flex-direction: column; }
             .page { width: 100%; padding: 1.5rem 1.2rem; }
@@ -484,7 +464,6 @@
 </head>
 <body>
 
-    <!-- ========== LOADING + PLAYER NHẠC ========== -->
     <div class="access-screen" id="access">
         <div class="access-inner">
 
@@ -494,15 +473,12 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="fill"></div>
                 </div>
-                <!-- ✅ 100% NẰM GIỮA, DƯỚI THANH -->
-                <span class="progress-pct" id="pct">0%</span>
 
                 <button class="enter-btn" id="enterBtn" onclick="startBinaryRain()">
                     ⌨️ <strong>TRUY CẬP</strong>
                 </button>
             </div>
 
-            <!-- PLAYER NHẠC -->
             <div class="music-player">
                 <div class="music-top">
                     <span class="music-note">🎵</span>
@@ -519,7 +495,6 @@
                 </div>
             </div>
 
-            <!-- AUDIO -->
             <audio id="bgMusic" loop preload="auto" autoplay muted>
                 <source src="/LePhiPhi.Com.mp3" type="audio/mpeg">
             </audio>
@@ -527,10 +502,8 @@
         </div>
     </div>
 
-    <!-- MƯA NHỊ PHÂN -->
     <div class="binary-rain" id="binaryRain"></div>
 
-    <!-- ========== DASHBOARD ========== -->
     <div class="main" id="main">
         <div class="notebook">
             <div class="book">
@@ -591,21 +564,17 @@
 
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
 
-    <!-- NÚT NHẠC NỔI -->
     <button class="music-mini" id="musicMini">♪</button>
 
-    <!-- NÚT PWA -->
     <button class="pwa-install-btn" id="pwaInstallBtn">➕ Thêm vào màn hình chính</button>
     <div class="pwa-hint-ios" id="pwaHintIOS">
         💡 Nhấn <strong>Chia sẻ</strong> → <strong>Thêm vào màn hình chính</strong>
     </div>
 
-    <!-- NÚT CHAT -->
     <button class="chat-bot-toggle" id="chatBotToggle" title="Mở AI Chat">
         <i class="fa fa-commenting-o"></i>
     </button>
 
-    <!-- KHUNG CHAT -->
     <div class="chat-bot-window" id="chatBotWindow">
         <div class="chat-bot-header">
             🤖 Chat với AI của Phi
@@ -618,7 +587,6 @@
     </div>
 
 <script>
-/* ========== PWA ========== */
 const installBtn = document.getElementById('pwaInstallBtn');
 const iosHint = document.getElementById('pwaHintIOS');
 let deferredPrompt = null;
@@ -660,7 +628,6 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
 });
 
-/* ========== NHẠC — TỰ PHÁT (MUTED → UNMUTE 100%) ========== */
 const bgMusic      = document.getElementById('bgMusic');
 const musicPlayBtn = document.getElementById('musicPlayBtn');
 const musicFill    = document.getElementById('musicFill');
@@ -731,7 +698,6 @@ musicTrack.addEventListener('click', (e) => {
     bgMusic.currentTime = Math.max(0, Math.min(1, pct)) * bgMusic.duration;
 });
 
-/* ========== CHAT ========== */
 const toggleBtn = document.getElementById('chatBotToggle');
 const chatWindow = document.getElementById('chatBotWindow');
 const chatMinimize = document.getElementById('chatMinimize');
@@ -745,7 +711,6 @@ toggleBtn.addEventListener('click', () => isChatOpen ? closeChatWindow() : openC
 chatMinimize.addEventListener('click', closeChatWindow);
 chatClose.addEventListener('click', closeChatWindow);
 
-/* ========== LOGIC CHÍNH ========== */
 function typeWriter(el, text, speed = 50) {
     let i = 0;
     el.textContent = '';
@@ -766,7 +731,6 @@ const statusTexts = ["Đang khởi tạo...", "Đang xác minh danh tính...", "
 let progress = 0, ready = false;
 
 const fill = document.getElementById('fill');
-const pct = document.getElementById('pct');
 const status = document.getElementById('status');
 const enterBtn = document.getElementById('enterBtn');
 const access = document.getElementById('access');
@@ -779,14 +743,12 @@ const timer = setInterval(() => {
         progress = 100;
         clearInterval(timer);
         fill.style.width = '100%';
-        pct.textContent = '100%';
         status.textContent = 'Đã sẵn sàng ✨';
         enterBtn.style.display = 'block';
         ready = true;
         return;
     }
     fill.style.width = `${progress}%`;
-    pct.textContent = `${Math.floor(progress)}%`;
     status.textContent = statusTexts[Math.min(Math.floor(progress / 25), 3)];
 }, 80);
 
