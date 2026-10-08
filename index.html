@@ -457,7 +457,7 @@
             <div class="music-top">
                 <span class="music-note">🎵</span>
                 <div class="music-title">
-                    <span>Nhạc nền — Lê Phi Phi · Playlist thư giãn 🎧</span>
+                    <span>LePhiPhi.Com Xin Chào 🎧</span>
                 </div>
             </div>
             <div class="music-bar">
@@ -469,8 +469,8 @@
             </div>
         </div>
 
-        <!-- AUDIO -->
-        <audio id="bgMusic" loop preload="auto" autoplay>
+        <!-- AUDIO: muted + autoplay để được phép phát, sẽ unmute khi có tương tác -->
+        <audio id="bgMusic" loop preload="auto" autoplay muted>
             <source src="/LePhiPhi.Com.mp3" type="audio/mpeg">
         </audio>
     </div>
@@ -608,16 +608,13 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
 });
 
-/* ========== NHẠC — TỰ PHÁT, ÂM LƯỢNG 100% ========== */
+/* ========== NHẠC — TỰ PHÁT (MUTED → UNMUTE 100%) ========== */
 const bgMusic      = document.getElementById('bgMusic');
 const musicPlayBtn = document.getElementById('musicPlayBtn');
 const musicFill    = document.getElementById('musicFill');
 const musicTime    = document.getElementById('musicTime');
 const musicTrack   = document.getElementById('musicTrack');
 const musicMini    = document.getElementById('musicMini');
-
-// ✅ Âm lượng 100%
-bgMusic.volume = 1.0;
 
 function setMusicIcon(playing) {
     musicPlayBtn.textContent = playing ? '❚❚' : '▶';
@@ -636,31 +633,34 @@ function updateMusicUI() {
     musicTime.textContent = fmtTime(cur) + ' / ' + fmtTime(dur);
 }
 
-// ✅ Tự phát nhạc (thử ngay, nếu bị chặn thì phát ở cú chạm đầu tiên)
-function tryAutoPlay() {
+// ✅ Bước 1: phát nhạc ở chế độ MUTED ngay khi tải trang (được phép)
+function startMuted() {
+    bgMusic.muted = true;
     bgMusic.volume = 1.0;
-    const p = bgMusic.play();
-    if (p !== undefined) {
-        p.then(() => setMusicIcon(true)).catch(() => {
-            const unlock = () => {
-                bgMusic.volume = 1.0;
-                bgMusic.play().then(() => setMusicIcon(true)).catch(()=>{});
-                ['click','touchstart','touchend','keydown','scroll']
-                    .forEach(ev => document.removeEventListener(ev, unlock));
-            };
-            ['click','touchstart','touchend','keydown','scroll']
-                .forEach(ev => document.addEventListener(ev, unlock, { once: true, passive: true }));
-        });
-    }
+    bgMusic.play().then(() => setMusicIcon(true)).catch(()=>{});
 }
 
-document.addEventListener('DOMContentLoaded', tryAutoPlay);
-window.addEventListener('load', tryAutoPlay);
-setTimeout(tryAutoPlay, 200);
+// ✅ Bước 2: lần tương tác đầu tiên → bật âm thanh 100%
+function unmuteOnFirstGesture() {
+    bgMusic.muted = false;
+    bgMusic.volume = 1.0;
+    if (bgMusic.paused) bgMusic.play().catch(()=>{});
+    setMusicIcon(true);
+    ['click','touchstart','touchend','keydown','scroll']
+        .forEach(ev => document.removeEventListener(ev, unmuteOnFirstGesture));
+}
+
+document.addEventListener('DOMContentLoaded', startMuted);
+window.addEventListener('load', startMuted);
+setTimeout(startMuted, 200);
+
+['click','touchstart','touchend','keydown','scroll']
+    .forEach(ev => document.addEventListener(ev, unmuteOnFirstGesture, { once: true, passive: true }));
 
 // Nút play / mini toggle
 function toggleMusic() {
     if (bgMusic.paused) {
+        bgMusic.muted = false;
         bgMusic.volume = 1.0;
         bgMusic.play().catch(()=>{});
     } else {
@@ -761,11 +761,10 @@ function createBinaryRain() {
 function startBinaryRain() {
     if (!ready) return;
 
-    // Đảm bảo nhạc đang phát
-    if (bgMusic.paused) {
-        bgMusic.volume = 1.0;
-        bgMusic.play().catch(()=>{});
-    }
+    // Đảm bảo nhạc đang phát và đã unmute
+    bgMusic.muted = false;
+    bgMusic.volume = 1.0;
+    if (bgMusic.paused) bgMusic.play().catch(()=>{});
     musicMini.classList.add('show');
 
     access.classList.add('hidden');
