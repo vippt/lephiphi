@@ -63,19 +63,29 @@
         }
         .pwa-hint-ios.show { display: block; }
 
-        /* ========== LOADING ========== */
+        /* ========== LOADING (căn giữa bằng flex, không bị tràn) ========== */
         .access-screen {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100; width: 90%; max-width: 520px;
-            text-align: center;
-            transition: opacity .4s ease, transform .4s ease;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+            gap: 12px;
+            z-index: 100;
+            overflow-y: auto;
+            transition: opacity .4s ease;
         }
         .access-screen.hidden {
-            opacity: 0; pointer-events: none;
-            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
         }
         .terminal {
+            width: 100%;
+            max-width: 520px;
             border: 2px solid var(--neon-green);
             box-shadow: 0 0 30px var(--neon-green-glow);
             background: rgba(0,0,0,0.85);
@@ -85,7 +95,9 @@
         .status {
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green);
-            font-size: 1.1rem; margin-bottom: 1rem;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-align: center;
             text-shadow: 0 0 8px var(--neon-green-glow);
         }
         .progress-bar {
@@ -93,7 +105,8 @@
             border: 1px solid var(--neon-green);
             border-radius: 4px;
             background: rgba(0,0,0,0.6);
-            margin-bottom: 0.8rem; overflow: hidden;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
         }
         .progress-fill {
             height: 100%; width: 0;
@@ -102,18 +115,24 @@
             box-shadow: 0 0 12px rgba(0,255,65,0.8);
         }
         .progress-pct {
+            display: block;
+            width: 100%;
+            text-align: center;
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green);
-            font-size: 0.9rem; margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
         }
         .enter-btn {
             font-family: 'Share Tech Mono', monospace;
             color: var(--neon-green);
-            font-size: 1rem; padding: 0.8rem 2rem;
+            font-size: 1rem;
+            padding: 0.8rem 2rem;
             border: 1px dashed rgba(0,255,65,0.8);
             border-radius: 6px;
             background: rgba(0,255,65,0.08);
-            cursor: pointer; display: none;
+            cursor: pointer;
+            display: none;
             margin: 0 auto;
             animation: pulse 1.5s infinite;
         }
@@ -124,8 +143,8 @@
 
         /* ========== PLAYER NHẠC ========== */
         .music-player {
-            margin: 12px auto 0;
-            width: 100%; max-width: 420px;
+            width: 100%;
+            max-width: 420px;
             background: rgba(0,0,0,0.85);
             border: 1px solid var(--neon-green);
             box-shadow: 0 0 18px var(--neon-green-glow);
@@ -154,7 +173,8 @@
             text-shadow: 0 0 8px var(--neon-green-glow);
         }
         .music-title span {
-            display: inline-block; padding-left: 100%;
+            display: inline-block;
+            padding-left: 100%;
             animation: musicScroll 14s linear infinite;
         }
         @keyframes musicScroll {
@@ -182,8 +202,10 @@
         .music-track {
             flex: 1; height: 5px;
             background: rgba(0,255,65,0.15);
-            border-radius: 3px; cursor: pointer;
-            position: relative; overflow: hidden;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
         .music-track-fill {
             height: 100%; width: 0;
@@ -205,8 +227,10 @@
             background: linear-gradient(135deg,#00ff41,#00cc34);
             border: none;
             box-shadow: 0 4px 20px rgba(0,255,65,0.4);
-            cursor: pointer; z-index: 99998;
-            display: none; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 99998;
+            display: none;
+            align-items: center; justify-content: center;
             font-size: 18px; color: #000;
             transition: transform .3s ease;
         }
@@ -247,9 +271,11 @@
             border-radius: 50%;
             background: linear-gradient(135deg,#00ff41,#00cc34);
             box-shadow: 0 4px 20px rgba(0,255,65,0.4);
-            cursor: pointer; z-index: 99998;
+            cursor: pointer;
+            z-index: 99998;
             display: flex; align-items: center; justify-content: center;
-            border: none; transition: transform .3s ease;
+            border: none;
+            transition: transform .3s ease;
         }
         .chat-bot-toggle:hover { transform: scale(1.08); }
         .chat-bot-toggle i { font-size: 24px; color: #000; }
@@ -260,8 +286,10 @@
             max-height: 75vh; min-height: 450px;
             border-radius: 16px;
             box-shadow: 0 5px 30px rgba(0,0,0,0.25);
-            background: #fff; z-index: 99998;
-            transform: scale(0); transform-origin: bottom right;
+            background: #fff;
+            z-index: 99998;
+            transform: scale(0);
+            transform-origin: bottom right;
             transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0; pointer-events: none;
             display: flex; flex-direction: column;
@@ -274,7 +302,8 @@
             background: linear-gradient(135deg,#00ff41,#00cc34);
             color: #000; padding: 10px 14px;
             display: flex; align-items: center; justify-content: space-between;
-            font-weight: bold; font-size: 14px; flex-shrink: 0;
+            font-weight: bold; font-size: 14px;
+            flex-shrink: 0;
         }
         .chat-bot-controls button {
             background: rgba(0,0,0,0.1); border: none;
@@ -294,14 +323,17 @@
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
             overflow-y: auto; overflow-x: hidden;
-            padding: 2rem 1rem; z-index: 10;
+            padding: 2rem 1rem;
+            z-index: 10;
             background: linear-gradient(135deg,#f5f0e1 0%,#e8dfc9 100%);
             opacity: 0; transition: opacity .8s ease;
         }
         .main.show { opacity: 1; }
         .type-text {
-            overflow: hidden; white-space: pre-wrap;
-            width: 0; display: inline-block;
+            overflow: hidden;
+            white-space: pre-wrap;
+            width: 0;
+            display: inline-block;
             transition: width .05s ease;
         }
         .notebook { max-width: 780px; margin: 0 auto; padding: 2rem 0; }
@@ -402,7 +434,8 @@
             width: 40px; height: 40px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.2rem; color: var(--text-soft);
-            cursor: pointer; z-index: 20;
+            cursor: pointer;
+            z-index: 20;
             opacity: 0; transition: opacity .3s;
         }
         .main.show .close { opacity: 1; }
@@ -430,7 +463,7 @@
             }
 
             .music-mini { left: 12px; width: 44px; height: 44px; font-size: 16px; }
-            .music-player { padding: 8px 10px; max-width: 100%; }
+            .music-player { padding: 8px 10px; }
             .music-time { min-width: 58px; font-size: 9px; }
             .music-title { font-size: 11px; }
 
@@ -457,7 +490,7 @@
             <div class="music-top">
                 <span class="music-note">🎵</span>
                 <div class="music-title">
-                    <span>LePhiPhi.Com Xin Chào 🎧</span>
+                    <span>Nhạc nền — Lê Phi Phi · Playlist thư giãn 🎧</span>
                 </div>
             </div>
             <div class="music-bar">
@@ -469,7 +502,7 @@
             </div>
         </div>
 
-        <!-- AUDIO: muted + autoplay để được phép phát, sẽ unmute khi có tương tác -->
+        <!-- AUDIO: muted + autoplay để được phép phát, unmute khi có tương tác -->
         <audio id="bgMusic" loop preload="auto" autoplay muted>
             <source src="/LePhiPhi.Com.mp3" type="audio/mpeg">
         </audio>
@@ -633,7 +666,7 @@ function updateMusicUI() {
     musicTime.textContent = fmtTime(cur) + ' / ' + fmtTime(dur);
 }
 
-// ✅ Bước 1: phát nhạc ở chế độ MUTED ngay khi tải trang (được phép)
+// ✅ Bước 1: phát nhạc ở chế độ MUTED ngay khi tải trang
 function startMuted() {
     bgMusic.muted = true;
     bgMusic.volume = 1.0;
