@@ -39,6 +39,7 @@
             background: #000500;
         }
 
+        /* ========== PWA ========== */
         .pwa-install-btn {
             position: fixed; bottom: 2px; left: 50%;
             transform: translateX(-50%);
@@ -61,6 +62,7 @@
         }
         .pwa-hint-ios.show { display: block; }
 
+        /* ========== LOADING ========== */
         .access-screen {
             position: fixed;
             top: 0; left: 0;
@@ -138,6 +140,7 @@
             50%{opacity:1;box-shadow:0 0 20px rgba(0,255,65,.6)}
         }
 
+        /* ========== PLAYER NHẠC ========== */
         .music-player {
             width: 100%;
             max-width: 420px;
@@ -178,10 +181,10 @@
             100%{transform:translateX(-100%)}
         }
         .music-bar {
-            display: flex; align-items: center; gap: 8px;
+            display: flex; align-items: center; gap: 6px;
         }
         .music-btn {
-            width: 28px; height: 28px;
+            width: 26px; height: 26px;
             border-radius: 50%;
             border: 1px solid var(--neon-green);
             background: rgba(0,255,65,0.1);
@@ -190,6 +193,8 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 10px; flex-shrink: 0;
             transition: all .2s ease;
+            padding: 0;
+            line-height: 1;
         }
         .music-btn:hover {
             background: rgba(0,255,65,0.25);
@@ -202,6 +207,7 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            min-width: 40px;
         }
         .music-track-fill {
             height: 100%; width: 0;
@@ -215,6 +221,7 @@
             flex-shrink: 0;
         }
 
+        /* ========== NÚT NHẠC NỔI ========== */
         .music-mini {
             position: fixed; bottom: 2px; left: 20px;
             width: 48px; height: 48px;
@@ -236,6 +243,7 @@
             50%{box-shadow:0 4px 32px rgba(0,255,65,0.95)}
         }
 
+        /* ========== MƯA NHỊ PHÂN ========== */
         .binary-rain {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
@@ -258,6 +266,7 @@
             100%{transform:translateY(120vh);opacity:0}
         }
 
+        /* ========== CHAT BOT ========== */
         .chat-bot-toggle {
             position: fixed; bottom: 2px; right: 20px;
             width: 56px; height: 56px;
@@ -311,6 +320,7 @@
             display: block; overflow: hidden; min-height: 0;
         }
 
+        /* ========== DASHBOARD ========== */
         .main {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -432,6 +442,7 @@
         }
         .main.show .close { opacity: 1; }
 
+        /* ========== MOBILE ========== */
         @media (max-width: 640px) {
             .book { flex-direction: column; }
             .page { width: 100%; padding: 1.5rem 1.2rem; }
@@ -455,8 +466,10 @@
 
             .music-mini { left: 12px; width: 44px; height: 44px; font-size: 16px; }
             .music-player { padding: 8px 10px; }
-            .music-time { min-width: 58px; font-size: 9px; }
+            .music-time { min-width: 52px; font-size: 9px; }
             .music-title { font-size: 11px; }
+            .music-btn { width: 24px; height: 24px; font-size: 9px; }
+            .music-bar { gap: 5px; }
 
             .main { padding: 1rem 0.5rem; }
         }
@@ -464,6 +477,7 @@
 </head>
 <body>
 
+    <!-- ========== LOADING + PLAYER NHẠC ========== -->
     <div class="access-screen" id="access">
         <div class="access-inner">
 
@@ -483,11 +497,13 @@
                 <div class="music-top">
                     <span class="music-note">🎵</span>
                     <div class="music-title">
-                        <span>🎧 LePhiPhi.Com Xin Chào 🎧</span>
+                        <span id="musicName">🎧 LePhiPhi.Com Xin Chào 🎧</span>
                     </div>
                 </div>
                 <div class="music-bar">
-                    <button class="music-btn" id="musicPlayBtn">▶</button>
+                    <button class="music-btn" id="musicPrevBtn" title="Bài trước">⏮</button>
+                    <button class="music-btn" id="musicPlayBtn" title="Phát / Tạm dừng">▶</button>
+                    <button class="music-btn" id="musicNextBtn" title="Bài kế tiếp">⏭</button>
                     <div class="music-track" id="musicTrack">
                         <div class="music-track-fill" id="musicFill"></div>
                     </div>
@@ -495,15 +511,18 @@
                 </div>
             </div>
 
-            <audio id="bgMusic" loop preload="auto" autoplay>
+            <!-- Audio KHÔNG có loop — JS tự chuyển bài -->
+            <audio id="bgMusic" preload="auto" autoplay muted>
                 <source src="/LePhiPhi.Com.mp3" type="audio/mpeg">
             </audio>
 
         </div>
     </div>
 
+    <!-- MƯA NHỊ PHÂN -->
     <div class="binary-rain" id="binaryRain"></div>
 
+    <!-- ========== DASHBOARD ========== -->
     <div class="main" id="main">
         <div class="notebook">
             <div class="book">
@@ -564,17 +583,21 @@
 
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
 
+    <!-- NÚT NHẠC NỔI -->
     <button class="music-mini" id="musicMini">♪</button>
 
+    <!-- NÚT PWA -->
     <button class="pwa-install-btn" id="pwaInstallBtn">➕ Thêm vào màn hình chính</button>
     <div class="pwa-hint-ios" id="pwaHintIOS">
         💡 Nhấn <strong>Chia sẻ</strong> → <strong>Thêm vào màn hình chính</strong>
     </div>
 
+    <!-- NÚT CHAT -->
     <button class="chat-bot-toggle" id="chatBotToggle" title="Mở AI Chat">
         <i class="fa fa-commenting-o"></i>
     </button>
 
+    <!-- KHUNG CHAT -->
     <div class="chat-bot-window" id="chatBotWindow">
         <div class="chat-bot-header">
             🤖 Chat với AI của Phi
@@ -587,6 +610,9 @@
     </div>
 
 <script>
+/* ============================================
+   PWA
+   ============================================ */
 const installBtn = document.getElementById('pwaInstallBtn');
 const iosHint = document.getElementById('pwaHintIOS');
 let deferredPrompt = null;
@@ -628,23 +654,38 @@ window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
 });
 
+/* ============================================
+   NHẠC — PLAYLIST + NÚT NEXT/PREV
+   ============================================ */
 const bgMusic      = document.getElementById('bgMusic');
 const musicPlayBtn = document.getElementById('musicPlayBtn');
+const musicPrevBtn = document.getElementById('musicPrevBtn');
+const musicNextBtn = document.getElementById('musicNextBtn');
 const musicFill    = document.getElementById('musicFill');
 const musicTime    = document.getElementById('musicTime');
 const musicTrack   = document.getElementById('musicTrack');
 const musicMini    = document.getElementById('musicMini');
+const musicName    = document.getElementById('musicName');
+
+/* ✅ DANH SÁCH BÀI HÁT — thêm bài mới chỉ cần thêm dòng */
+const playlist = [
+    { src: '/LePhiPhi.Com.mp3',   name: '🎧 LePhiPhi.Com Xin Chào 🎧' },
+    { src: '/giac-mo-con-sang-le-phi-phi.mp3', name: '🎵 Giấc Mơ Còn Sáng — LePhiPhi 🎵' }
+];
+let currentSong = 0;
 
 function setMusicIcon(playing) {
     musicPlayBtn.textContent = playing ? '❚❚' : '▶';
     musicMini.textContent    = playing ? '❚❚' : '♪';
     musicMini.classList.toggle('playing', playing);
 }
+
 function fmtTime(s) {
     if (!isFinite(s) || s < 0) return '0:00';
     const m = Math.floor(s / 60), sec = Math.floor(s % 60);
     return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
+
 function updateMusicUI() {
     const cur = bgMusic.currentTime || 0;
     const dur = bgMusic.duration || 0;
@@ -652,6 +693,34 @@ function updateMusicUI() {
     musicTime.textContent = fmtTime(cur) + ' / ' + fmtTime(dur);
 }
 
+/* Đổi bài: nạp src mới, cập nhật tên, reset thanh tiến trình */
+function changeSong(index) {
+    currentSong = (index + playlist.length) % playlist.length;
+    bgMusic.src = playlist[currentSong].src;
+    musicName.textContent = playlist[currentSong].name;
+    musicFill.style.width = '0%';
+    musicTime.textContent = '0:00 / 0:00';
+    bgMusic.load();
+
+    // Phát bài mới
+    bgMusic.muted = false;
+    bgMusic.volume = 1.0;
+    bgMusic.play().then(() => setMusicIcon(true)).catch(()=>{});
+}
+
+/* Tự chuyển bài khi hết */
+bgMusic.addEventListener('ended', () => {
+    changeSong(currentSong + 1);
+});
+
+/* Phát bài hiện tại */
+function playCurrent() {
+    bgMusic.muted = false;
+    bgMusic.volume = 1.0;
+    bgMusic.play().then(() => setMusicIcon(true)).catch(()=>{});
+}
+
+/* Bật nhạc ở chế độ muted để vượt autoplay, unmute khi có gesture */
 function startMuted() {
     bgMusic.muted = true;
     bgMusic.volume = 1.0;
@@ -674,11 +743,10 @@ setTimeout(startMuted, 200);
 ['click','touchstart','touchend','keydown','scroll']
     .forEach(ev => document.addEventListener(ev, unmuteOnFirstGesture, { once: true, passive: true }));
 
+/* Nút ▶ / ❚❚ */
 function toggleMusic() {
     if (bgMusic.paused) {
-        bgMusic.muted = false;
-        bgMusic.volume = 1.0;
-        bgMusic.play().catch(()=>{});
+        playCurrent();
     } else {
         bgMusic.pause();
     }
@@ -686,11 +754,22 @@ function toggleMusic() {
 musicPlayBtn.addEventListener('click', toggleMusic);
 musicMini.addEventListener('click', toggleMusic);
 
+/* ✅ Nút ⏭ Bài kế tiếp */
+musicNextBtn.addEventListener('click', () => {
+    changeSong(currentSong + 1);
+});
+
+/* ✅ Nút ⏮ Bài trước */
+musicPrevBtn.addEventListener('click', () => {
+    changeSong(currentSong - 1);
+});
+
 bgMusic.addEventListener('play',  () => setMusicIcon(true));
 bgMusic.addEventListener('pause', () => setMusicIcon(false));
 bgMusic.addEventListener('timeupdate', updateMusicUI);
 bgMusic.addEventListener('loadedmetadata', updateMusicUI);
 
+/* Bấm vào thanh để tua */
 musicTrack.addEventListener('click', (e) => {
     if (!bgMusic.duration) return;
     const rect = musicTrack.getBoundingClientRect();
@@ -698,6 +777,9 @@ musicTrack.addEventListener('click', (e) => {
     bgMusic.currentTime = Math.max(0, Math.min(1, pct)) * bgMusic.duration;
 });
 
+/* ============================================
+   CHAT BOT
+   ============================================ */
 const toggleBtn = document.getElementById('chatBotToggle');
 const chatWindow = document.getElementById('chatBotWindow');
 const chatMinimize = document.getElementById('chatMinimize');
@@ -711,6 +793,9 @@ toggleBtn.addEventListener('click', () => isChatOpen ? closeChatWindow() : openC
 chatMinimize.addEventListener('click', closeChatWindow);
 chatClose.addEventListener('click', closeChatWindow);
 
+/* ============================================
+   LOGIC CHÍNH
+   ============================================ */
 function typeWriter(el, text, speed = 50) {
     let i = 0;
     el.textContent = '';
@@ -771,9 +856,7 @@ function createBinaryRain() {
 function startBinaryRain() {
     if (!ready) return;
 
-    bgMusic.muted = false;
-    bgMusic.volume = 1.0;
-    if (bgMusic.paused) bgMusic.play().catch(()=>{});
+    playCurrent();
     musicMini.classList.add('show');
 
     access.classList.add('hidden');
