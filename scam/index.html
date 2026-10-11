@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo Cáo Bơm Hàng</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family:'Segoe UI',Tahoma,sans-serif; background:linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; color:#333; }
+  .container { max-width:1200px; margin:0 auto; background:#fff; border-radius:16px; box-shadow:0 20px 50px rgba(0,0,0,.25); padding:30px; }
+  h1 { text-align:center; color:#4a3f8f; margin-bottom:6px; font-size:26px; }
+  .subtitle { text-align:center; color:#888; margin-bottom:20px; font-size:14px; }
+  .status-bar { text-align:center; font-size:13px; margin-bottom:15px; padding:8px; border-radius:8px; background:#f0f4ff; color:#4a3f8f; }
+  .status-bar.error { background:#fdecea; color:#c0392b; }
+  .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-bottom:20px; }
+  .form-group { display:flex; flex-direction:column; }
+  .form-group label { font-size:13px; font-weight:600; margin-bottom:5px; color:#555; }
+  .form-group input, .form-group select, .form-group textarea { padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; font-family:inherit; transition:border .2s; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:#667eea; }
+  .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+  button { padding:11px 22px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
+  .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; flex:1; min-width:150px; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 15px rgba(102,126,234,.4); }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  .btn-secondary { background:#f0f0f0; color:#555; }
+  .btn-secondary:hover { background:#e0e0e0; }
+  .btn-export { background:#27ae60; color:#fff; }
+  .btn-export:hover { background:#219150; }
+  .btn-danger { background:#e74c3c; color:#fff; }
+  .btn-refresh { background:#3498db; color:#fff; }
+  .btn-refresh:hover { background:#2980b9; }
+  .search-bar { display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; align-items:center; }
+  .search-bar input { flex:1; min-width:200px; padding:10px 15px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; }
+  .search-bar select { padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; background:#fff; }
+  .stats { display:flex; gap:15px; margin-bottom:20px; flex-wrap:wrap; }
+  .stat-card { flex:1; min-width:150px; background:linear-gradient(135deg,#f6f8ff,#eef1ff); padding:15px; border-radius:10px; border-left:4px solid #667eea; }
+  .stat-card .label { font-size:12px; color:#777; }
+  .stat-card .value { font-size:22px; font-weight:700; color:#4a3f8f; margin-top:4px; }
+  .table-wrap { overflow-x:auto; border-radius:10px; border:1px solid #eee; }
+  table { width:100%; border-collapse:collapse; min-width:900px; }
+  thead { background:#4a3f8f; color:#fff; }
+  th, td { padding:12px; text-align:left; font-size:14px; }
+  tbody tr { border-bottom:1px solid #f0f0f0; transition:background .15s; }
+  tbody tr:hover { background:#f9f9ff; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; }
+  .badge.pending { background:#fff3cd; color:#856404; }
+  .badge.done { background:#d4edda; color:#155724; }
+  .badge.cancel { background:#f8d7da; color:#721c24; }
+  .actions button { padding:6px 12px; font-size:12px; margin-right:5px; }
+  .btn-edit { background:#3498db; color:#fff; }
+  .btn-del { background:#e74c3c; color:#fff; }
+  .empty { text-align:center; padding:40px; color:#aaa; font-style:italic; }
+  .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:999; font-size:14px; max-width:320px; }
+  .toast.show { transform:translateX(0); }
+  .toast.error { background:#e74c3c; }
+
+  /* ====== PHÂN TRANG ====== */
+  .pagination {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:15px; padding:12px 5px; flex-wrap:wrap; gap:12px;
+  }
+  .page-info { font-size:13px; color:#666; }
+  .page-info b { color:#4a3f8f; }
+  .page-controls { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+  .page-controls button {
+    padding:7px 12px; min-width:38px; font-size:13px;
+    background:#fff; color:#4a3f8f; border:2px solid #e0e0e0;
+  }
+  .page-controls button:hover:not(:disabled) { background:#eef1ff; border-color:#667eea; }
+  .page-controls button.active {
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:#fff; border-color:#667eea;
+  }
+  .page-controls button:disabled { opacity:.35; cursor:not-allowed; }
+  .page-controls .dots { padding:7px 4px; color:#999; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📦 BÁO CÁO BƠM HÀNG</h1>
+  <p class="subtitle">Nhập & tìm kiếm chung – Dữ liệu lưu trên Google Sheets</p>
+
+  <div class="status-bar" id="statusBar">🔄 Đang kết nối Google Sheets...</div>
+
+  <form id="formData">
+    <div class="form-grid">
+      <div class="form-group"><label>Tên người bơm hàng *</label><input type="text" id="name" required></div>
+      <div class="form-group"><label>Số điện thoại *</label><input type="tel" id="phone" required></div>
+      <div class="form-group"><label>Tên Facebook</label><input type="text" id="facebook"></div>
+      <div class="form-group"><label>Tài khoản ngân hàng</label><input type="text" id="bank"></div>
+      <div class="form-group"><label>Chủ tài khoản</label><input type="text" id="bankOwner"></div>
+      <div class="form-group"><label>Mặt hàng / Số lượng</label><input type="text" id="product"></div>
+      <div class="form-group"><label>Số tiền (VNĐ)</label><input type="number" id="amount" min="0"></div>
+      <div class="form-group"><label>Trạng thái</label>
+        <select id="status">
+          <option value="pending">⏳ Chờ xử lý</option>
+          <option value="done">✅ Đã bơm</option>
+          <option value="cancel">❌ Hủy</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:15px;">
+      <label>Ghi chú</label>
+      <textarea id="note" rows="2"></textarea>
+    </div>
+    <div class="btn-row">
+      <button type="submit" class="btn-primary" id="submitBtn">➕ Thêm vào báo cáo</button>
+      <button type="button" class="btn-secondary" id="resetBtn">🔄 Làm mới</button>
+      <button type="button" class="btn-refresh" id="refreshBtn">🔃 Tải lại</button>
+      <button type="button" class="btn-export" id="exportBtn">📥 Xuất CSV</button>
+    </div>
+  </form>
+
+  <div class="stats">
+    <div class="stat-card"><div class="label">Tổng số</div><div class="value" id="statTotal">0</div></div>
+    <div class="stat-card"><div class="label">Chờ xử lý</div><div class="value" id="statPending">0</div></div>
+    <div class="stat-card"><div class="label">Đã bơm</div><div class="value" id="statDone">0</div></div>
+    <div class="stat-card"><div class="label">Tổng tiền</div><div class="value" id="statMoney">0đ</div></div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="🔍 Tìm theo tên, SĐT, Facebook, ngân hàng, mặt hàng...">
+    <select id="pageSize">
+      <option value="20" selected>20 dòng/trang</option>
+      <option value="30">30 dòng/trang</option>
+      <option value="50">50 dòng/trang</option>
+      <option value="100">100 dòng/trang</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>STT</th><th>Tên</th><th>SĐT</th><th>Facebook</th>
+          <th>Ngân hàng</th><th>Mặt hàng</th><th>Số tiền</th>
+          <th>Trạng thái</th><th>Ghi chú</th><th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="10" class="empty">Đang tải dữ liệu...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PHÂN TRANG -->
+  <div class="pagination">
+    <div class="page-info" id="pageInfo">Hiển thị 0/0</div>
+    <div class="page-controls" id="pageControls"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ====== DÁN URL WEB APP VÀO ĐÂY ======
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzS-jKipiPBgHHnJ15uOAELFz8BOJ76qImOze8AR8vh-G9jVXZaCHK1gVODM-MnMpE/exec';
+  // =====================================
+
+  let data = [];
+  let editId = null;
+  let currentPage = 1;
+  let pageSize = 20;
+  let lastFiltered = [];
+
+  const $ = id => document.getElementById(id);
+
+  function toast(msg, isError=false) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.toggle('error', isError);
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  function setStatus(msg, isError=false) {
+    const s = $('statusBar');
+    s.textContent = msg;
+    s.classList.toggle('error', isError);
+  }
+
+  function formatMoney(n) {
+    if (!n || n === 0) return '-';
+    return Number(n).toLocaleString('vi-VN') + 'đ';
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ====== GỌI API ======
+  async function apiGet() {
+    const res = await fetch(API_URL + '?action=list&t=' + Date.now());
+    return await res.json();
+  }
+
+  async function apiPost(payload) {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  }
+
+  // ====== TẢI DỮ LIỆU ======
+  async function loadData() {
+    try {
+      setStatus('🔄 Đang tải dữ liệu từ Google Sheets...');
+      const r = await apiGet();
+      if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
+      data = r.data || [];
+      render();
+      setStatus('✅ Đã kết nối Google Sheets — ' + data.length + ' bản ghi');
+    } catch (e) {
+      setStatus('❌ Không kết nối được: ' + e.message, true);
+      toast('Lỗi tải dữ liệu: ' + e.message, true);
+    }
+  }
+
+  // ====== LỌC DỮ LIỆU ======
+  function getFiltered() {
+    const kw = $('search').value.toLowerCase().trim();
+    if (!kw) return data;
+    return data.filter(x =>
+      (x.name||'').toLowerCase().includes(kw) ||
+      (x.phone||'').toLowerCase().includes(kw) ||
+      (x.facebook||'').toLowerCase().includes(kw) ||
+      (x.bank||'').toLowerCase().includes(kw) ||
+      (x.bankOwner||'').toLowerCase().includes(kw) ||
+      (x.product||'').toLowerCase().includes(kw)
+    );
+  }
+
+  // ====== RENDER CÓ PHÂN TRANG ======
+  function render() {
+    const tbody = $('tbody');
+    lastFiltered = getFiltered();
+    const total = lastFiltered.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    // Nếu trang hiện tại vượt quá số trang (sau khi lọc/xóa)
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const start = (currentPage - 1) * pageSize;
+    const end = Math.min(start + pageSize, total);
+    const pageData = lastFiltered.slice(start, end);
+
+    if (total === 0) {
+      tbody.innerHTML = '<tr><td colspan="10" class="empty">Không có dữ liệu phù hợp.</td></tr>';
+    } else {
+      tbody.innerHTML = pageData.map((item, i) => {
+        const st = item.status || 'pending';
+        const stText = st==='done'?'✅ Đã bơm':st==='cancel'?'❌ Hủy':'⏳ Chờ';
+        return `
+          <tr>
+            <td>${start + i + 1}</td>
+            <td><strong>${escapeHtml(item.name)}</strong></td>
+            <td>${escapeHtml(item.phone)}</td>
+            <td>${escapeHtml(item.facebook) || '-'}</td>
+            <td>${escapeHtml(item.bank) || '-'}${item.bankOwner?'<br><small>('+escapeHtml(item.bankOwner)+')</small>':''}</td>
+            <td>${escapeHtml(item.product) || '-'}</td>
+            <td>${formatMoney(item.amount)}</td>
+            <td><span class="badge ${st}">${stText}</span></td>
+            <td>${escapeHtml(item.note) || '-'}</td>
+            <td class="actions">
+              <button class="btn-edit" onclick="editItem('${item.id}')">✏️</button>
+              <button class="btn-del" onclick="deleteItem('${item.id}')">🗑️</button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    // Thông tin trang
+    $('pageInfo').innerHTML = total === 0
+      ? 'Không có dữ liệu'
+      : `Hiển thị <b>${start + 1}–${end}</b> / <b>${total}</b> bản ghi &nbsp;|&nbsp; Trang <b>${currentPage}/${totalPages}</b>`;
+
+    renderPagination(totalPages);
+    updateStats();
+  }
+
+  // ====== VẼ NÚT PHÂN TRANG ======
+  function renderPagination(totalPages) {
+    const box = $('pageControls');
+    box.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const addBtn = (label, page, opts = {}) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      if (opts.active) b.classList.add('active');
+      if (opts.disabled) b.disabled = true;
+      b.onclick = () => gotoPage(page);
+      box.appendChild(b);
+    };
+
+    const addDots = () => {
+      const s = document.createElement('span');
+      s.className = 'dots';
+      s.textContent = '…';
+      box.appendChild(s);
+    };
+
+    // Nút đầu
+    addBtn('«', 1, { disabled: currentPage === 1 });
+    addBtn('‹', currentPage - 1, { disabled: currentPage === 1 });
+
+    // Dải số trang quanh trang hiện tại
+    const pages = new Set();
+    pages.add(1);
+    pages.add(totalPages);
+    for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+      if (i >= 1 && i <= totalPages) pages.add(i);
+    }
+    const sorted = [...pages].sort((a, b) => a - b);
+
+    let prev = 0;
+    sorted.forEach(p => {
+      if (p - prev > 1) addDots();
+      addBtn(String(p), p, { active: p === currentPage });
+      prev = p;
+    });
+
+    // Nút cuối
+    addBtn('›', currentPage + 1, { disabled: currentPage === totalPages });
+    addBtn('»', totalPages, { disabled: currentPage === totalPages });
+  }
+
+  function gotoPage(p) {
+    currentPage = p;
+    render();
+    // Cuộn tới bảng
+    document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function updateStats() {
+    $('statTotal').textContent = data.length;
+    $('statPending').textContent = data.filter(x => (x.status||'pending')==='pending').length;
+    $('statDone').textContent = data.filter(x => x.status==='done').length;
+    const total = data.filter(x => x.status!=='cancel').reduce((s,x)=>s+(Number(x.amount)||0),0);
+    $('statMoney').textContent = total.toLocaleString('vi-VN') + 'đ';
+  }
+
+  // ====== SUBMIT ======
+  $('formData').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const item = {
+      id: editId,
+      name: $('name').value.trim(),
+      phone: $('phone').value.trim(),
+      facebook: $('facebook').value.trim(),
+      bank: $('bank').value.trim(),
+      bankOwner: $('bankOwner').value.trim(),
+      product: $('product').value.trim(),
+      amount: Number($('amount').value) || 0,
+      status: $('status').value,
+      note: $('note').value.trim()
+    };
+
+    const btn = $('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Đang lưu...';
+
+    try {
+      const r = await apiPost({ action: editId ? 'update' : 'add', data: item });
+      if (!r.ok) throw new Error(r.error || 'Lỗi lưu');
+      toast(editId ? '✅ Đã cập nhật!' : '✅ Đã thêm vào báo cáo!');
+      editId = null;
+      $('formData').reset();
+      $('status').value = 'pending';
+      await loadData();
+    } catch (err) {
+      toast('❌ ' + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = editId ? '💾 Cập nhật' : '➕ Thêm vào báo cáo';
+    }
+  });
+
+  // ====== SỬA ======
+  window.editItem = function(id) {
+    const item = data.find(x => x.id === id);
+    if (!item) return;
+    $('name').value = item.name || '';
+    $('phone').value = item.phone || '';
+    $('facebook').value = item.facebook || '';
+    $('bank').value = item.bank || '';
+    $('bankOwner').value = item.bankOwner || '';
+    $('product').value = item.product || '';
+    $('amount').value = item.amount || '';
+    $('status').value = item.status || 'pending';
+    $('note').value = item.note || '';
+    editId = id;
+    $('submitBtn').textContent = '💾 Cập nhật';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ====== XÓA ======
+  window.deleteItem = async function(id) {
+    if (!confirm('Bạn có chắc muốn xóa mục này?')) return;
+    try {
+      const r = await apiPost({ action: 'delete', id });
+      if (!r.ok) throw new Error(r.error);
+      toast('🗑️ Đã xóa!', true);
+      await loadData();
+    } catch (err) { toast('❌ ' + err.message, true); }
+  };
+
+  // ====== RESET ======
+  $('resetBtn').addEventListener('click', () => {
+    $('formData').reset();
+    editId = null;
+    $('submitBtn').textContent = '➕ Thêm vào báo cáo';
+    $('status').value = 'pending';
+  });
+
+  // ====== TẢI LẠI ======
+  $('refreshBtn').addEventListener('click', loadData);
+
+  // ====== TÌM KIẾM (reset về trang 1) ======
+  $('search').addEventListener('input', () => {
+    currentPage = 1;
+    render();
+  });
+
+  // ====== ĐỔI SỐ DÒNG/TRANG ======
+  $('pageSize').addEventListener('change', (e) => {
+    pageSize = Number(e.target.value);
+    currentPage = 1;
+    render();
+  });
+
+  // ====== XUẤT CSV ======
+  $('exportBtn').addEventListener('click', () => {
+    if (data.length === 0) return toast('Không có dữ liệu để xuất!', true);
+    const headers = ['STT','Tên','SĐT','Facebook','Ngân hàng','Chủ TK','Mặt hàng','Số tiền','Trạng thái','Ghi chú'];
+    const rows = data.map((x,i) => [
+      i+1, x.name, x.phone, x.facebook, x.bank, x.bankOwner, x.product, x.amount,
+      x.status==='done'?'Đã bơm':x.status==='cancel'?'Hủy':'Chờ xử lý', x.note
+    ]);
+    const csv = [headers, ...rows]
+      .map(r => r.map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'bao-cao-bom-hang-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    toast('📥 Đã xuất CSV!');
+  });
+
+  // ====== KHỞI TẠO ======
+  pageSize = Number($('pageSize').value) || 20;
+  loadData();
+  setInterval(loadData, 30000);
+</script>
+</body>
+</html>
