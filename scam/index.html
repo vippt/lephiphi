@@ -73,9 +73,9 @@
 <body>
 <div class="container">
   <h1>📦 BÁO CÁO BƠM HÀNG</h1>
-  <p class="subtitle">Dữ liệu lưu trên Google Sheets — ai có link đều nhập được</p>
+  <p class="subtitle">Dữ liệu lưu trên Máy chủ — ai có link đều nhập được</p>
 
-  <div class="status-bar" id="statusBar">🔄 Đang kết nối Google Sheets...</div>
+  <div class="status-bar" id="statusBar">🔄 Đang kết nối Máy chủ...</div>
 
   <div class="guide">
     📝 <b>Hướng dẫn:</b> Bạn <b>không cần nhập đầy đủ</b> các ô — chỉ cần điền những thông tin bạn có.
@@ -151,7 +151,7 @@
 
 <script>
   // ====== DÁN URL WEB APP VÀO ĐÂY ======
-  const API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwGB457gWoZq25sNo4r7sHEvGbp4a3CIMxepb7p26BX7cSvJ6V93aJWNN0fEiW7h2w/exec';
   // =====================================
 
   let data = [];
@@ -205,12 +205,12 @@
   async function loadData() {
     if (!checkApiUrl()) return;
     try {
-      setStatus('🔄 Đang tải dữ liệu từ Google Sheets...');
+      setStatus('🔄 Đang tải dữ liệu từ Máy chủ...');
       const r = await apiGet();
       if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
       data = r.data || [];
       render();
-      setStatus('✅ Đã kết nối Google Sheets — ' + data.length + ' bản ghi');
+      setStatus('✅ Đã kết nối Máy chủ — ' + data.length + ' bản ghi');
     } catch (e) {
       setStatus('❌ Không kết nối được: ' + e.message, 'error');
       toast('Lỗi tải dữ liệu: ' + e.message, true);
