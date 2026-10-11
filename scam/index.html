@@ -195,7 +195,7 @@
       setStatus('🔄 Đang tải dữ liệu từ Máy Chủ...');
       const r = await apiGet();
       if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
-      data = r.data || [];
+     data = (r.data || []).reverse(); 
       render();
       setStatus('✅ Đã kết nối Máy Chủ — ' + data.length + ' bản ghi');
     } catch (e) {
