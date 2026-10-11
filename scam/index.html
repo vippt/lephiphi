@@ -12,26 +12,14 @@
   .subtitle { text-align:center; color:#888; margin-bottom:20px; font-size:14px; }
   .status-bar { text-align:center; font-size:13px; margin-bottom:15px; padding:8px; border-radius:8px; background:#f0f4ff; color:#4a3f8f; }
   .status-bar.error { background:#fdecea; color:#c0392b; }
-
-  .guide {
-    background:linear-gradient(135deg,#fff8e1,#ffecb3);
-    border-left:4px solid #f39c12;
-    padding:12px 16px;
-    border-radius:8px;
-    font-size:13.5px;
-    color:#7a5c00;
-    margin-bottom:20px;
-    line-height:1.5;
-  }
+  .guide { background:linear-gradient(135deg,#fff8e1,#ffecb3); border-left:4px solid #f39c12; padding:12px 16px; border-radius:8px; font-size:13.5px; color:#7a5c00; margin-bottom:20px; line-height:1.5; }
   .guide b { color:#c47d00; }
-
   .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-bottom:15px; }
   .form-group { display:flex; flex-direction:column; }
   .form-group label { font-size:13px; font-weight:600; margin-bottom:5px; color:#555; }
   .form-group input, .form-group textarea { padding:11px 13px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; font-family:inherit; transition:border .2s; }
   .form-group input:focus, .form-group textarea:focus { outline:none; border-color:#667eea; }
   .form-group.full { grid-column:1 / -1; }
-
   .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:25px; }
   button { padding:11px 22px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
   .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; flex:1; min-width:150px; }
@@ -43,11 +31,9 @@
   .btn-export:hover { background:#219150; }
   .btn-refresh { background:#3498db; color:#fff; }
   .btn-refresh:hover { background:#2980b9; }
-
   .search-bar { display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; align-items:center; }
   .search-bar input { flex:1; min-width:200px; padding:10px 15px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; }
   .search-bar select { padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; background:#fff; }
-
   .table-wrap { overflow-x:auto; border-radius:10px; border:1px solid #eee; }
   table { width:100%; border-collapse:collapse; min-width:700px; }
   thead { background:#4a3f8f; color:#fff; }
@@ -58,7 +44,6 @@
   .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:999; font-size:14px; max-width:320px; }
   .toast.show { transform:translateX(0); }
   .toast.error { background:#e74c3c; }
-
   .pagination { display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding:12px 5px; flex-wrap:wrap; gap:12px; }
   .page-info { font-size:13px; color:#666; }
   .page-info b { color:#4a3f8f; }
@@ -73,9 +58,9 @@
 <body>
 <div class="container">
   <h1>📦 BÁO CÁO BƠM HÀNG</h1>
-  <p class="subtitle">Dữ liệu lưu trên Máy chủ — ai có link đều nhập được</p>
+  <p class="subtitle">Dữ liệu lưu trên Google Sheets — ai có link đều nhập được</p>
 
-  <div class="status-bar" id="statusBar">🔄 Đang kết nối Máy chủ...</div>
+  <div class="status-bar" id="statusBar">🔄 Đang kết nối Google Sheets...</div>
 
   <div class="guide">
     📝 <b>Hướng dẫn:</b> Bạn <b>không cần nhập đầy đủ</b> các ô — chỉ cần điền những thông tin bạn có.
@@ -150,9 +135,11 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ====== DÁN URL WEB APP VÀO ĐÂY ======
-  const API_URL = 'https://script.google.com/macros/s/AKfycbwGB457gWoZq25sNo4r7sHEvGbp4a3CIMxepb7p26BX7cSvJ6V93aJWNN0fEiW7h2w/exec';
-  // =====================================
+  // ================================================
+  // 👇 DÁN URL WEB APP VÀO ĐÂY (giữa 2 dấu nháy đơn)
+  // ================================================
+  const API_URL = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxx/exec';
+  // ================================================
 
   let data = [];
   let currentPage = 1;
@@ -205,12 +192,12 @@
   async function loadData() {
     if (!checkApiUrl()) return;
     try {
-      setStatus('🔄 Đang tải dữ liệu từ Máy chủ...');
+      setStatus('🔄 Đang tải dữ liệu từ Google Sheets...');
       const r = await apiGet();
       if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
       data = r.data || [];
       render();
-      setStatus('✅ Đã kết nối Máy chủ — ' + data.length + ' bản ghi');
+      setStatus('✅ Đã kết nối Google Sheets — ' + data.length + ' bản ghi');
     } catch (e) {
       setStatus('❌ Không kết nối được: ' + e.message, 'error');
       toast('Lỗi tải dữ liệu: ' + e.message, true);
