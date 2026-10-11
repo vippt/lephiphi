@@ -76,10 +76,10 @@
 </head>
 <body>
 <div class="container">
-  <h1>📦 BÁO CÁO BƠM HÀNG</h1>
-  <p class="subtitle">Dữ liệu lưu trên Google Sheets — ai có link đều nhập được</p>
+  <h1>📦 BÁO CÁO BƠM HÀNG - LỪA ĐẢO</h1>
+  <p class="subtitle">Dữ liệu lưu trên Mày chủ </p>
 
-  <div class="status-bar" id="statusBar">🔄 Đang kết nối Google Sheets...</div>
+  <div class="status-bar" id="statusBar">🔄 Đang kết nối Máy Chủ...</div>
 
   <!-- HƯỚNG DẪN -->
   <div class="guide">
@@ -205,12 +205,12 @@
   // ====== TẢI DỮ LIỆU ======
   async function loadData() {
     try {
-      setStatus('🔄 Đang tải dữ liệu từ Google Sheets...');
+      setStatus('🔄 Đang tải dữ liệu từ Máy chủ...');
       const r = await apiGet();
       if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
       data = r.data || [];
       render();
-      setStatus('✅ Đã kết nối Google Sheets — ' + data.length + ' bản ghi');
+      setStatus('✅ Đã kết nối Máy chủ — ' + data.length + ' bản ghi');
     } catch (e) {
       setStatus('❌ Không kết nối được: ' + e.message, true);
       toast('Lỗi tải dữ liệu: ' + e.message, true);
