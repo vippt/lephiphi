@@ -479,20 +479,22 @@
     });
 
     /* 4) Click → gọi prompt() NATIVE, KHÔNG còn hướng dẫn dài */
-    btn.addEventListener('click', async () => {
-      // Có sẵn deferred → mở hộp thoại cài NATIVE của Windows
-      if (deferred) {
-        try {
-          deferred.prompt();
-          const { outcome } = await deferred.userChoice;
-          deferred = null;
-          toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
-        } catch (err) {
-          console.warn(err);
-          toast('❌ Không mở được hộp thoại cài đặt.', true);
-        }
-        return;
-      }
+btn.addEventListener('click', async () => {
+  if (deferred) {
+    try {
+      deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      deferred = null;
+      toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Đã huỷ cài đặt.', outcome !== 'accepted');
+    } catch (err) {
+      toast('❌ Không mở được hộp thoại cài đặt.', true);
+    }
+    return;
+  }
+  // Không có deferred → hướng dẫn cài bằng nút trình duyệt
+  toast('💡 Nhấn biểu tượng ➕ trên thanh địa chỉ để cài đặt', false);
+  console.log('👉 Hoặc: 3 chấm > Lưu và chia sẻ > Cài đặt trang này');
+});
 
       // Chưa có → thử chờ tối đa 2.5s xem Chrome có bắn muộn không
       toast('⏳ Đang kiểm tra khả năng cài đặt...');
