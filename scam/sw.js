@@ -9,9 +9,8 @@ self.addEventListener('activate', e => {
   e.waitUntil(clients.claim());
 });
 
-// Bắt buộc phải có listener fetch để trình duyệt công nhận SW hợp lệ
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
