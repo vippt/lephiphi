@@ -403,61 +403,47 @@ $('exportBtn').addEventListener('click', () => {
   const btn = $('pwaBtn');
   let deferred = null;
 
-  // Đăng ký Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
-      .then(reg => console.log('✅ SW đã đăng ký:', reg.scope))
-      .catch(err => console.warn('⚠️ SW lỗi:', err));
-  }
-
-  // Bắt sự kiện sẵn sàng cài đặt
+  // Bắt SỚM NGAY — trước khi trang load xong
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferred = e;
     btn.classList.add('show');
-    console.log('✅ Sẵn sàng cài đặt PWA');
+    console.log('✅ Sẵn sàng cài đặt — deferred đã lưu');
+    // Xóa hướng dẫn nếu có
+    toast('🎉 Có thể cài đặt ngay! Nhấn nút bên dưới', false);
   });
 
-  // Đã cài rồi → ẩn nút
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-                    || (window.navigator).standalone === true;
-  if (isStandalone) { btn.remove(); return; }
+  // Đăng ký SW
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
+      .then(reg => console.log('✅ SW:', reg.scope))
+      .catch(err => console.warn('⚠️ SW lỗi:', err));
+  }
 
-  setTimeout(() => btn.classList.add('show'), 800);
+  // Đã cài rồi → ẩn
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  if (isStandalone || window.navigator.standalone) { btn.remove(); return; }
 
-  // Ẩn/hiện khi cuộn
-  let lastY = window.scrollY, idle;
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (y > lastY + 6 && y > 120) btn.classList.add('hide');
-    else if (y < lastY - 6) btn.classList.remove('hide');
-    lastY = y;
-    clearTimeout(idle);
-    idle = setTimeout(() => btn.classList.remove('hide'), 600);
-  }, { passive:true });
+  setTimeout(() => btn.classList.add('show'), 500);
 
-  // Đã cài xong → ẩn nút
+  // Nhấn nút
+  btn.addEventListener('click', async () => {
+    if (deferred) {
+      deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      deferred = null;
+      toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Đã huỷ.', outcome !== 'accepted');
+      return;
+    }
+    // Không có deferred → hướng dẫn CÁCH CÀI TRỰC TIẾP
+    toast('💡 Nhấn ➕ trên thanh địa chỉ HOẶC 3 chấm ⋮ → Lưu và chia sẻ → Cài đặt trang này', false);
+    console.log('👉 Cách nhanh: gõ chrome://apps → Cài đặt ứng dụng Báo Cáo');
+  });
+
   window.addEventListener('appinstalled', () => {
     btn.classList.remove('show');
     deferred = null;
-    toast('🎉 Đã cài đặt ứng dụng!');
-  });
-
-  // Xử lý nhấn nút — ĐÃ SỬA LỖI await
-  btn.addEventListener('click', async () => {
-    if (deferred) {
-      try {
-        deferred.prompt();
-        const { outcome } = await deferred.userChoice;
-        deferred = null;
-        toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
-      } catch (err) {
-        toast('❌ Không mở được hộp thoại cài đặt.', true);
-      }
-      return;
-    }
-    // Chưa sẵn sàng → hướng dẫn cách thủ công
-    toast('💡 Nhấn ➕ trên thanh địa chỉ hoặc: 3 chấm > Lưu và chia sẻ > Cài đặt trang này', false);
+    toast('✅ Đã cài đặt thành công!', false);
   });
 })();
 
