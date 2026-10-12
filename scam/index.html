@@ -3,29 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Báo Cáo Bơm Hàng - Lừa Đảo</title>
-<link rel="icon" type="image/png" href="/scam/scam.png">
-
-<!-- ===== PWA ===== -->
-<link rel="manifest" href="/scam/manifest.json">
-<meta name="theme-color" content="#667eea">
-<link rel="apple-touch-icon" href="/scam/icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Báo Cáo">
-<link rel="icon" type="image/png" sizes="192x192" href="/scam/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/scam/icon-512.png">
-
-<!-- ===== Open Graph ===== -->
-<meta property="og:title" content="Báo cáo scam, boom hàng, lừa đảo" />
-<meta property="og:description" content="cộng đồng báo cáo boom hàng lừa đảo scam" />
-<meta property="og:image" content="https://www.lephiphi.com/scam/scam.jpeg" />
-<meta property="og:image:type" content="image/jpeg" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://www.lephiphi.com/scam" />
-<meta property="og:type" content="website" />
-
+<title>Báo Cáo Bơm Hàng - Lừa Đảo </title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family:'Segoe UI',Tahoma,sans-serif; background:linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; color:#333; }
@@ -63,7 +41,7 @@
   tbody tr { border-bottom:1px solid #f0f0f0; transition:background .15s; }
   tbody tr:hover { background:#f9f9ff; }
   .empty { text-align:center; padding:40px; color:#aaa; font-style:italic; }
-  .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:99999; font-size:14px; max-width:340px; white-space:pre-line; }
+  .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:999; font-size:14px; max-width:320px; }
   .toast.show { transform:translateX(0); }
   .toast.error { background:#e74c3c; }
   .pagination { display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding:12px 5px; flex-wrap:wrap; gap:12px; }
@@ -75,41 +53,6 @@
   .page-controls button.active { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border-color:#667eea; }
   .page-controls button:disabled { opacity:.35; cursor:not-allowed; }
   .page-controls .dots { padding:7px 4px; color:#999; }
-
-  /* ===== Nút PWA nổi ===== */
-  .pwa-fab{
-    position:fixed; right:18px; bottom:18px; z-index:998;
-    display:flex; align-items:center; gap:8px;
-    padding:12px 18px; border:none; border-radius:999px;
-    background:linear-gradient(135deg,#667eea,#764ba2); color:#fff;
-    font-family:inherit; font-size:14px; font-weight:700; letter-spacing:.2px;
-    box-shadow:0 10px 26px rgba(102,126,234,.55);
-    cursor:pointer; overflow:visible;
-    opacity:0; pointer-events:none;
-    transform:translate(0,140%) scale(.9);
-    transition:transform .45s cubic-bezier(.2,.9,.25,1.25), opacity .3s ease, box-shadow .2s;
-    will-change:transform;
-  }
-  .pwa-fab .ico{ font-size:18px; line-height:1; }
-  .pwa-fab.show{ opacity:1; pointer-events:auto; transform:translate(0,0) scale(1); }
-  .pwa-fab.show:hover{ box-shadow:0 16px 34px rgba(102,126,234,.75); transform:translate(0,-3px) scale(1.03); }
-  .pwa-fab.show.hide{ opacity:0; pointer-events:none; transform:translate(140%,0) scale(.85); }
-  .pwa-fab::after{
-    content:''; position:absolute; inset:0; border-radius:inherit;
-    animation:pwaPulse 2.4s ease-out infinite; pointer-events:none;
-  }
-  @keyframes pwaPulse{
-    0%  { box-shadow:0 0 0 0 rgba(102,126,234,.55); }
-    70% { box-shadow:0 0 0 16px rgba(102,126,234,0); }
-    100%{ box-shadow:0 0 0 0 rgba(102,126,234,0); }
-  }
-  @media (max-width:520px){
-    .pwa-fab{ right:12px; bottom:12px; padding:12px 16px; font-size:13px; }
-  }
-  @media (prefers-reduced-motion:reduce){
-    .pwa-fab{ transition:opacity .2s; }
-    .pwa-fab::after{ animation:none; }
-  }
 </style>
 </head>
 <body>
@@ -189,18 +132,14 @@
   </div>
 </div>
 
-<!-- Nút cài đặt PWA -->
-<button type="button" class="pwa-fab" id="pwaBtn" title="Cài đặt ứng dụng">
-  <span class="ico">📲</span><span>Cài đặt App</span>
-</button>
-
 <div class="toast" id="toast"></div>
 
 <script>
   // ================================================
-  // 👇 URL WEB APP (Google Apps Script)
+  // 👇 DÁN URL WEB APP VÀO ĐÂY (giữa 2 dấu nháy đơn)
   // ================================================
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxZ2YkCfrNWco1uu7Z0b7_kfWGWHjDTcdVJIhpImPn6lZbunrgKi7C7PWrfzPWYV6c/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwDX053JzRApHmvHxHHYxq-qZUaYUODrBKmeXrrw7whyHZSROLvUdWMyvQG8RytxJ0/exec';
+  // ================================================
 
   let data = [];
   let currentPage = 1;
@@ -214,7 +153,7 @@
     t.textContent = msg;
     t.classList.toggle('error', isError);
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
+    setTimeout(() => t.classList.remove('show'), 2500);
   }
 
   function setStatus(msg, cls='') {
@@ -236,39 +175,27 @@
     return true;
   }
 
-  /* =========================================================
-     API — DÙNG GET ĐỂ TRÁNH LỖI CORS "Failed to fetch"
-     ========================================================= */
   async function apiGet() {
-    const res = await fetch(API_URL + '?action=list&t=' + Date.now(), {
-      method: 'GET',
-      redirect: 'follow'
+    const res = await fetch(API_URL + '?action=list&t=' + Date.now());
+    return await res.json();
+  }
+
+  async function apiPost(payload) {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
     });
     return await res.json();
   }
 
-  async function apiAdd(item) {
-    const url = API_URL
-      + '?action=add'
-      + '&data=' + encodeURIComponent(JSON.stringify(item))
-      + '&t=' + Date.now();
-    const res = await fetch(url, {
-      method: 'GET',
-      redirect: 'follow'
-    });
-    return await res.json();
-  }
-
-  /* =========================================================
-     LOAD DATA
-     ========================================================= */
   async function loadData() {
     if (!checkApiUrl()) return;
     try {
       setStatus('🔄 Đang tải dữ liệu từ Máy Chủ...');
       const r = await apiGet();
       if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
-      data = (r.data || []).reverse();
+     data = (r.data || []).reverse(); 
       render();
       setStatus('✅ Đã kết nối Máy Chủ — ' + data.length + ' bản ghi');
     } catch (e) {
@@ -373,9 +300,6 @@
     document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  /* =========================================================
-     SUBMIT FORM — dùng GET, không bị CORS
-     ========================================================= */
   $('formData').addEventListener('submit', async function(e) {
     e.preventDefault();
     if (!checkApiUrl()) return toast('❌ Chưa cấu hình URL API!', true);
@@ -399,14 +323,13 @@
     btn.textContent = '⏳ Đang lưu...';
 
     try {
-      const r = await apiAdd(item);
+      const r = await apiPost({ action: 'add', data: item });
       if (!r.ok) throw new Error(r.error || 'Lỗi lưu');
       toast('✅ Đã thêm vào báo cáo!');
       $('formData').reset();
       await loadData();
     } catch (err) {
       toast('❌ ' + err.message, true);
-      console.error('Submit error:', err);
     } finally {
       btn.disabled = false;
       btn.textContent = '➕ Thêm vào báo cáo';
@@ -445,96 +368,6 @@
     toast('📥 Đã xuất CSV!');
   });
 
-  /* =========================================================
-     PWA — CÀI ĐẶT TRỰC TIẾP TRÊN PC WINDOWS
-     ========================================================= */
-  (function initPWA(){
-    const btn = $('pwaBtn');
-    let deferred = null;
-
-    /* 1) Đăng ký Service Worker NGAY (không chờ load) */
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
-        .then(reg => console.log('✅ SW đã đăng ký:', reg.scope))
-        .catch(err => console.warn('⚠️ SW lỗi:', err));
-    }
-
-    /* 2) Bắt beforeinstallprompt NGAY — lưu lại để dùng khi click */
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferred = e;
-      btn.classList.add('show');
-      console.log('✅ beforeinstallprompt đã bắn — sẵn sàng cài');
-    });
-
-    /* Đã cài rồi → ẩn nút */
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-                      || window.navigator.standalone === true;
-    if (isStandalone) { btn.remove(); return; }
-
-    /* Hiện nút sau 800ms dù chưa có deferred (để user bấm thử) */
-    setTimeout(() => btn.classList.add('show'), 800);
-
-    /* Ẩn/hiện nút khi scroll */
-    let lastY = window.scrollY, idle;
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      if (y > lastY + 6 && y > 120) btn.classList.add('hide');
-      else if (y < lastY - 6)       btn.classList.remove('hide');
-      lastY = y;
-      clearTimeout(idle);
-      idle = setTimeout(() => btn.classList.remove('hide'), 600);
-    }, { passive:true });
-
-    /* Cài xong → ẩn nút */
-    window.addEventListener('appinstalled', () => {
-      btn.classList.remove('show');
-      deferred = null;
-      toast('🎉 Đã cài đặt ứng dụng!');
-      console.log('✅ PWA installed');
-    });
-
-    /* 3) Click → gọi prompt() NATIVE, KHÔNG hướng dẫn dài dòng */
-    btn.addEventListener('click', async () => {
-      // Có sẵn deferred → mở hộp thoại cài NATIVE
-      if (deferred) {
-        try {
-          deferred.prompt();
-          const { outcome } = await deferred.userChoice;
-          deferred = null;
-          toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
-        } catch (err) {
-          console.warn(err);
-          toast('❌ Không mở được hộp thoại cài đặt.', true);
-        }
-        return;
-      }
-
-      // Chưa có → chờ tối đa 2.5s xem Chrome có bắn muộn
-      toast('⏳ Đang kiểm tra khả năng cài đặt...');
-      const got = await new Promise(resolve => {
-        const t = setTimeout(() => resolve(false), 2500);
-        window.addEventListener('beforeinstallprompt', e => {
-          e.preventDefault();
-          deferred = e;
-          clearTimeout(t);
-          resolve(true);
-        }, { once: true });
-      });
-
-      if (got && deferred) {
-        deferred.prompt();
-        const { outcome } = await deferred.userChoice;
-        deferred = null;
-        toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
-      } else {
-        toast('❌ Trình duyệt chưa cho phép cài.\nMở DevTools → Application → Manifest để xem lỗi.', true);
-        console.warn('💡 Kiểm tra: manifest có screenshots, icon 512×512, SW activated, chạy qua HTTPS.');
-      }
-    });
-  })();
-
-  /* ============ KHỞI ĐỘNG ============ */
   pageSize = Number($('pageSize').value) || 20;
   loadData();
   setInterval(loadData, 30000);
