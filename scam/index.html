@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Báo Cáo Bơm Hàng - Lừa Đảo</title>
- <link rel="icon" type="image/png" href="/scam/scam.png">
+<link rel="icon" type="image/png" href="/scam/scam.png">
+
 <!-- ===== PWA ===== -->
 <link rel="manifest" href="/scam/manifest.json">
 <meta name="theme-color" content="#667eea">
 <link rel="apple-touch-icon" href="/scam/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Báo Cáo">
 <link rel="icon" type="image/png" sizes="192x192" href="/scam/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/scam/icon-512.png">
@@ -61,7 +63,7 @@
   tbody tr { border-bottom:1px solid #f0f0f0; transition:background .15s; }
   tbody tr:hover { background:#f9f9ff; }
   .empty { text-align:center; padding:40px; color:#aaa; font-style:italic; }
-  .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:999; font-size:14px; max-width:320px; }
+  .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:99999; font-size:14px; max-width:340px; }
   .toast.show { transform:translateX(0); }
   .toast.error { background:#e74c3c; }
   .pagination { display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding:12px 5px; flex-wrap:wrap; gap:12px; }
@@ -196,10 +198,9 @@
 
 <script>
   // ================================================
-  // 👇 DÁN URL WEB APP VÀO ĐÂY (giữa 2 dấu nháy đơn)
+  // 👇 URL WEB APP (Google Apps Script)
   // ================================================
   const API_URL = 'https://script.google.com/macros/s/AKfycbwDX053JzRApHmvHxHHYxq-qZUaYUODrBKmeXrrw7whyHZSROLvUdWMyvQG8RytxJ0/exec';
-  // ================================================
 
   let data = [];
   let currentPage = 1;
@@ -428,24 +429,37 @@
     toast('📥 Đã xuất CSV!');
   });
 
-  /* ================= PWA: Service Worker + nút cài ================= */
+  /* =========================================================
+     PWA — CÀI ĐẶT TRỰC TIẾP TRÊN PC WINDOWS
+     ========================================================= */
   (function initPWA(){
     const btn = $('pwaBtn');
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-                      || window.navigator.standalone === true;
-    if (isStandalone) return;
+    let deferred = null;
 
-    // Đăng ký Service Worker (BẮT BUỘC để Windows cho cài)
+    /* 1) Đăng ký Service Worker NGAY (không chờ load) */
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
-          .then(reg => console.log('✅ SW đã đăng ký:', reg.scope))
-          .catch(err => console.warn('⚠️ SW lỗi:', err));
-      });
+      navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
+        .then(reg => console.log('✅ SW đã đăng ký:', reg.scope))
+        .catch(err => console.warn('⚠️ SW lỗi:', err));
     }
 
+    /* 2) Bắt beforeinstallprompt NGAY — lưu lại để dùng khi click */
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferred = e;
+      btn.classList.add('show');
+      console.log('✅ beforeinstallprompt đã bắn — sẵn sàng cài');
+    });
+
+    /* Nếu đang chạy standalone (đã cài) → ẩn nút */
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                      || window.navigator.standalone === true;
+    if (isStandalone) { btn.remove(); return; }
+
+    /* Hiện nút sau 800ms dù chưa có deferred (để user bấm thử) */
     setTimeout(() => btn.classList.add('show'), 800);
 
+    /* Ẩn/hiện nút khi scroll */
     let lastY = window.scrollY, idle;
     window.addEventListener('scroll', () => {
       const y = window.scrollY;
@@ -456,37 +470,56 @@
       idle = setTimeout(() => btn.classList.remove('hide'), 600);
     }, { passive:true });
 
-    let deferred = null;
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferred = e;
-      btn.classList.add('show');
-      console.log('✅ Có thể cài PWA');
-    });
+    /* 3) Khi cài xong → ẩn nút */
     window.addEventListener('appinstalled', () => {
       btn.classList.remove('show');
       deferred = null;
       toast('🎉 Đã cài đặt ứng dụng!');
+      console.log('✅ PWA installed');
     });
 
+    /* 4) Click → gọi prompt() NATIVE, KHÔNG còn hướng dẫn dài */
     btn.addEventListener('click', async () => {
-      if (deferred){
+      // Có sẵn deferred → mở hộp thoại cài NATIVE của Windows
+      if (deferred) {
+        try {
+          deferred.prompt();
+          const { outcome } = await deferred.userChoice;
+          deferred = null;
+          toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
+        } catch (err) {
+          console.warn(err);
+          toast('❌ Không mở được hộp thoại cài đặt.', true);
+        }
+        return;
+      }
+
+      // Chưa có → thử chờ tối đa 2.5s xem Chrome có bắn muộn không
+      toast('⏳ Đang kiểm tra khả năng cài đặt...');
+      const got = await new Promise(resolve => {
+        const t = setTimeout(() => resolve(false), 2500);
+        window.addEventListener('beforeinstallprompt', e => {
+          e.preventDefault();
+          deferred = e;
+          clearTimeout(t);
+          resolve(true);
+        }, { once: true });
+      });
+
+      if (got && deferred) {
         deferred.prompt();
         const { outcome } = await deferred.userChoice;
         deferred = null;
         toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
-        return;
+      } else {
+        // Không có hướng dẫn dài — chỉ báo lỗi ngắn + gợi ý check
+        toast('❌ Trình duyệt chưa cho phép cài.\nMở DevTools → Application → Manifest để xem lỗi.', true);
+        console.warn('💡 Kiểm tra: /scam/manifest.json phải load được, có icon 512×512, SW đang activated, và chạy qua HTTPS.');
       }
-      const ua = navigator.userAgent;
-      const isIOS = /iPad|iPhone|iPod/.test(ua)
-                 || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      const isEdge = /Edg\//.test(ua);
-      if (isIOS) toast('📲 iOS: bấm nút Chia sẻ ⬆️ → "Thêm vào MH chính".');
-      else if (isEdge) toast('🖥 Edge: menu "..." → Ứng dụng → "Cài đặt trang này dưới dạng ứng dụng".');
-      else toast('🖥 Chrome: bấm biểu tượng ⊕ trên thanh địa chỉ → "Install".');
     });
   })();
 
+  /* ============ KHỞI ĐỘNG ============ */
   pageSize = Number($('pageSize').value) || 20;
   loadData();
   setInterval(loadData, 30000);
