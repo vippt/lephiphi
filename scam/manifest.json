@@ -1,12 +1,12 @@
 {
   "name": "Báo Cáo Bơm Hàng - Lừa Đảo",
   "short_name": "Báo Cáo",
-  "description": "Cộng đồng báo cáo boom hàng, lừa đảo, scam",
+  "description": "Cộng đồng báo cáo boom hàng, lừa đảo scam",
   "start_url": "/scam/",
   "scope": "/scam/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
+  "background_color": "#667eea",
   "theme_color": "#667eea",
   "lang": "vi",
   "icons": [
