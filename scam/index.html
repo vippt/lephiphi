@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Báo Cáo Bơm Hàng - Lừa Đảo</title>
-<link rel="icon" type="image/png" href="/scam/icon-192.png">
-<!-- ===== PWA Manifest ===== -->
+<link rel="icon" type="image/png" href="/scam/scam.png">
+
+<!-- ===== PWA ===== -->
 <link rel="manifest" href="/scam/manifest.json">
 <meta name="theme-color" content="#667eea">
 <link rel="apple-touch-icon" href="/scam/icon-192.png">
@@ -14,15 +15,17 @@
 <meta name="apple-mobile-web-app-title" content="Báo Cáo">
 <link rel="icon" type="image/png" sizes="192x192" href="/scam/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/scam/icon-512.png">
+
 <!-- ===== Open Graph ===== -->
 <meta property="og:title" content="Báo cáo scam, boom hàng, lừa đảo" />
-<meta property="og:description" content="Cộng đồng báo cáo boom hàng lừa đảo scam" />
-<meta property="og:image" content="https://lephiphi.com/scam/scam.jpeg" />
+<meta property="og:description" content="cộng đồng báo cáo boom hàng lừa đảo scam" />
+<meta property="og:image" content="https://www.lephiphi.com/scam/scam.jpeg" />
 <meta property="og:image:type" content="image/jpeg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://lephiphi.com/scam/" />
+<meta property="og:url" content="https://www.lephiphi.com/scam" />
 <meta property="og:type" content="website" />
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family:'Segoe UI',Tahoma,sans-serif; background:linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; padding:20px; color:#333; }
@@ -60,7 +63,7 @@
   tbody tr { border-bottom:1px solid #f0f0f0; transition:background .15s; }
   tbody tr:hover { background:#f9f9ff; }
   .empty { text-align:center; padding:40px; color:#aaa; font-style:italic; }
-  .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:99999; font-size:14px; max-width:340px; }
+  .toast { position:fixed; top:20px; right:20px; background:#27ae60; color:#fff; padding:12px 20px; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.2); transform:translateX(400px); transition:transform .3s; z-index:99999; font-size:14px; max-width:340px; white-space:pre-line; }
   .toast.show { transform:translateX(0); }
   .toast.error { background:#e74c3c; }
   .pagination { display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding:12px 5px; flex-wrap:wrap; gap:12px; }
@@ -72,7 +75,8 @@
   .page-controls button.active { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border-color:#667eea; }
   .page-controls button:disabled { opacity:.35; cursor:not-allowed; }
   .page-controls .dots { padding:7px 4px; color:#999; }
-  /* ===== Nút Cài Đặt PWA ===== */
+
+  /* ===== Nút PWA nổi ===== */
   .pwa-fab{
     position:fixed; right:18px; bottom:18px; z-index:998;
     display:flex; align-items:center; gap:8px;
@@ -112,11 +116,14 @@
 <div class="container">
   <h1>📦 BÁO CÁO BƠM HÀNG - LỪA ĐẢO</h1>
   <p class="subtitle">Được tạo bởi lephiphi.com</p>
+
   <div class="status-bar" id="statusBar">🔄 Đang kết nối Máy Chủ...</div>
+
   <div class="guide">
     📝 <b>Hướng dẫn:</b> Bạn <b>không cần nhập đầy đủ</b> các ô — chỉ cần điền những thông tin bạn có.
     Ví dụ: chỉ có SĐT thì điền SĐT, chỉ có Facebook thì điền Facebook, hoặc điền tất cả nếu có.
   </div>
+
   <form id="formData">
     <div class="form-grid">
       <div class="form-group">
@@ -147,6 +154,7 @@
       <button type="button" class="btn-export" id="exportBtn">📥 Xuất CSV</button>
     </div>
   </form>
+
   <div class="search-bar">
     <input type="text" id="search" placeholder="🔍 Tìm theo tên, SĐT, Facebook, ngân hàng, ghi chú...">
     <select id="pageSize">
@@ -156,6 +164,7 @@
       <option value="100">100 dòng/trang</option>
     </select>
   </div>
+
   <div class="table-wrap">
     <table>
       <thead>
@@ -173,13 +182,14 @@
       </tbody>
     </table>
   </div>
+
   <div class="pagination">
     <div class="page-info" id="pageInfo">Hiển thị 0/0</div>
     <div class="page-controls" id="pageControls"></div>
   </div>
 </div>
 
-<!-- Nút Cài Đặt App -->
+<!-- Nút cài đặt PWA -->
 <button type="button" class="pwa-fab" id="pwaBtn" title="Cài đặt ứng dụng">
   <span class="ico">📲</span><span>Cài đặt App</span>
 </button>
@@ -187,270 +197,347 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ================================================
-// CẤU HÌNH
-// ================================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbwDX053JzRApHmvHxHHYxq-qZUaYUODrBKmeXrrw7whyHZSROLvUdWMyvQG8RytxJ0/exec';
-let data = [];
-let currentPage = 1;
-let pageSize = 20;
-let lastFiltered = [];
-const $ = id => document.getElementById(id);
+  // ================================================
+  // 👇 URL WEB APP (Google Apps Script)
+  // ================================================
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwDX053JzRApHmvHxHHYxq-qZUaYUODrBKmeXrrw7whyHZSROLvUdWMyvQG8RytxJ0/exec';
 
-// Thông báo
-function toast(msg, isError=false) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.toggle('error', isError);
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+  let data = [];
+  let currentPage = 1;
+  let pageSize = 20;
+  let lastFiltered = [];
 
-function setStatus(msg, cls='') {
-  const s = $('statusBar');
-  s.textContent = msg;
-  s.className = 'status-bar ' + cls;
-}
+  const $ = id => document.getElementById(id);
 
-function escapeHtml(s) {
-  if (!s) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function checkApiUrl() {
-  if (!API_URL || API_URL.includes('xxxxxxxxx')) {
-    setStatus('❌ Chưa dán URL Web App vào biến API_URL!', 'error');
-    return false;
+  function toast(msg, isError=false) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.toggle('error', isError);
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
   }
-  return true;
-}
 
-// Gọi API
-async function apiGet() {
-  const res = await fetch(API_URL + '?action=list&t=' + Date.now());
-  return await res.json();
-}
+  function setStatus(msg, cls='') {
+    const s = $('statusBar');
+    s.textContent = msg;
+    s.className = 'status-bar ' + cls;
+  }
 
-async function apiPost(payload) {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json;charset=utf-8' },
-    body: JSON.stringify(payload)
-  });
-  return await res.json();
-}
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 
-// Tải dữ liệu
-async function loadData() {
-  if (!checkApiUrl()) return;
-  try {
-    setStatus('🔄 Đang tải dữ liệu từ Máy Chủ...');
-    const r = await apiGet();
-    if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
-    data = (r.data || []).reverse();
+  function checkApiUrl() {
+    if (!API_URL || API_URL.includes('xxxxxxxxx')) {
+      setStatus('❌ Chưa dán URL Web App vào biến API_URL trong file HTML!', 'error');
+      return false;
+    }
+    return true;
+  }
+
+  /* =========================================================
+     API — DÙNG GET ĐỂ TRÁNH LỖI CORS "Failed to fetch"
+     ========================================================= */
+  async function apiGet() {
+    const res = await fetch(API_URL + '?action=list&t=' + Date.now(), {
+      method: 'GET',
+      redirect: 'follow'
+    });
+    return await res.json();
+  }
+
+  async function apiAdd(item) {
+    const url = API_URL
+      + '?action=add'
+      + '&data=' + encodeURIComponent(JSON.stringify(item))
+      + '&t=' + Date.now();
+    const res = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow'
+    });
+    return await res.json();
+  }
+
+  /* =========================================================
+     LOAD DATA
+     ========================================================= */
+  async function loadData() {
+    if (!checkApiUrl()) return;
+    try {
+      setStatus('🔄 Đang tải dữ liệu từ Máy Chủ...');
+      const r = await apiGet();
+      if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
+      data = (r.data || []).reverse();
+      render();
+      setStatus('✅ Đã kết nối Máy Chủ — ' + data.length + ' bản ghi');
+    } catch (e) {
+      setStatus('❌ Không kết nối được: ' + e.message, 'error');
+      toast('Lỗi tải dữ liệu: ' + e.message, true);
+    }
+  }
+
+  function getFiltered() {
+    const kw = $('search').value.toLowerCase().trim();
+    if (!kw) return data;
+    return data.filter(x =>
+      (x.name||'').toLowerCase().includes(kw) ||
+      (x.phone||'').toLowerCase().includes(kw) ||
+      (x.facebook||'').toLowerCase().includes(kw) ||
+      (x.bank||'').toLowerCase().includes(kw) ||
+      (x.note||'').toLowerCase().includes(kw)
+    );
+  }
+
+  function render() {
+    const tbody = $('tbody');
+    lastFiltered = getFiltered();
+    const total = lastFiltered.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const start = (currentPage - 1) * pageSize;
+    const end = Math.min(start + pageSize, total);
+    const pageData = lastFiltered.slice(start, end);
+
+    if (total === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Không có dữ liệu phù hợp.</td></tr>';
+    } else {
+      tbody.innerHTML = pageData.map((item, i) => `
+        <tr>
+          <td>${start + i + 1}</td>
+          <td><strong>${escapeHtml(item.name) || '<span style="color:#bbb">—</span>'}</strong></td>
+          <td>${escapeHtml(item.phone) || '<span style="color:#bbb">—</span>'}</td>
+          <td>${escapeHtml(item.facebook) || '<span style="color:#bbb">—</span>'}</td>
+          <td>${escapeHtml(item.bank) || '<span style="color:#bbb">—</span>'}</td>
+          <td>${escapeHtml(item.note) || '<span style="color:#bbb">—</span>'}</td>
+        </tr>
+      `).join('');
+    }
+
+    $('pageInfo').innerHTML = total === 0
+      ? 'Không có dữ liệu'
+      : `Hiển thị <b>${start + 1}–${end}</b> / <b>${total}</b> bản ghi &nbsp;|&nbsp; Trang <b>${currentPage}/${totalPages}</b>`;
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    const box = $('pageControls');
+    box.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const addBtn = (label, page, opts = {}) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      if (opts.active) b.classList.add('active');
+      if (opts.disabled) b.disabled = true;
+      b.onclick = () => gotoPage(page);
+      box.appendChild(b);
+    };
+
+    const addDots = () => {
+      const s = document.createElement('span');
+      s.className = 'dots';
+      s.textContent = '…';
+      box.appendChild(s);
+    };
+
+    addBtn('«', 1, { disabled: currentPage === 1 });
+    addBtn('‹', currentPage - 1, { disabled: currentPage === 1 });
+
+    const pages = new Set();
+    pages.add(1);
+    pages.add(totalPages);
+    for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+      if (i >= 1 && i <= totalPages) pages.add(i);
+    }
+    const sorted = [...pages].sort((a, b) => a - b);
+
+    let prev = 0;
+    sorted.forEach(p => {
+      if (p - prev > 1) addDots();
+      addBtn(String(p), p, { active: p === currentPage });
+      prev = p;
+    });
+
+    addBtn('›', currentPage + 1, { disabled: currentPage === totalPages });
+    addBtn('»', totalPages, { disabled: currentPage === totalPages });
+  }
+
+  function gotoPage(p) {
+    currentPage = p;
     render();
-    setStatus('✅ Đã kết nối — ' + data.length + ' bản ghi');
-  } catch (e) {
-    setStatus('❌ Không kết nối được: ' + e.message, 'error');
-    toast('Lỗi tải dữ liệu: ' + e.message, true);
-  }
-}
-
-// Lọc & Hiển thị
-function getFiltered() {
-  const kw = $('search').value.toLowerCase().trim();
-  if (!kw) return data;
-  return data.filter(x =>
-    (x.name||'').toLowerCase().includes(kw) ||
-    (x.phone||'').toLowerCase().includes(kw) ||
-    (x.facebook||'').toLowerCase().includes(kw) ||
-    (x.bank||'').toLowerCase().includes(kw) ||
-    (x.note||'').toLowerCase().includes(kw)
-  );
-}
-
-function render() {
-  const tbody = $('tbody');
-  lastFiltered = getFiltered();
-  const total = lastFiltered.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  if (currentPage > totalPages) currentPage = totalPages;
-  if (currentPage < 1) currentPage = 1;
-  const start = (currentPage - 1) * pageSize;
-  const end = Math.min(start + pageSize, total);
-  const pageData = lastFiltered.slice(start, end);
-
-  if (total === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty">Không có dữ liệu phù hợp.</td></tr>';
-  } else {
-    tbody.innerHTML = pageData.map((item, i) => `
-      <tr>
-        <td>${start + i + 1}</td>
-        <td><strong>${escapeHtml(item.name) || '<span style="color:#bbb">—</span>'}</strong></td>
-        <td>${escapeHtml(item.phone) || '<span style="color:#bbb">—</span>'}</td>
-        <td>${escapeHtml(item.facebook) || '<span style="color:#bbb">—</span>'}</td>
-        <td>${escapeHtml(item.bank) || '<span style="color:#bbb">—</span>'}</td>
-        <td>${escapeHtml(item.note) || '<span style="color:#bbb">—</span>'}</td>
-      </tr>
-    `).join('');
+    document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  $('pageInfo').innerHTML = total === 0
-    ? 'Không có dữ liệu'
-    : `Hiển thị <b>${start + 1}–${end}</b> / <b>${total}</b> bản ghi &nbsp;|&nbsp; Trang <b>${currentPage}/${totalPages}</b>`;
-  renderPagination(totalPages);
-}
-
-function renderPagination(totalPages) {
-  const box = $('pageControls');
-  box.innerHTML = '';
-  if (totalPages <= 1) return;
-
-  const addBtn = (label, page, opts = {}) => {
-    const b = document.createElement('button');
-    b.textContent = label;
-    if (opts.active) b.classList.add('active');
-    if (opts.disabled) b.disabled = true;
-    b.onclick = () => { currentPage = page; render(); };
-    box.appendChild(b);
-  };
-  const addDots = () => {
-    const s = document.createElement('span');
-    s.className = 'dots';
-    s.textContent = '…';
-    box.appendChild(s);
-  };
-
-  addBtn('«', 1, { disabled: currentPage === 1 });
-  addBtn('‹', currentPage - 1, { disabled: currentPage === 1 });
-
-  const pages = new Set([1, totalPages]);
-  for (let i = currentPage - 2; i <= currentPage + 2; i++) {
-    if (i >= 1 && i <= totalPages) pages.add(i);
-  }
-  const sorted = [...pages].sort((a, b) => a - b);
-  let prev = 0;
-  sorted.forEach(p => {
-    if (p - prev > 1) addDots();
-    addBtn(String(p), p, { active: p === currentPage });
-    prev = p;
-  });
-
-  addBtn('›', currentPage + 1, { disabled: currentPage === totalPages });
-  addBtn('»', totalPages, { disabled: currentPage === totalPages });
-}
-
-// Gửi form
-$('formData').addEventListener('submit', async e => {
-  e.preventDefault();
-  if (!checkApiUrl()) return toast('❌ Chưa cấu hình URL API!', true);
-
-  const item = {
-    name: $('name').value.trim(),
-    phone: $('phone').value.trim(),
-    facebook: $('facebook').value.trim(),
-    bank: $('bank').value.trim(),
-    note: $('note').value.trim()
-  };
-
-  const hasData = item.name || item.phone || item.facebook || item.bank || item.note;
-  if (!hasData) return toast('⚠️ Vui lòng nhập ít nhất 1 thông tin!', true);
-
-  const btn = $('submitBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Đang lưu...';
-
-  try {
-    const r = await apiPost({ action: 'add', data: item });
-    if (!r.ok) throw new Error(r.error || 'Lỗi lưu');
-    toast('✅ Đã thêm vào báo cáo!');
-    $('formData').reset();
-    await loadData();
-  } catch (err) {
-    toast('❌ ' + err.message, true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '➕ Thêm vào báo cáo';
-  }
-});
-
-// Nút điều khiển
-$('resetBtn').addEventListener('click', () => $('formData').reset());
-$('refreshBtn').addEventListener('click', loadData);
-$('search').addEventListener('input', () => { currentPage = 1; render(); });
-$('pageSize').addEventListener('change', e => { pageSize = Number(e.target.value); currentPage = 1; render(); });
-
-// Xuất CSV
-$('exportBtn').addEventListener('click', () => {
-  if (data.length === 0) return toast('Không có dữ liệu để xuất!', true);
-  const headers = ['STT','Tên','SĐT','Facebook','Ngân hàng','Ghi chú'];
-  const rows = data.map((x,i) => [i+1, x.name, x.phone, x.facebook, x.bank, x.note]);
-  const csv = [headers, ...rows]
-    .map(r => r.map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(','))
-    .join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'bao-cao-bom-hang-' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
-  toast('📥 Đã xuất CSV!');
-});
-
-// =========================================================
-// PWA — NÚT CÀI ĐẶT APP (ĐÃ SỬA LỖI)
-// =========================================================
-(function initPWA(){
-  const btn = $('pwaBtn');
-  let deferred = null;
-
-  // Bắt SỚM NGAY — trước khi trang load xong
-  window.addEventListener('beforeinstallprompt', e => {
+  /* =========================================================
+     SUBMIT FORM — dùng GET, không bị CORS
+     ========================================================= */
+  $('formData').addEventListener('submit', async function(e) {
     e.preventDefault();
-    deferred = e;
-    btn.classList.add('show');
-    console.log('✅ Sẵn sàng cài đặt — deferred đã lưu');
-    // Xóa hướng dẫn nếu có
-    toast('🎉 Có thể cài đặt ngay! Nhấn nút bên dưới', false);
-  });
+    if (!checkApiUrl()) return toast('❌ Chưa cấu hình URL API!', true);
 
-  // Đăng ký SW
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
-      .then(reg => console.log('✅ SW:', reg.scope))
-      .catch(err => console.warn('⚠️ SW lỗi:', err));
-  }
+    const item = {
+      name: $('name').value.trim(),
+      phone: $('phone').value.trim(),
+      facebook: $('facebook').value.trim(),
+      bank: $('bank').value.trim(),
+      note: $('note').value.trim()
+    };
 
-  // Đã cài rồi → ẩn
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-  if (isStandalone || window.navigator.standalone) { btn.remove(); return; }
-
-  setTimeout(() => btn.classList.add('show'), 500);
-
-  // Nhấn nút
-  btn.addEventListener('click', async () => {
-    if (deferred) {
-      deferred.prompt();
-      const { outcome } = await deferred.userChoice;
-      deferred = null;
-      toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Đã huỷ.', outcome !== 'accepted');
+    const hasData = item.name || item.phone || item.facebook || item.bank || item.note;
+    if (!hasData) {
+      toast('⚠️ Vui lòng nhập ít nhất 1 thông tin!', true);
       return;
     }
-    // Không có deferred → hướng dẫn CÁCH CÀI TRỰC TIẾP
-    toast('💡 Nhấn ➕ trên thanh địa chỉ HOẶC 3 chấm ⋮ → Lưu và chia sẻ → Cài đặt trang này', false);
-    console.log('👉 Cách nhanh: gõ chrome://apps → Cài đặt ứng dụng Báo Cáo');
+
+    const btn = $('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Đang lưu...';
+
+    try {
+      const r = await apiAdd(item);
+      if (!r.ok) throw new Error(r.error || 'Lỗi lưu');
+      toast('✅ Đã thêm vào báo cáo!');
+      $('formData').reset();
+      await loadData();
+    } catch (err) {
+      toast('❌ ' + err.message, true);
+      console.error('Submit error:', err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '➕ Thêm vào báo cáo';
+    }
   });
 
-  window.addEventListener('appinstalled', () => {
-    btn.classList.remove('show');
-    deferred = null;
-    toast('✅ Đã cài đặt thành công!', false);
+  $('resetBtn').addEventListener('click', () => {
+    $('formData').reset();
   });
-})();
 
-// Khởi động
-pageSize = Number($('pageSize').value) || 20;
-loadData();
-setInterval(loadData, 30000);
+  $('refreshBtn').addEventListener('click', loadData);
+
+  $('search').addEventListener('input', () => {
+    currentPage = 1;
+    render();
+  });
+
+  $('pageSize').addEventListener('change', (e) => {
+    pageSize = Number(e.target.value);
+    currentPage = 1;
+    render();
+  });
+
+  $('exportBtn').addEventListener('click', () => {
+    if (data.length === 0) return toast('Không có dữ liệu để xuất!', true);
+    const headers = ['STT','Tên','SĐT','Facebook','Ngân hàng','Ghi chú'];
+    const rows = data.map((x,i) => [i+1, x.name, x.phone, x.facebook, x.bank, x.note]);
+    const csv = [headers, ...rows]
+      .map(r => r.map(c => `"${String(c ?? '').replace(/"/g,'""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'bao-cao-bom-hang-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    toast('📥 Đã xuất CSV!');
+  });
+
+  /* =========================================================
+     PWA — CÀI ĐẶT TRỰC TIẾP TRÊN PC WINDOWS
+     ========================================================= */
+  (function initPWA(){
+    const btn = $('pwaBtn');
+    let deferred = null;
+
+    /* 1) Đăng ký Service Worker NGAY (không chờ load) */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
+        .then(reg => console.log('✅ SW đã đăng ký:', reg.scope))
+        .catch(err => console.warn('⚠️ SW lỗi:', err));
+    }
+
+    /* 2) Bắt beforeinstallprompt NGAY — lưu lại để dùng khi click */
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferred = e;
+      btn.classList.add('show');
+      console.log('✅ beforeinstallprompt đã bắn — sẵn sàng cài');
+    });
+
+    /* Đã cài rồi → ẩn nút */
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                      || window.navigator.standalone === true;
+    if (isStandalone) { btn.remove(); return; }
+
+    /* Hiện nút sau 800ms dù chưa có deferred (để user bấm thử) */
+    setTimeout(() => btn.classList.add('show'), 800);
+
+    /* Ẩn/hiện nút khi scroll */
+    let lastY = window.scrollY, idle;
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (y > lastY + 6 && y > 120) btn.classList.add('hide');
+      else if (y < lastY - 6)       btn.classList.remove('hide');
+      lastY = y;
+      clearTimeout(idle);
+      idle = setTimeout(() => btn.classList.remove('hide'), 600);
+    }, { passive:true });
+
+    /* Cài xong → ẩn nút */
+    window.addEventListener('appinstalled', () => {
+      btn.classList.remove('show');
+      deferred = null;
+      toast('🎉 Đã cài đặt ứng dụng!');
+      console.log('✅ PWA installed');
+    });
+
+    /* 3) Click → gọi prompt() NATIVE, KHÔNG hướng dẫn dài dòng */
+    btn.addEventListener('click', async () => {
+      // Có sẵn deferred → mở hộp thoại cài NATIVE
+      if (deferred) {
+        try {
+          deferred.prompt();
+          const { outcome } = await deferred.userChoice;
+          deferred = null;
+          toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
+        } catch (err) {
+          console.warn(err);
+          toast('❌ Không mở được hộp thoại cài đặt.', true);
+        }
+        return;
+      }
+
+      // Chưa có → chờ tối đa 2.5s xem Chrome có bắn muộn
+      toast('⏳ Đang kiểm tra khả năng cài đặt...');
+      const got = await new Promise(resolve => {
+        const t = setTimeout(() => resolve(false), 2500);
+        window.addEventListener('beforeinstallprompt', e => {
+          e.preventDefault();
+          deferred = e;
+          clearTimeout(t);
+          resolve(true);
+        }, { once: true });
+      });
+
+      if (got && deferred) {
+        deferred.prompt();
+        const { outcome } = await deferred.userChoice;
+        deferred = null;
+        toast(outcome === 'accepted' ? '🎉 Đang cài đặt...' : 'Bạn đã huỷ cài đặt.', outcome !== 'accepted');
+      } else {
+        toast('❌ Trình duyệt chưa cho phép cài.\nMở DevTools → Application → Manifest để xem lỗi.', true);
+        console.warn('💡 Kiểm tra: manifest có screenshots, icon 512×512, SW activated, chạy qua HTTPS.');
+      }
+    });
+  })();
+
+  /* ============ KHỞI ĐỘNG ============ */
+  pageSize = Number($('pageSize').value) || 20;
+  loadData();
+  setInterval(loadData, 30000);
 </script>
 </body>
 </html>
