@@ -1,10 +1,13 @@
 {
+  "id": "/scam/",
   "name": "Báo Cáo Bơm Hàng",
   "short_name": "BaoCao",
   "start_url": "/scam/",
+  "scope": "/scam/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#667eea",
+  "form_factor": "wide",
   "icons": [
     {
       "src": "/scam/icon-192.png",
