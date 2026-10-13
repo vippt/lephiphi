@@ -370,6 +370,40 @@
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
+  // ===== HIỂN THỊ LINK FACEBOOK (MỞ CÙNG TAB) =====
+  function renderFbLink(raw) {
+    if (!raw) return '<span style="color:#bbb">—</span>';
+
+    let text = String(raw).trim();
+
+    // Nếu không có dấu chấm ở phần đầu (domain) → coi là username FB
+    const firstPart = text.split('/')[0];
+    if (!/\./.test(firstPart) && !/^https?:\/\//i.test(text)) {
+      text = 'facebook.com/' + text.replace(/^\/+/, '');
+    }
+
+    // Tự động thêm https:// nếu thiếu
+    let url = text;
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url.replace(/^\/+/, '');
+    }
+
+    // Tạo text hiển thị (rút gọn)
+    let display = text.replace(/^https?:\/\//i, '').replace(/^www\./i, '');
+    const MAX_LEN = 20;
+    if (display.length > MAX_LEN) {
+      display = display.slice(0, MAX_LEN) + '...';
+    }
+
+    // Mở CÙNG TAB (không dùng target="_blank")
+    return `<a href="${escapeHtml(url)}"
+               title="${escapeHtml(text)}"
+               style="color:#1877f2;text-decoration:none;font-weight:600;
+                      border-bottom:1px dashed #1877f2;word-break:break-all;">
+              ${escapeHtml(display)}
+            </a>`;
+  }
+
   function checkApiUrl() {
     if (!API_URL || API_URL.includes('xxxxxxxxx')) {
       setStatus('❌ Chưa dán URL Web App vào biến API_URL trong file HTML!', 'error');
@@ -440,7 +474,7 @@
           <td>${start + i + 1}</td>
           <td><strong>${escapeHtml(item.name) || '<span style="color:#bbb">—</span>'}</strong></td>
           <td>${escapeHtml(item.phone) || '<span style="color:#bbb">—</span>'}</td>
-          <td>${escapeHtml(item.facebook) || '<span style="color:#bbb">—</span>'}</td>
+          <td>${renderFbLink(item.facebook)}</td>
           <td>${escapeHtml(item.bank) || '<span style="color:#bbb">—</span>'}</td>
           <td>${escapeHtml(item.note) || '<span style="color:#bbb">—</span>'}</td>
         </tr>
