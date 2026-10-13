@@ -74,8 +74,8 @@
     z-index: 9999 !important;
     display: flex !important;
     align-items: center;
-    gap: 8px;
-    padding: 14px 22px;
+    gap: 10px;
+    padding: 13px 24px 13px 18px;
     background: linear-gradient(135deg, #f39c12, #e67e22);
     color: #fff;
     border: none;
@@ -89,6 +89,7 @@
     pointer-events: none;
     transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .4s;
     font-family: inherit;
+    white-space: nowrap;
   }
 
   #installBtn.show {
@@ -112,8 +113,18 @@
   }
 
   #installBtn .install-icon {
-    font-size: 20px;
+    font-size: 22px;
     animation: pulseIcon 2s infinite;
+    flex-shrink: 0;
+  }
+
+  #installBtn .install-label {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    line-height: 1;
+    text-shadow: 0 1px 2px rgba(0,0,0,.15);
+    display: inline-block !important;
   }
 
   @keyframes pulseIcon {
@@ -121,21 +132,25 @@
     50% { transform: scale(1.25); }
   }
 
+  /* Mobile: vẫn giữ chữ, thu gọn padding và font */
   @media (max-width: 480px) {
     #installBtn {
-      padding: 0;
-      width: 58px;
-      height: 58px;
-      border-radius: 50% 0 0 50%;
-      justify-content: center;
+      padding: 11px 18px 11px 14px;
+      gap: 8px;
+      border-radius: 50px 0 0 50px;
     }
-    #installBtn .install-label { display: none; }
+    #installBtn .install-icon {
+      font-size: 20px;
+    }
+    #installBtn .install-label {
+      font-size: 13.5px;
+    }
     @keyframes slideLoop {
-      0%   { transform: translateX(35%); }
+      0%   { transform: translateX(25%); }
       15%  { transform: translateX(0); }
       35%  { transform: translateX(0); }
-      50%  { transform: translateX(35%); }
-      100% { transform: translateX(35%); }
+      50%  { transform: translateX(25%); }
+      100% { transform: translateX(25%); }
     }
   }
   /* ================================================ */
@@ -221,7 +236,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ========== NÚT CÀI ĐẶT APP — NẰM NGOÀI CONTAINER ========== -->
+<!-- ========== NÚT CÀI ĐẶT APP (NỔI GÓC DƯỚI PHẢI) ========== -->
 <button type="button" id="installBtn" aria-label="Cài đặt ứng dụng">
   <span class="install-icon">📲</span>
   <span class="install-label">Cài đặt App</span>
@@ -519,9 +534,9 @@
   if (isDesktop) {
     showBtn('Cài đặt App');
   } else if (isIOS) {
-    showBtn('Thêm vào M.Hình');
-  } else if (!isIOS && !isDesktop) {
-    // Android nhưng chưa có beforeinstallprompt → vẫn hiện
+    showBtn('Cài đặt App');
+  } else {
+    // Android không có beforeinstallprompt → vẫn hiện nút
     showBtn('Cài đặt App');
   }
 
