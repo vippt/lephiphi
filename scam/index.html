@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Báo Cáo Bơm Hàng - Lừa Đảo </title>
+<title>Báo Cáo Bơm Hàng - Lừa Đảo</title>
 
-<!-- ===== PWA: BẮT ĐẦU THÊM VÀO ===== -->
+<!-- ===== PWA META ===== -->
 <link rel="manifest" href="/scam/manifest.json">
 <meta name="theme-color" content="#4a3f8f">
 <link rel="apple-touch-icon" href="/scam/icon-192.png">
@@ -13,7 +13,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Báo Cáo Bơm Hàng">
 <meta name="mobile-web-app-capable" content="yes">
-<!-- ===== PWA: KẾT THÚC THÊM VÀO ===== -->
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,16 +64,18 @@
   .page-controls button:disabled { opacity:.35; cursor:not-allowed; }
   .page-controls .dots { padding:7px 4px; color:#999; }
 
-  /* ===== PWA: NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI - TỰ ĐỘNG TRƯỢT ===== */
-  .btn-install {
-    position: fixed;
-    bottom: 24px;
-    right: 0;
-    z-index: 998;
-    display: flex;
+  /* ========= NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI ========= */
+  #installBtn {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 0 !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: 9999 !important;
+    display: flex !important;
     align-items: center;
     gap: 8px;
-    padding: 14px 20px;
+    padding: 14px 22px;
     background: linear-gradient(135deg, #f39c12, #e67e22);
     color: #fff;
     border: none;
@@ -83,67 +84,65 @@
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(243, 156, 18, .55);
-    /* Ban đầu ẩn hoàn toàn bên phải */
     transform: translateX(100%);
     opacity: 0;
     pointer-events: none;
     transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .4s;
+    font-family: inherit;
   }
 
-  /* Khi sẵn sàng: trượt vào + tự động trượt ra/vào */
-  .btn-install.ready {
+  #installBtn.show {
     opacity: 1;
     pointer-events: auto;
     animation: slideLoop 4s ease-in-out infinite;
   }
 
-  /* Khi hover: dừng trượt, nhô ra hoàn toàn */
-  .btn-install.ready:hover {
+  #installBtn:hover {
     animation: none;
-    transform: translateX(0) scale(1.05);
-    box-shadow: 0 10px 30px rgba(243, 156, 18, .85);
+    transform: translateX(0) scale(1.05) !important;
+    box-shadow: 0 10px 30px rgba(243, 156, 18, .9);
   }
 
-  /* Animation tự động trượt ra/vào liên tục */
   @keyframes slideLoop {
-    0%   { transform: translateX(30%); }
+    0%   { transform: translateX(25%); }
     15%  { transform: translateX(0); }
     35%  { transform: translateX(0); }
-    50%  { transform: translateX(30%); }
-    100% { transform: translateX(30%); }
+    50%  { transform: translateX(25%); }
+    100% { transform: translateX(25%); }
   }
 
-  .btn-install .icon {
+  #installBtn .install-icon {
     font-size: 20px;
     animation: pulseIcon 2s infinite;
   }
+
   @keyframes pulseIcon {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.25); }
   }
 
-  /* Mobile: thu gọn thành nút tròn */
   @media (max-width: 480px) {
-    .btn-install {
-      padding: 14px;
+    #installBtn {
+      padding: 0;
+      width: 58px;
+      height: 58px;
       border-radius: 50% 0 0 50%;
-      width: 60px;
-      height: 60px;
       justify-content: center;
     }
-    .btn-install .label { display: none; }
+    #installBtn .install-label { display: none; }
     @keyframes slideLoop {
-      0%   { transform: translateX(40%); }
+      0%   { transform: translateX(35%); }
       15%  { transform: translateX(0); }
       35%  { transform: translateX(0); }
-      50%  { transform: translateX(40%); }
-      100% { transform: translateX(40%); }
+      50%  { transform: translateX(35%); }
+      100% { transform: translateX(35%); }
     }
   }
-  /* ===== PWA: KẾT THÚC ===== */
+  /* ================================================ */
 </style>
 </head>
 <body>
+
 <div class="container">
   <h1>📦 BÁO CÁO BƠM HÀNG - LỪA ĐẢO</h1>
   <p class="subtitle">Được tạo bởi lephiphi.com</p>
@@ -222,16 +221,16 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ===== PWA: NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI ===== -->
-<button type="button" class="btn-install" id="installBtn" aria-label="Cài đặt ứng dụng">
-  <span class="icon">📲</span>
-  <span class="label">Cài đặt App</span>
+<!-- ========== NÚT CÀI ĐẶT APP — NẰM NGOÀI CONTAINER ========== -->
+<button type="button" id="installBtn" aria-label="Cài đặt ứng dụng">
+  <span class="install-icon">📲</span>
+  <span class="install-label">Cài đặt App</span>
 </button>
-<!-- ===== PWA: KẾT THÚC ===== -->
+<!-- ============================================================ -->
 
 <script>
   // ================================================
-  // 👇 DÁN URL WEB APP VÀO ĐÂY (giữa 2 dấu nháy đơn)
+  // 👇 DÁN URL WEB APP VÀO ĐÂY
   // ================================================
   const API_URL = 'https://script.google.com/macros/s/AKfycbxnNHvGkw4rBcGYAQ46-MjG5hBvmVelQJ0RqQjnCPZS2ruQ6noSexz7MOKEWgMZltI/exec';
   // ================================================
@@ -290,7 +289,7 @@
       setStatus('🔄 Đang tải dữ liệu từ Máy Chủ...');
       const r = await apiGet();
       if (!r.ok) throw new Error(r.error || 'Lỗi không xác định');
-     data = (r.data || []).reverse(); 
+      data = (r.data || []).reverse();
       render();
       setStatus('✅ Đã kết nối Máy Chủ — ' + data.length + ' bản ghi');
     } catch (e) {
@@ -468,11 +467,8 @@
   setInterval(loadData, 30000);
 </script>
 
-<!-- ===== PWA: SERVICE WORKER + NÚT CÀI ĐẶT TRƯỢT ===== -->
+<!-- ============= PWA: SERVICE WORKER + NÚT CÀI ĐẶT ============= -->
 <script>
-// ============================================================
-// PWA — SERVICE WORKER + NÚT CÀI ĐẶT TRƯỢT GÓC DƯỚI PHẢI
-// ============================================================
 (function () {
   // 1. Đăng ký Service Worker
   if ('serviceWorker' in navigator) {
@@ -494,38 +490,42 @@
 
   // 3. Hàm hiện/ẩn nút
   const showBtn = (label) => {
-    if (label) installBtn.querySelector('.label').textContent = label;
-    // Delay nhẹ để trang load xong mới trượt vào
-    setTimeout(() => installBtn.classList.add('ready'), 600);
+    if (label) {
+      const lbl = installBtn.querySelector('.install-label');
+      if (lbl) lbl.textContent = label;
+    }
+    setTimeout(() => installBtn.classList.add('show'), 600);
   };
   const hideBtn = () => {
-    installBtn.classList.remove('ready');
-    installBtn.style.transform = 'translateX(100%)';
+    installBtn.classList.remove('show');
   };
 
-  // 4. Nếu đã cài đặt rồi → không hiện nút
+  // 4. Nếu đã cài đặt rồi → ẩn
   if (isStandalone) {
     hideBtn();
     return;
   }
 
-  // 5. Sự kiện beforeinstallprompt (Chrome, Edge trên Windows & Android)
+  // 5. Sự kiện beforeinstallprompt (Chrome/Edge Windows + Android)
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     showBtn('Cài đặt App');
-    console.log('✅ PWA có thể cài đặt — nút đang trượt vào');
+    console.log('✅ PWA có thể cài đặt — hiện nút');
   });
 
-  // 6. Hiển thị nút cho các trường hợp đặc biệt
+  // 6. Fallback: hiện nút cho desktop và iOS
   const isDesktop = !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   if (isDesktop) {
     showBtn('Cài đặt App');
   } else if (isIOS) {
     showBtn('Thêm vào M.Hình');
+  } else if (!isIOS && !isDesktop) {
+    // Android nhưng chưa có beforeinstallprompt → vẫn hiện
+    showBtn('Cài đặt App');
   }
 
-  // 7. Xử lý khi bấm nút
+  // 7. Xử lý click
   installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -556,16 +556,16 @@
     }
   });
 
-  // 8. Khi cài đặt thành công → ẩn nút
+  // 8. Khi cài xong
   window.addEventListener('appinstalled', () => {
-    console.log('✅ PWA đã được cài đặt thành công!');
+    console.log('✅ PWA đã được cài đặt!');
     hideBtn();
     deferredPrompt = null;
     if (typeof toast === 'function') toast('✅ Đã cài đặt ứng dụng thành công!');
   });
 })();
 </script>
-<!-- ===== PWA: KẾT THÚC ===== -->
+<!-- ============================================================= -->
 
 </body>
 </html>
