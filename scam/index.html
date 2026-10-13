@@ -65,60 +65,80 @@
   .page-controls button:disabled { opacity:.35; cursor:not-allowed; }
   .page-controls .dots { padding:7px 4px; color:#999; }
 
-  /* ===== PWA: NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI ===== */
+  /* ===== PWA: NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI - TỰ ĐỘNG TRƯỢT ===== */
   .btn-install {
     position: fixed;
     bottom: 24px;
-    right: 24px;
+    right: 0;
     z-index: 998;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 14px 22px;
+    padding: 14px 20px;
     background: linear-gradient(135deg, #f39c12, #e67e22);
     color: #fff;
     border: none;
-    border-radius: 50px;
+    border-radius: 50px 0 0 50px;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(243, 156, 18, .55);
-    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s, box-shadow .2s;
-    /* Trượt ra khỏi màn hình ban đầu */
-    transform: translateX(calc(100% + 40px));
+    /* Ban đầu ẩn hoàn toàn bên phải */
+    transform: translateX(100%);
     opacity: 0;
     pointer-events: none;
+    transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .4s;
   }
-  .btn-install.show {
-    transform: translateX(0);
+
+  /* Khi sẵn sàng: trượt vào + tự động trượt ra/vào */
+  .btn-install.ready {
     opacity: 1;
     pointer-events: auto;
+    animation: slideLoop 4s ease-in-out infinite;
   }
-  .btn-install:hover {
-    box-shadow: 0 10px 30px rgba(243, 156, 18, .75);
-    transform: translateY(-3px) scale(1.03);
+
+  /* Khi hover: dừng trượt, nhô ra hoàn toàn */
+  .btn-install.ready:hover {
+    animation: none;
+    transform: translateX(0) scale(1.05);
+    box-shadow: 0 10px 30px rgba(243, 156, 18, .85);
   }
-  .btn-install:active {
-    transform: translateY(0) scale(.98);
+
+  /* Animation tự động trượt ra/vào liên tục */
+  @keyframes slideLoop {
+    0%   { transform: translateX(30%); }
+    15%  { transform: translateX(0); }
+    35%  { transform: translateX(0); }
+    50%  { transform: translateX(30%); }
+    100% { transform: translateX(30%); }
   }
+
   .btn-install .icon {
     font-size: 20px;
     animation: pulseIcon 2s infinite;
   }
   @keyframes pulseIcon {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    50% { transform: scale(1.25); }
   }
-  /* Trên mobile nhỏ, thu gọn thành nút tròn */
+
+  /* Mobile: thu gọn thành nút tròn */
   @media (max-width: 480px) {
     .btn-install {
       padding: 14px;
-      border-radius: 50%;
-      width: 56px;
-      height: 56px;
+      border-radius: 50% 0 0 50%;
+      width: 60px;
+      height: 60px;
       justify-content: center;
     }
     .btn-install .label { display: none; }
+    @keyframes slideLoop {
+      0%   { transform: translateX(40%); }
+      15%  { transform: translateX(0); }
+      35%  { transform: translateX(0); }
+      50%  { transform: translateX(40%); }
+      100% { transform: translateX(40%); }
+    }
   }
   /* ===== PWA: KẾT THÚC ===== */
 </style>
@@ -202,7 +222,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ===== PWA: NÚT CÀI ĐẶT NỔI ===== -->
+<!-- ===== PWA: NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI ===== -->
 <button type="button" class="btn-install" id="installBtn" aria-label="Cài đặt ứng dụng">
   <span class="icon">📲</span>
   <span class="label">Cài đặt App</span>
@@ -448,10 +468,10 @@
   setInterval(loadData, 30000);
 </script>
 
-<!-- ===== PWA: BẮT ĐẦU THÊM VÀO ===== -->
+<!-- ===== PWA: SERVICE WORKER + NÚT CÀI ĐẶT TRƯỢT ===== -->
 <script>
 // ============================================================
-// PWA — SERVICE WORKER + NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI
+// PWA — SERVICE WORKER + NÚT CÀI ĐẶT TRƯỢT GÓC DƯỚI PHẢI
 // ============================================================
 (function () {
   // 1. Đăng ký Service Worker
@@ -472,13 +492,16 @@
 
   if (!installBtn) return;
 
-  // 3. Hàm hiện/ẩn nút với hiệu ứng trượt
+  // 3. Hàm hiện/ẩn nút
   const showBtn = (label) => {
     if (label) installBtn.querySelector('.label').textContent = label;
-    // Delay nhẹ để hiệu ứng trượt mượt hơn
-    setTimeout(() => installBtn.classList.add('show'), 400);
+    // Delay nhẹ để trang load xong mới trượt vào
+    setTimeout(() => installBtn.classList.add('ready'), 600);
   };
-  const hideBtn = () => installBtn.classList.remove('show');
+  const hideBtn = () => {
+    installBtn.classList.remove('ready');
+    installBtn.style.transform = 'translateX(100%)';
+  };
 
   // 4. Nếu đã cài đặt rồi → không hiện nút
   if (isStandalone) {
@@ -491,16 +514,14 @@
     e.preventDefault();
     deferredPrompt = e;
     showBtn('Cài đặt App');
-    console.log('✅ PWA có thể cài đặt — nút đã trượt vào');
+    console.log('✅ PWA có thể cài đặt — nút đang trượt vào');
   });
 
   // 6. Hiển thị nút cho các trường hợp đặc biệt
   const isDesktop = !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   if (isDesktop) {
-    // PC: luôn hiện nút (nếu chưa có prompt thì sẽ hướng dẫn dùng biểu tượng trên thanh địa chỉ)
     showBtn('Cài đặt App');
   } else if (isIOS) {
-    // iOS: hiện nút với label riêng
     showBtn('Thêm vào M.Hình');
   }
 
@@ -518,7 +539,6 @@
       return;
     }
 
-    // Không có prompt → hiện hướng dẫn
     if (isIOS) {
       alert(
         '📱 Cách cài đặt trên iPhone/iPad:\n\n' +
@@ -545,7 +565,7 @@
   });
 })();
 </script>
-<!-- ===== PWA: KẾT THÚC THÊM VÀO ===== -->
+<!-- ===== PWA: KẾT THÚC ===== -->
 
 </body>
 </html>
