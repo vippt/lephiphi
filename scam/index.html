@@ -654,71 +654,77 @@
     }
     setTimeout(() => installBtn.classList.add('show'), 600);
   };
+  
   const hideBtn = () => {
     installBtn.classList.remove('show');
   };
 
-  // 4. Nếu đã cài đặt rồi → ẩn nút cài đặt (nhưng vẫn hiện nút hướng dẫn)
+  // Nếu đã cài đặt rồi thì ẩn nút đi
   if (isStandalone) {
     hideBtn();
-  } else {
-    // 5. Sự kiện beforeinstallprompt (Chrome/Edge Windows + Android)
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      showBtn('Cài đặt App');
-      console.log('✅ PWA có thể cài đặt — hiện nút');
-    });
+    return;
+  }
 
-    // 6. Fallback: hiện nút cho desktop và iOS
-    const isDesktop = !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-    if (isDesktop) {
-      showBtn('Cài đặt App');
-    } else if (isIOS) {
-      showBtn('Cài đặt App');
-    } else {
-      showBtn('Cài đặt App');
+  // 4. Xử lý riêng cho iOS (vì iOS không hỗ trợ beforeinstallprompt)
+  if (isIOS) {
+    showBtn('Cài đặt App');
+    installBtn.addEventListener('click', () => {
+      alert(
+        '📱 Cách cài đặt trên iPhone/iPad:\n\n' +
+        '1. Nhấn nút Chia sẻ (⬆️) ở thanh dưới cùng Safari\n' +
+        '2. Cuộn xuống chọn "Thêm vào Màn hình chính"\n' +
+        '3. Nhấn "Thêm" để hoàn tất'
+      );
+    });
+    return;
+  }
+
+  // 5. Đối với Desktop và Android: Lắng nghe sự kiện chuẩn từ trình duyệt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Ngăn trình duyệt tự hiện banner mặc định (nếu có)
+    e.preventDefault();
+    // Lưu lại sự kiện để kích hoạt khi người dùng bấm nút
+    deferredPrompt = e;
+    // Hiển thị nút cài đặt lên giao diện
+    showBtn('Cài đặt App');
+    console.log('✅ PWA đã sẵn sàng để cài đặt');
+  });
+
+  // 6. Xử lý sự kiện khi người dùng click vào nút Cài đặt App
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      // Trường hợp trình duyệt chưa sẵn sàng sự kiện (ví dụ chưa đủ tương tác)
+      alert(
+        '💻 Trình duyệt đang chuẩn bị cài đặt:\n\n' +
+        'Hãy thử tải lại trang (Ctrl + F5), tương tác vài cái trên web rồi bấm lại nút Cài đặt, ' +
+        'hoặc bấm vào biểu tượng cài đặt (màn hình có mũi tên/dấu cộng) ngay trên thanh địa chỉ của Chrome/Edge.'
+      );
+      return;
     }
 
-    // 7. Xử lý click
-    installBtn.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('Người dùng chọn:', outcome);
-        deferredPrompt = null;
-        if (outcome === 'accepted') {
-          hideBtn();
-          if (typeof toast === 'function') toast('✅ Đang cài đặt ứng dụng...');
-        }
-        return;
-      }
-
-      if (isIOS) {
-        alert(
-          '📱 Cách cài đặt trên iPhone/iPad:\n\n' +
-          '1. Nhấn nút Chia sẻ (⬆️) ở thanh dưới cùng Safari\n' +
-          '2. Cuộn xuống chọn "Thêm vào Màn hình chính"\n' +
-          '3. Nhấn "Thêm" để hoàn tất'
-        );
-      } else {
-        alert(
-          '💻 Cách cài đặt trên máy tính:\n\n' +
-          '• Microsoft Edge: Nhấn biểu tượng ⊕ hoặc 💻 trên thanh địa chỉ → "Cài đặt"\n' +
-          '• Google Chrome: Nhấn biểu tượng 💻 (Install) trên thanh địa chỉ\n\n' +
-          'Nếu không thấy biểu tượng, hãy tải lại trang (Ctrl + F5) và đợi vài giây.'
-        );
-      }
-    });
-
-    // 8. Khi cài xong
-    window.addEventListener('appinstalled', () => {
-      console.log('✅ PWA đã được cài đặt!');
+    // Hiển thị bảng cài đặt gốc của trình duyệt
+    deferredPrompt.prompt();
+    
+    // Đợi người dùng phản hồi (chấp nhận hoặc hủy)
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('Người dùng phản hồi:', outcome);
+    
+    if (outcome === 'accepted') {
       hideBtn();
-      deferredPrompt = null;
-      if (typeof toast === 'function') toast('✅ Đã cài đặt ứng dụng thành công!');
-    });
-  }
+      if (typeof toast === 'function') toast('✅ Đang tiến hành cài đặt...');
+    }
+    
+    // Sự kiện prompt chỉ dùng được 1 lần, sau đó phải reset
+    deferredPrompt = null;
+  });
+
+  // 7. Khi PWA đã được cài đặt thành công hoàn tất
+  window.addEventListener('appinstalled', () => {
+    console.log('✅ PWA đã được cài đặt thành công!');
+    hideBtn();
+    deferredPrompt = null;
+    if (typeof toast === 'function') toast('✅ Đã cài đặt ứng dụng thành công!');
+  });
 })();
 </script>
 <!-- ================================================= -->
