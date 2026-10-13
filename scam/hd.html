@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cách lấy link Facebook của một người — Desktop &amp; Mobile</title>
+<meta name="description" content="Hướng dẫn chi tiết cách lấy link trang cá nhân Facebook trên máy tính và điện thoại, kèm hình minh họa từng bước." />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    --blue: #1877f2;
+    --blue-600: #0f5bd1;
+    --blue-soft: #e7f0fe;
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --text: #1c1e21;
+    --muted: #65676b;
+    --border: #e4e6eb;
+    --orange: #ff8a00;
+    --green: #1a7f37;
+    --radius: 16px;
+    --shadow: 0 2px 10px rgba(0, 0, 0, .06);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    background: linear-gradient(135deg, #1877f2 0%, #0a4fb5 100%);
+    color: #fff;
+    padding: 52px 16px 60px;
+    text-align: center;
+  }
+  .hero .kicker {
+    display: inline-block;
+    background: rgba(255, 255, 255, .16);
+    border: 1px solid rgba(255, 255, 255, .28);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: clamp(22px, 4.6vw, 36px);
+    line-height: 1.28;
+    margin: 0 0 12px;
+    font-weight: 800;
+  }
+  .hero p {
+    margin: 0 auto;
+    max-width: 620px;
+    font-size: clamp(14px, 2.2vw, 17px);
+    opacity: .94;
+  }
+
+  /* ---------- TABS ---------- */
+  .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 12px 16px;
+    background: rgba(240, 242, 245, .88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    flex: 1 1 0;
+    max-width: 230px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 12px 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background .18s, color .18s, border-color .18s, box-shadow .18s;
+  }
+  .tab:hover { border-color: #cfd8e3; }
+  .tab.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(24, 119, 242, .34);
+  }
+  .tab:focus-visible { outline: 3px solid rgba(24, 119, 242, .35); outline-offset: 2px; }
+
+  /* ---------- PANELS ---------- */
+  .panel { display: none; padding: 26px 0 6px; }
+  .panel.active { display: block; animation: fadeUp .28s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- STEP CARD ---------- */
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .step-head { display: flex; gap: 14px; align-items: flex-start; }
+  .num {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    display: grid;
+    place-items: center;
+  }
+  .step h3 { margin: 4px 0 6px; font-size: 17px; line-height: 1.4; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+  .step ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 15px; }
+  .step li { margin-bottom: 4px; }
+  .step strong { color: var(--text); }
+
+  kbd {
+    display: inline-block;
+    background: #f5f6f7;
+    border: 1px solid #ccd0d5;
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 12.5px;
+    font-family: inherit;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  /* ---------- FIGURE ---------- */
+  .figure {
+    margin: 16px 0 0;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: linear-gradient(180deg, #f8fafd 0%, #eef3f9 100%);
+  }
+  .figure svg { display: block; width: 100%; height: auto; }
+  .figure.phone svg { max-width: 290px; margin: 0 auto; }
+  .figcap {
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ---------- LINK DEMO ---------- */
+  .link-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: #1c1e21;
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+  .link-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px;
+    color: #e4e6eb;
+    white-space: nowrap;
+  }
+  .link-code .keep {
+    background: rgba(24, 119, 242, .35);
+    color: #a9cfff;
+    border-radius: 5px;
+    padding: 2px 4px;
+  }
+  .link-code .drop {
+    background: rgba(244, 67, 54, .22);
+    color: #ff9b92;
+    border-radius: 5px;
+    padding: 2px 4px;
+    text-decoration: line-through;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 12px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .dot { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+  .dot.keep-dot { background: #1877f2; }
+  .dot.drop-dot { background: #e57373; }
+
+  /* ---------- BUTTON ---------- */
+  .btn-copy {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--blue);
+    background: var(--blue-soft);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: background .16s, color .16s, transform .1s;
+  }
+  .btn-copy:hover { background: #d7e6fd; }
+  .btn-copy:active { transform: scale(.97); }
+  .btn-copy.copied { background: #e3f7e8; color: var(--green); }
+  .btn-copy:focus-visible { outline: 3px solid rgba(24, 119, 242, .35); outline-offset: 2px; }
+
+  /* ---------- NOTES ---------- */
+  .notes {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px;
+    margin: 26px 0;
+  }
+  .notes h2 {
+    font-size: 19px;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .notes > p { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+  .notes ul { margin: 0; padding-left: 20px; }
+  .notes li { margin-bottom: 10px; color: var(--muted); font-size: 15px; }
+  .notes li strong { color: var(--text); }
+  .notes code {
+    background: #f0f2f5;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: #c0392b;
+    word-break: break-all;
+  }
+
+  .callout {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--orange);
+    background: #fff8ec;
+    border-radius: 0 10px 10px 0;
+    font-size: 14.5px;
+    color: #7a5200;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+    padding: 28px 16px 40px;
+  }
+
+  @media (max-width: 480px) {
+    .hero { padding: 36px 16px 44px; }
+    .step { padding: 16px; }
+    .num { flex-basis: 32px; width: 32px; height: 32px; font-size: 14px; }
+    .step h3 { font-size: 16px; }
+    .figure { padding: 12px; }
+    .tab { font-size: 14px; padding: 11px 12px; }
+    .notes { padding: 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">Hướng dẫn từng bước</span>
+    <h1>Cách lấy link Facebook của một người</h1>
+    <p>Áp dụng cho cả máy tính và điện thoại — kèm hình minh họa chi tiết cho từng bước.</p>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Chọn thiết bị">
+  <button class="tab active" role="tab" aria-selected="true" aria-controls="desktop" id="tab-desktop" data-tab="desktop">
+    🖥️ Máy tính
+  </button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="mobile" id="tab-mobile" data-tab="mobile">
+    📱 Điện thoại
+  </button>
+</nav>
+
+<main class="wrap">
+
+  <!-- ================= DESKTOP ================= -->
+  <section class="panel active" id="desktop" role="tabpanel" aria-labelledby="tab-desktop">
+
+    <!-- STEP 1 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">1</span>
+        <div>
+          <h3>Mở trang cá nhân của người đó</h3>
+          <p>Gõ tên họ vào ô tìm kiếm Facebook, chuyển sang mục <strong>Mọi người</strong> rồi bấm vào đúng người cần tìm.</p>
+          <ul>
+            <li>Cách nhanh hơn: bấm trực tiếp vào <strong>tên</strong> hoặc <strong>ảnh đại diện</strong> của họ ở một bài viết bất kỳ.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure">
+        <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Minh họa ô tìm kiếm Facebook và kết quả tìm người">
+          <defs>
+            <clipPath id="clipSearchAva"><circle cx="86" cy="156" r="22"/></clipPath>
+          </defs>
+
+          <rect x="6" y="6" width="628" height="308" rx="16" fill="#ffffff" stroke="#dde3ea" stroke-width="2"/>
+
+          <!-- search input -->
+          <rect x="40" y="28" width="560" height="48" rx="24" fill="#f0f2f5" stroke="#e4e6eb"/>
+          <circle cx="70" cy="52" r="8" fill="none" stroke="#65676b" stroke-width="2"/>
+          <line x1="76" y1="58" x2="84" y2="66" stroke="#65676b" stroke-width="2" stroke-linecap="round"/>
+          <text x="98" y="58" font-family="system-ui,sans-serif" font-size="15" fill="#1c1e21">Nguyễn Văn A</text>
+          <line x1="560" y1="48" x2="560" y2="56" stroke="#1c1e21" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+
+          <!-- dropdown -->
+          <rect x="44" y="90" width="552" height="200" rx="12" fill="#000" opacity=".05"/>
+          <rect x="40" y="86" width="552" height="200" rx="12" fill="#ffffff" stroke="#e4e6eb"/>
+          <text x="60" y="114" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#65676b" letter-spacing="1">MỌI NGƯỜI</text>
+
+          <!-- result 1 (highlight) -->
+          <rect x="48" y="126" width="536" height="64" rx="10" fill="#e7f0fe"/>
+          <circle cx="86" cy="156" r="22" fill="#c9d2dc"/>
+          <g clip-path="url(#clipSearchAva)">
+            <circle cx="86" cy="149" r="8" fill="#ffffff"/>
+            <circle cx="86" cy="176" r="14" fill="#ffffff"/>
+          </g>
+          <text x="122" y="152" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#1c1e21">Nguyễn Văn A</text>
+          <text x="122" y="172" font-family="system-ui,sans-serif" font-size="12" fill="#65676b">Bạn bè chung: 12</text>
+          <rect x="486" y="144" width="86" height="28" rx="7" fill="#1877f2"/>
+          <text x="529" y="162" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">Xem trang</text>
+
+          <!-- result 2 -->
+          <circle cx="86" cy="212" r="22" fill="#d8dde3"/>
+          <text x="122" y="208" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#1c1e21">Nguyễn Văn B</text>
+          <text x="122" y="228" font-family="system-ui,sans-serif" font-size="12" fill="#65676b">Bạn bè chung: 3</text>
+
+          <!-- result 3 -->
+          <circle cx="86" cy="266" r="22" fill="#d8dde3"/>
+          <text x="122" y="262" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#1c1e21">Nguyễn Văn C</text>
+          <text x="122" y="282" font-family="system-ui,sans-serif" font-size="12" fill="#65676b">Không có bạn bè chung</text>
+
+          <!-- cursor -->
+          <path d="M430 150 L430 174 L436 168 L440 177 L444 175 L440 166 L447 166 Z"
+                fill="#ffffff" stroke="#111827" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+        <figcaption class="figcap">Bước 1 — Tìm và mở đúng trang cá nhân cần lấy link</figcaption>
+      </figure>
+    </article>
+
+    <!-- STEP 2 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">2</span>
+        <div>
+          <h3>Nhìn lên thanh địa chỉ trình duyệt</h3>
+          <p>Link trang cá nhân <strong>chính là</strong> phần địa chỉ đang hiển thị trên thanh address bar, ví dụ <code>facebook.com/nguyen.van.a</code>.</p>
+          <ul>
+            <li>Bấm vào thanh địa chỉ, nhấn <kbd>Ctrl</kbd> + <kbd>A</kbd> để chọn hết rồi <kbd>Ctrl</kbd> + <kbd>C</kbd> để sao chép.</li>
+            <li>Trên macOS dùng <kbd>⌘</kbd> + <kbd>A</kbd> và <kbd>⌘</kbd> + <kbd>C</kbd>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure">
+        <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Minh họa thanh địa chỉ trình duyệt chứa link Facebook">
+          <defs>
+            <linearGradient id="coverA" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4facfe"/><stop offset="100%" stop-color="#00c6fb"/>
+            </linearGradient>
+            <marker id="arrA" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+              <path d="M0 0 L9 4.5 L0 9 Z" fill="#111827"/>
+            </marker>
+            <clipPath id="avA"><circle cx="78" cy="150" r="34"/></clipPath>
+          </defs>
+
+          <rect x="6" y="6" width="628" height="308" rx="16" fill="#ffffff" stroke="#dde3ea" stroke-width="2"/>
+
+          <!-- browser chrome -->
+          <path d="M6 22A16 16 0 0 1 22 6h596a16 16 0 0 1 16 16v32H6z" fill="#eef1f5"/>
+          <circle cx="32" cy="27" r="5.5" fill="#ff5f57"/>
+          <circle cx="52" cy="27" r="5.5" fill="#febc2e"/>
+          <circle cx="72" cy="27" r="5.5" fill="#28c840"/>
+          <rect x="96" y="15" width="118" height="24" rx="6" fill="#ffffff"/>
+          <text x="108" y="31" font-family="system-ui,sans-serif" font-size="12" fill="#606770">Facebook</text>
+
+          <!-- address bar -->
+          <rect x="236" y="14" width="386" height="26" rx="13" fill="#ffffff" stroke="#ccd2da"/>
+          <rect x="245" y="18" width="205" height="18" rx="5" fill="#1877f2" opacity="0.16"/>
+          <text x="250" y="31" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#1877f2"
+                textLength="195" lengthAdjust="spacingAndGlyphs">facebook.com/nguyen.van.a</text>
+          <rect x="235" y="11" width="388" height="32" rx="16" fill="none" stroke="#ff8a00" stroke-width="2.5" stroke-dasharray="7 5"/>
+
+          <!-- page content -->
+          <path d="M6 54h628v244a16 16 0 0 1-16 16H22a16 16 0 0 1-16-16z" fill="#f7f9fb"/>
+          <path d="M6 54h628v96H6z" fill="url(#coverA)"/>
+
+          <!-- avatar -->
+          <circle cx="78" cy="150" r="38" fill="#ffffff"/>
+          <g clip-path="url(#avA)">
+            <circle cx="78" cy="150" r="34" fill="#c9d2dc"/>
+            <circle cx="78" cy="141" r="12" fill="#ffffff"/>
+            <circle cx="78" cy="177" r="21" fill="#ffffff"/>
+          </g>
+          <circle cx="78" cy="150" r="34" fill="none" stroke="#ffffff" stroke-width="4"/>
+
+          <text x="130" y="146" font-family="system-ui,sans-serif" font-size="19" font-weight="700" fill="#1c1e21">Nguyễn Văn A</text>
+          <text x="130" y="168" font-family="system-ui,sans-serif" font-size="12" fill="#65676b">1.2K người theo dõi · 340 bạn bè</text>
+
+          <rect x="130" y="182" width="104" height="28" rx="7" fill="#1877f2"/>
+          <text x="182" y="200" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">Thêm bạn bè</text>
+          <rect x="242" y="182" width="80" height="28" rx="7" fill="#e4e6eb"/>
+          <text x="282" y="200" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#1c1e21" text-anchor="middle">Nhắn tin</text>
+
+          <!-- placeholder posts -->
+          <rect x="30" y="230" width="278" height="66" rx="10" fill="#ffffff" stroke="#e4e6eb"/>
+          <rect x="46" y="246" width="120" height="8" rx="4" fill="#e4e6eb"/>
+          <rect x="46" y="262" width="200" height="8" rx="4" fill="#eef1f5"/>
+          <rect x="326" y="230" width="278" height="66" rx="10" fill="#ffffff" stroke="#e4e6eb"/>
+          <rect x="342" y="246" width="120" height="8" rx="4" fill="#e4e6eb"/>
+          <rect x="342" y="262" width="200" height="8" rx="4" fill="#eef1f5"/>
+
+          <!-- callout -->
+          <rect x="348" y="66" width="252" height="38" rx="10" fill="#111827" opacity="0.92"/>
+          <text x="364" y="90" font-family="system-ui,sans-serif" font-size="13" fill="#ffffff">Link nằm ở thanh địa chỉ</text>
+          <line x1="474" y1="66" x2="474" y2="47" stroke="#111827" stroke-width="2" marker-end="url(#arrA)"/>
+        </svg>
+        <figcaption class="figcap">Bước 2 — Link trang cá nhân nằm ngay trên thanh địa chỉ</figcaption>
+      </figure>
+    </article>
+
+    <!-- STEP 3 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">3</span>
+        <div>
+          <h3>Hoặc dùng menu chuột phải</h3>
+          <p>Nhấn <strong>chuột phải</strong> vào ảnh đại diện hoặc tên người đó, rồi chọn <strong>“Sao chép liên kết”</strong> (Copy link).</p>
+          <ul>
+            <li>Cách này cho ra link “sạch” hơn, ít tham số rác phía sau.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure">
+        <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Minh họa menu chuột phải với tùy chọn Sao chép liên kết">
+          <defs>
+            <linearGradient id="phB" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f6d365"/><stop offset="100%" stop-color="#fda085"/>
+            </linearGradient>
+            <clipPath id="phClip"><rect x="60" y="50" width="200" height="200" rx="14"/></clipPath>
+          </defs>
+
+          <rect x="6" y="6" width="628" height="308" rx="16" fill="#f7f9fb" stroke="#dde3ea" stroke-width="2"/>
+
+          <!-- profile photo -->
+          <g clip-path="url(#phClip)">
+            <rect x="60" y="50" width="200" height="200" fill="url(#phB)"/>
+            <circle cx="160" cy="128" r="34" fill="#ffffff" opacity="0.85"/>
+            <circle cx="160" cy="240" r="66" fill="#ffffff" opacity="0.85"/>
+          </g>
+
+          <!-- context menu -->
+          <rect x="284" y="66" width="264" height="170" rx="12" fill="#000000" opacity=".07"/>
+          <rect x="280" y="62" width="264" height="170" rx="12" fill="#ffffff" stroke="#e4e6eb"/>
+
+          <text x="300" y="92" font-family="system-ui,sans-serif" font-size="13" fill="#1c1e21">Mở liên kết trong tab mới</text>
+
+          <rect x="286" y="104" width="252" height="36" rx="8" fill="#e7f0fe"/>
+          <text x="300" y="128" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="#1877f2">Sao chép liên kết</text>
+
+          <line x1="292" y1="152" x2="532" y2="152" stroke="#e4e6eb"/>
+          <text x="300" y="172" font-family="system-ui,sans-serif" font-size="13" fill="#1c1e21">Lưu hình ảnh thành…</text>
+          <text x="300" y="206" font-family="system-ui,sans-serif" font-size="13" fill="#1c1e21">Tìm hình ảnh với Google</text>
+
+          <!-- cursor -->
+          <path d="M262 104 L262 128 L267 122 L271 130 L275 128 L271 120 L278 120 Z"
+                fill="#ffffff" stroke="#111827" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        <figcaption class="figcap">Bước 3 — Chuột phải → “Sao chép liên kết”</figcaption>
+      </figure>
+    </article>
+
+    <!-- STEP 4 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">4</span>
+        <div>
+          <h3>Dán link ra nơi bạn cần</h3>
+          <p>Mở Ghi chú, Messenger, Zalo, Email… và nhấn <kbd>Ctrl</kbd> + <kbd>V</kbd> để dán.</p>
+          <ul>
+            <li>Nếu link có dấu <strong>?</strong> và các ký tự phía sau, bạn có thể xoá phần đó đi — link vẫn hoạt động bình thường.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure">
+        <div class="link-demo">
+          <code class="link-code"><span class="keep">https://www.facebook.com/nguyen.van.a</span><span class="drop">?mibextid=LQQJ4d&amp;rdid=abc123</span></code>
+        </div>
+        <div class="legend">
+          <span><i class="dot keep-dot"></i> Giữ lại — link trang cá nhân</span>
+          <span><i class="dot drop-dot"></i> Xoá được — tham số theo dõi</span>
+        </div>
+        <figcaption class="figcap">
+          <button class="btn-copy" type="button" data-copy="https://www.facebook.com/nguyen.van.a">Sao chép link đã rút gọn</button>
+        </figcaption>
+      </figure>
+    </article>
+
+  </section>
+
+  <!-- ================= MOBILE ================= -->
+  <section class="panel" id="mobile" role="tabpanel" aria-labelledby="tab-mobile">
+
+    <!-- STEP 1 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">1</span>
+        <div>
+          <h3>Mở trang cá nhân trong app Facebook</h3>
+          <p>Bấm vào ô tìm kiếm ở đầu app, gõ tên người đó rồi chọn đúng tài khoản trong mục <strong>Mọi người</strong>.</p>
+          <ul>
+            <li>Hoặc bấm trực tiếp vào tên / ảnh đại diện của họ ở một bài viết.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure phone">
+        <svg viewBox="0 0 340 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Minh họa tìm kiếm người trên app Facebook điện thoại">
+          <defs>
+            <clipPath id="screenM1"><rect x="78" y="18" width="184" height="434" rx="24"/></clipPath>
+            <clipPath id="avM1a"><circle cx="110" cy="145" r="16"/></clipPath>
+            <clipPath id="avM1b"><circle cx="110" cy="207" r="16"/></clipPath>
+          </defs>
+
+          <rect x="70" y="10" width="200" height="450" rx="30" fill="#1c1e21"/>
+          <rect x="78" y="18" width="184" height="434" rx="24" fill="#ffffff"/>
+          <rect x="145" y="24" width="50" height="7" rx="3.5" fill="#1c1e21"/>
+
+          <g clip-path="url(#screenM1)">
+            <text x="94" y="42" font-family="system-ui,sans-serif" font-size="9" font-weight="600" fill="#1c1e21">9:41</text>
+
+            <!-- search bar -->
+            <rect x="88" y="54" width="164" height="32" rx="16" fill="#f0f2f5"/>
+            <circle cx="106" cy="70" r="6" fill="none" stroke="#65676b" stroke-width="1.6"/>
+            <line x1="110" y1="74" x2="115" y2="79" stroke="#65676b" stroke-width="1.6" stroke-linecap="round"/>
+            <text x="124" y="74" font-family="system-ui,sans-serif" font-size="10" fill="#1c1e21">Nguyễn Văn A</text>
+
+            <text x="90" y="110" font-family="system-ui,sans-serif" font-size="9" font-weight="700" fill="#65676b" letter-spacing="0.8">MỌI NGƯỜI</text>
+
+            <!-- result 1 -->
+            <rect x="86" y="118" width="168" height="54" rx="10" fill="#e7f0fe"/>
+            <circle cx="110" cy="145" r="16" fill="#c9d2dc"/>
+            <g clip-path="url(#avM1a)">
+              <circle cx="110" cy="140" r="6" fill="#ffffff"/>
+              <circle cx="110" cy="160" r="10" fill="#ffffff"/>
+            </g>
+            <text x="134" y="141" font-family="system-ui,sans-serif" font-size="10.5" font-weight="700" fill="#1c1e21">Nguyễn Văn A</text>
+            <text x="134" y="155" font-family="system-ui,sans-serif" font-size="9" fill="#65676b">Bạn bè chung: 12</text>
+            <circle cx="196" cy="145" r="18" fill="#ff8a00" opacity=".13"/>
+
+            <!-- result 2 -->
+            <rect x="86" y="180" width="168" height="54" rx="10" fill="#f7f9fb"/>
+            <circle cx="110" cy="207" r="16" fill="#d8dde3"/>
+            <g clip-path="url(#avM1b)">
+              <circle cx="110" cy="202" r="6" fill="#ffffff"/>
+              <circle cx="110" cy="222" r="10" fill="#ffffff"/>
+            </g>
+            <text x="134" y="203" font-family="system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#1c1e21">Nguyễn Văn B</text>
+            <text x="134" y="217" font-family="system-ui,sans-serif" font-size="9" fill="#65676b">Bạn bè chung: 3</text>
+
+            <!-- result 3 -->
+            <rect x="86" y="242" width="168" height="54" rx="10" fill="#f7f9fb"/>
+            <circle cx="110" cy="269" r="16" fill="#d8dde3"/>
+            <text x="134" y="265" font-family="system-ui,sans-serif" font-size="10.5" font-weight="600" fill="#1c1e21">Nguyễn Văn C</text>
+            <text x="134" y="279" font-family="system-ui,sans-serif" font-size="9" fill="#65676b">Không có bạn bè chung</text>
+          </g>
+        </svg>
+        <figcaption class="figcap">Bước 1 — Tìm và mở trang cá nhân cần lấy link</figcaption>
+      </figure>
+    </article>
+
+    <!-- STEP 2 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">2</span>
+        <div>
+          <h3>Nhấn nút “…” rồi chọn “Sao chép liên kết”</h3>
+          <p>Nút <strong>ba chấm (…)</strong> nằm ở góc trên bên phải trang cá nhân. Bấm vào đó, một bảng tùy chọn sẽ hiện lên từ dưới màn hình.</p>
+          <ul>
+            <li>Chọn dòng <strong>“Sao chép liên kết”</strong> — link đã được lưu vào clipboard.</li>
+            <li>Một số phiên bản app ghi là <em>“Copy link”</em> hoặc <em>“Sao chép đường liên kết”</em>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure phone">
+        <svg viewBox="0 0 340 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Minh họa nút ba chấm và tùy chọn Sao chép liên kết trên app Facebook">
+          <defs>
+            <clipPath id="screenM2"><rect x="78" y="18" width="184" height="434" rx="24"/></clipPath>
+            <clipPath id="avM2"><circle cx="124" cy="61" r="15"/></clipPath>
+            <clipPath id="avM2b"><circle cx="112" cy="158" r="21"/></clipPath>
+            <linearGradient id="coverC" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#43cea2"/><stop offset="100%" stop-color="#185a9d"/>
+            </linearGradient>
+          </defs>
+
+          <rect x="70" y="10" width="200" height="450" rx="30" fill="#1c1e21"/>
+          <rect x="78" y="18" width="184" height="434" rx="24" fill="#ffffff"/>
+          <rect x="145" y="24" width="50" height="7" rx="3.5" fill="#1c1e21"/>
+
+          <g clip-path="url(#screenM2)">
+            <!-- app bar -->
+            <rect x="78" y="34" width="184" height="54" fill="#ffffff"/>
+            <path d="M100 62 l-8 9 l8 9" fill="none" stroke="#1877f2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="124" cy="61" r="15" fill="#c9d2dc"/>
+            <g clip-path="url(#avM2)">
+              <circle cx="124" cy="56" r="5.5" fill="#ffffff"/>
+              <circle cx="124" cy="72" r="9" fill="#ffffff"/>
+            </g>
+            <text x="148" y="59" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#1c1e21">Nguyễn Văn A</text>
+            <text x="148" y="72" font-family="system-ui,sans-serif" font-size="9" fill="#65676b">Trang cá nhân</text>
+
+            <!-- three dots -->
+            <circle cx="240" cy="61" r="20" fill="#ff8a00" opacity=".12"/>
+            <circle cx="240" cy="61" r="14" fill="#e4e6eb"/>
+            <circle cx="233" cy="61" r="1.8" fill="#444950"/>
+            <circle cx="240" cy="61" r="1.8" fill="#444950"/>
+            <circle cx="247" cy="61" r="1.8" fill="#444950"/>
+            <circle cx="240" cy="61" r="20" fill="none" stroke="#ff8a00" stroke-width="2" stroke-dasharray="5 4"/>
+            <line x1="78" y1="88" x2="262" y2="88" stroke="#e4e6eb"/>
+
+            <!-- profile -->
+            <rect x="78" y="89" width="184" height="70" fill="url(#coverC)"/>
+            <circle cx="112" cy="158" r="24" fill="#ffffff"/>
+            <g clip-path="url(#avM2b)">
+              <circle cx="112" cy="158" r="21" fill="#c9d2dc"/>
+              <circle cx="112" cy="152" r="7.5" fill="#ffffff"/>
+              <circle cx="112" cy="176" r="13" fill="#ffffff"/>
+            </g>
+            <text x="146" y="158" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#1c1e21">Nguyễn Văn A</text>
+            <rect x="146" y="166" width="72" height="7" rx="3.5" fill="#e4e6eb"/>
+            <rect x="94" y="196" width="152" height="9" rx="4.5" fill="#eef1f5"/>
+            <rect x="94" y="214" width="120" height="9" rx="4.5" fill="#eef1f5"/>
+
+            <!-- bottom sheet -->
+            <rect x="78" y="252" width="184" height="200" rx="18" fill="#000000" opacity=".08"/>
+            <rect x="78" y="250" width="184" height="200" rx="18" fill="#ffffff"/>
+            <rect x="150" y="262" width="40" height="4" rx="2" fill="#ccd2da"/>
+
+            <!-- option 1 -->
+            <rect x="90" y="278" width="160" height="42" rx="10" fill="#e7f0fe"/>
+            <circle cx="110" cy="299" r="11" fill="#1877f2"/>
+            <rect x="104" y="295" width="10" height="12" rx="2" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+            <rect x="108" y="292" width="10" height="12" rx="2" fill="#1877f2" stroke="#ffffff" stroke-width="1.5"/>
+            <text x="128" y="303" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#1877f2">Sao chép liên kết</text>
+
+            <!-- option 2 -->
+            <rect x="90" y="328" width="160" height="42" rx="10" fill="#f0f2f5"/>
+            <circle cx="110" cy="349" r="11" fill="#8a8d91"/>
+            <rect x="104" y="345" width="10" height="12" rx="2" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+            <rect x="108" y="342" width="10" height="12" rx="2" fill="#8a8d91" stroke="#ffffff" stroke-width="1.5"/>
+            <text x="128" y="353" font-family="system-ui,sans-serif" font-size="11" fill="#1c1e21">Lưu bài viết</text>
+
+            <!-- option 3 -->
+            <rect x="90" y="378" width="160" height="42" rx="10" fill="#f0f2f5"/>
+            <circle cx="110" cy="399" r="11" fill="#8a8d91"/>
+            <path d="M106 399 l5 -5 l5 5 M111 394 v10" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="128" y="403" font-family="system-ui,sans-serif" font-size="11" fill="#1c1e21">Chia sẻ lên tin</text>
+          </g>
+        </svg>
+        <figcaption class="figcap">Bước 2 — Nhấn “…” → chọn “Sao chép liên kết”</figcaption>
+      </figure>
+    </article>
+
+    <!-- STEP 3 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">3</span>
+        <div>
+          <h3>Hoặc lấy link bằng trình duyệt trên điện thoại</h3>
+          <p>Mở <strong>facebook.com</strong> bằng Chrome / Safari → vào trang cá nhân → <strong>nhấn giữ</strong> vào thanh địa chỉ → chọn <strong>“Sao chép”</strong>.</p>
+          <ul>
+            <li>Cách này cho link đầy đủ, không bị rút gọn như khi copy trong app.</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure phone">
+        <svg viewBox="0 0 340 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Minh họa nhấn giữ thanh địa chỉ trên trình duyệt điện thoại để sao chép link">
+          <defs>
+            <clipPath id="screenM3"><rect x="78" y="18" width="184" height="434" rx="24"/></clipPath>
+            <clipPath id="avM3"><circle cx="112" cy="216" r="21"/></clipPath>
+            <linearGradient id="coverD" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#764ba2"/>
+            </linearGradient>
+          </defs>
+
+          <rect x="70" y="10" width="200" height="450" rx="30" fill="#1c1e21"/>
+          <rect x="78" y="18" width="184" height="434" rx="24" fill="#ffffff"/>
+          <rect x="145" y="24" width="50" height="7" rx="3.5" fill="#1c1e21"/>
+
+          <g clip-path="url(#screenM3)">
+            <text x="94" y="42" font-family="system-ui,sans-serif" font-size="9" font-weight="600" fill="#1c1e21">9:41</text>
+            <rect x="234" y="33" width="18" height="9" rx="2" fill="none" stroke="#1c1e21" stroke-width="1"/>
+
+            <!-- address bar -->
+            <rect x="88" y="54" width="164" height="30" rx="15" fill="#eef1f5"/>
+            <rect x="96" y="59" width="124" height="20" rx="4" fill="#1877f2" opacity="0.18"/>
+            <text x="100" y="73" font-family="system-ui,sans-serif" font-size="9.5" font-weight="600" fill="#1877f2"
+                  textLength="116" lengthAdjust="spacingAndGlyphs">facebook.com/nguyen.van.a</text>
+            <circle cx="96" cy="85" r="3.2" fill="#1877f2"/>
+            <circle cx="220" cy="85" r="3.2" fill="#1877f2"/>
+
+            <!-- popup menu -->
+            <rect x="90" y="96" width="160" height="40" rx="10" fill="#000000" opacity=".07"/>
+            <rect x="88" y="94" width="160" height="40" rx="10" fill="#ffffff" stroke="#e4e6eb"/>
+            <text x="102" y="119" font-family="system-ui,sans-serif" font-size="10" font-weight="700" fill="#1877f2">Sao chép</text>
+            <text x="152" y="119" font-family="system-ui,sans-serif" font-size="10" fill="#1c1e21">Chọn tất cả</text>
+            <text x="216" y="119" font-family="system-ui,sans-serif" font-size="10" fill="#1c1e21">Dán</text>
+
+            <!-- page -->
+            <rect x="78" y="146" width="184" height="70" fill="url(#coverD)"/>
+            <circle cx="112" cy="216" r="24" fill="#ffffff"/>
+            <g clip-path="url(#avM3)">
+              <circle cx="112" cy="216" r="21" fill="#c9d2dc"/>
+              <circle cx="112" cy="210" r="7.5" fill="#ffffff"/>
+              <circle cx="112" cy="234" r="13" fill="#ffffff"/>
+            </g>
+            <text x="146" y="216" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#1c1e21">Nguyễn Văn A</text>
+            <rect x="146" y="224" width="72" height="7" rx="3.5" fill="#e4e6eb"/>
+            <rect x="94" y="258" width="152" height="10" rx="5" fill="#eef1f5"/>
+            <rect x="94" y="278" width="120" height="10" rx="5" fill="#eef1f5"/>
+            <rect x="94" y="298" width="140" height="10" rx="5" fill="#eef1f5"/>
+          </g>
+        </svg>
+        <figcaption class="figcap">Bước 3 — Nhấn giữ thanh địa chỉ → “Sao chép”</figcaption>
+      </figure>
+    </article>
+
+    <!-- STEP 4 -->
+    <article class="step">
+      <div class="step-head">
+        <span class="num">4</span>
+        <div>
+          <h3>Dán link ra nơi bạn cần</h3>
+          <p>Sau khi sao chép, link đã nằm trong clipboard. Mở <strong>Ghi chú</strong>, <strong>Messenger</strong>, <strong>Zalo</strong>… rồi <strong>nhấn giữ</strong> vào ô nhập và chọn <strong>“Dán”</strong>.</p>
+          <ul>
+            <li>Link copy từ app đôi khi có dạng rút gọn <code>fb.com/…</code> — vẫn hoạt động bình thường.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- ================= SHARED: LINK STRUCTURE ================= -->
+  <section class="notes">
+    <h2>🔗 Link chuẩn trông như thế nào?</h2>
+    <p>Link trang cá nhân Facebook thường có 2 dạng, cả hai đều dùng được:</p>
+    <ul>
+      <li><strong>Dạng tên riêng:</strong> <code>facebook.com/nguyen.van.a</code> — ngắn gọn, dễ nhớ.</li>
+      <li><strong>Dạng ID số:</strong> <code>facebook.com/profile.php?id=100012345678</code> — dùng khi người đó chưa đặt tên riêng cho trang.</li>
+    </ul>
+
+    <div class="link-demo">
+      <code class="link-code"><span class="keep">https://www.facebook.com/nguyen.van.a</span><span class="drop">?mibextid=LQQJ4d&amp;rdid=abc123</span></code>
+    </div>
+    <div class="legend">
+      <span><i class="dot keep-dot"></i> Giữ lại — phần định danh trang cá nhân</span>
+      <span><i class="dot drop-dot"></i> Xoá được — tham số theo dõi</span>
+    </div>
+
+    <div class="callout">
+      💡 <strong>Mẹo:</strong> Mọi ký tự nằm sau dấu <strong>?</strong> đều là tham số theo dõi (<code>mibextid</code>, <code>rdid</code>, <code>v</code>, <code>__cft__</code>…).
+      Xoá chúng đi thì link vẫn mở đúng trang và trông gọn gàng hơn nhiều.
+    </div>
+  </section>
+
+  <!-- ================= SHARED: NOTES ================= -->
+  <section class="notes">
+    <h2>⚠️ Lưu ý quan trọng</h2>
+    <ul>
+      <li><strong>Phân biệt link trang cá nhân và link bài viết.</strong> Link bài viết có thêm <code>/posts/</code>, <code>/photos/</code>, <code>/videos/</code>… — bấm vào đó sẽ mở đúng bài viết chứ không phải trang cá nhân.</li>
+      <li><strong>Không thấy nút “Sao chép liên kết”?</strong> Người đó có thể đã chặn bạn, tài khoản bị hạn chế, hoặc bạn đang xem ở chế độ không cho phép sao chép.</li>
+      <li><strong>Link có thể thay đổi.</strong> Nếu chủ tài khoản đổi tên người dùng (username), link dạng tên riêng cũ sẽ hết hiệu lực — khi đó hãy dùng link dạng ID số.</li>
+      <li><strong>Tôn trọng quyền riêng tư.</strong> Chỉ lấy và chia sẻ link khi người đó đồng ý. Không dùng link để spam, quấy rối hay theo dõi người khác.</li>
+      <li><strong>Không nhấn vào link lạ</strong> được gửi tới bạn dưới dạng link Facebook — hãy kiểm tra kỹ tên miền trước khi đăng nhập.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  Trang hướng dẫn mang tính tham khảo · Giao diện Facebook có thể thay đổi theo thời gian.
+</footer>
+
+<script>
+  /* ---------- Chuyển tab Desktop / Mobile ---------- */
+  (function () {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.panel');
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var target = tab.dataset.tab;
+
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.classList.toggle('active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+
+        panels.forEach(function (p) {
+          p.classList.toggle('active', p.id === target);
+        });
+      });
+
+      /* Điều hướng bằng bàn phím (← →) */
+      tab.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        var list = Array.prototype.slice.call(tabs);
+        var i = list.indexOf(tab);
+        var next = e.key === 'ArrowRight' ? (i + 1) % list.length : (i - 1 + list.length) % list.length;
+        list[next].focus();
+        list[next].click();
+      });
+    });
+  })();
+
+  /* ---------- Nút sao chép ---------- */
+  (function () {
+    document.querySelectorAll('.btn-copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var text = btn.dataset.copy || '';
+        var original = btn.textContent;
+
+        function done() {
+          btn.classList.add('copied');
+          btn.textContent = 'Đã sao chép ✓';
+          setTimeout(function () {
+            btn.classList.remove('copied');
+            btn.textContent = original;
+          }, 1600);
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(done).catch(fallback);
+        } else {
+          fallback();
+        }
+
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); } catch (err) {}
+          document.body.removeChild(ta);
+          done();
+        }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
