@@ -4,15 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Báo Cáo Bơm Hàng - Lừa Đảo </title>
- <link rel="icon" type="image/png" href="/scam/scam.png">
-   <meta property="og:title" content="Báo cáo lừa đảo, bơm hàng" />
-  <meta property="og:description" content="Báo cáo lừa đảo, bơm hàng" />
-  <meta property="og:image" content="/scam/scam.jpge" />
-  <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:url" content="https://www.lephiphi.com/scam/" />
-  <meta property="og:type" content="website" />
+
 <!-- ===== PWA: BẮT ĐẦU THÊM VÀO ===== -->
 <link rel="manifest" href="/scam/manifest.json">
 <meta name="theme-color" content="#4a3f8f">
@@ -73,29 +65,62 @@
   .page-controls button:disabled { opacity:.35; cursor:not-allowed; }
   .page-controls .dots { padding:7px 4px; color:#999; }
 
-  /* ===== PWA: BẮT ĐẦU THÊM VÀO ===== */
+  /* ===== PWA: NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI ===== */
   .btn-install {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 998;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 22px;
     background: linear-gradient(135deg, #f39c12, #e67e22);
     color: #fff;
-    padding: 11px 22px;
     border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all .2s;
-    animation: pulseInstall 2s infinite;
+    box-shadow: 0 8px 24px rgba(243, 156, 18, .55);
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s, box-shadow .2s;
+    /* Trượt ra khỏi màn hình ban đầu */
+    transform: translateX(calc(100% + 40px));
+    opacity: 0;
+    pointer-events: none;
+  }
+  .btn-install.show {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
   }
   .btn-install:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(243, 156, 18, .5);
-    animation: none;
+    box-shadow: 0 10px 30px rgba(243, 156, 18, .75);
+    transform: translateY(-3px) scale(1.03);
   }
-  @keyframes pulseInstall {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, .7); }
-    50% { box-shadow: 0 0 0 10px rgba(243, 156, 18, 0); }
+  .btn-install:active {
+    transform: translateY(0) scale(.98);
   }
-  /* ===== PWA: KẾT THÚC THÊM VÀO ===== */
+  .btn-install .icon {
+    font-size: 20px;
+    animation: pulseIcon 2s infinite;
+  }
+  @keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+  /* Trên mobile nhỏ, thu gọn thành nút tròn */
+  @media (max-width: 480px) {
+    .btn-install {
+      padding: 14px;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      justify-content: center;
+    }
+    .btn-install .label { display: none; }
+  }
+  /* ===== PWA: KẾT THÚC ===== */
 </style>
 </head>
 <body>
@@ -138,9 +163,6 @@
       <button type="button" class="btn-secondary" id="resetBtn">🔄 Làm mới</button>
       <button type="button" class="btn-refresh" id="refreshBtn">🔃 Tải lại</button>
       <button type="button" class="btn-export" id="exportBtn">📥 Xuất CSV</button>
-      <!-- ===== PWA: NÚT CÀI ĐẶT THÊM VÀO ===== -->
-      <button type="button" class="btn-install" id="installBtn" style="display:none;">📲 Cài đặt App</button>
-      <!-- ===== PWA: KẾT THÚC ===== -->
     </div>
   </form>
 
@@ -179,6 +201,13 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ===== PWA: NÚT CÀI ĐẶT NỔI ===== -->
+<button type="button" class="btn-install" id="installBtn" aria-label="Cài đặt ứng dụng">
+  <span class="icon">📲</span>
+  <span class="label">Cài đặt App</span>
+</button>
+<!-- ===== PWA: KẾT THÚC ===== -->
 
 <script>
   // ================================================
@@ -422,7 +451,7 @@
 <!-- ===== PWA: BẮT ĐẦU THÊM VÀO ===== -->
 <script>
 // ============================================================
-// PWA — ĐĂNG KÝ SERVICE WORKER + XỬ LÝ NÚT CÀI ĐẶT
+// PWA — SERVICE WORKER + NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI
 // ============================================================
 (function () {
   // 1. Đăng ký Service Worker
@@ -443,47 +472,53 @@
 
   if (!installBtn) return;
 
-  // 3. Nếu đã cài đặt rồi → không hiện nút
+  // 3. Hàm hiện/ẩn nút với hiệu ứng trượt
+  const showBtn = (label) => {
+    if (label) installBtn.querySelector('.label').textContent = label;
+    // Delay nhẹ để hiệu ứng trượt mượt hơn
+    setTimeout(() => installBtn.classList.add('show'), 400);
+  };
+  const hideBtn = () => installBtn.classList.remove('show');
+
+  // 4. Nếu đã cài đặt rồi → không hiện nút
   if (isStandalone) {
-    installBtn.style.display = 'none';
+    hideBtn();
     return;
   }
 
-  // 4. Sự kiện beforeinstallprompt (Chrome, Edge trên Windows & Android)
+  // 5. Sự kiện beforeinstallprompt (Chrome, Edge trên Windows & Android)
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    installBtn.style.display = 'inline-block';
-    installBtn.textContent = '📲 Cài đặt App';
-    console.log('✅ PWA có thể cài đặt — đã hiện nút');
+    showBtn('Cài đặt App');
+    console.log('✅ PWA có thể cài đặt — nút đã trượt vào');
   });
 
-  // 5. Trên PC (Windows/Mac/Linux): luôn hiện nút để người dùng bấm
-  //    Trên iOS: hiện nút với hướng dẫn riêng
+  // 6. Hiển thị nút cho các trường hợp đặc biệt
   const isDesktop = !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   if (isDesktop) {
-    installBtn.style.display = 'inline-block';
+    // PC: luôn hiện nút (nếu chưa có prompt thì sẽ hướng dẫn dùng biểu tượng trên thanh địa chỉ)
+    showBtn('Cài đặt App');
   } else if (isIOS) {
-    installBtn.style.display = 'inline-block';
-    installBtn.textContent = '📲 Thêm vào màn hình chính';
+    // iOS: hiện nút với label riêng
+    showBtn('Thêm vào M.Hình');
   }
 
-  // 6. Xử lý khi bấm nút
+  // 7. Xử lý khi bấm nút
   installBtn.addEventListener('click', async () => {
-    // Trường hợp có prompt native → gọi prompt
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       console.log('Người dùng chọn:', outcome);
       deferredPrompt = null;
       if (outcome === 'accepted') {
-        installBtn.style.display = 'none';
+        hideBtn();
         if (typeof toast === 'function') toast('✅ Đang cài đặt ứng dụng...');
       }
       return;
     }
 
-    // Trường hợp không có prompt → hiện hướng dẫn
+    // Không có prompt → hiện hướng dẫn
     if (isIOS) {
       alert(
         '📱 Cách cài đặt trên iPhone/iPad:\n\n' +
@@ -501,10 +536,10 @@
     }
   });
 
-  // 7. Khi cài đặt thành công
+  // 8. Khi cài đặt thành công → ẩn nút
   window.addEventListener('appinstalled', () => {
     console.log('✅ PWA đã được cài đặt thành công!');
-    installBtn.style.display = 'none';
+    hideBtn();
     deferredPrompt = null;
     if (typeof toast === 'function') toast('✅ Đã cài đặt ứng dụng thành công!');
   });
