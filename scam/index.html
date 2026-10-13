@@ -632,13 +632,13 @@
     });
   }
 
-  // 2. Hiện nút hướng dẫn Facebook (trượt vào từ mép trái)
+  // 2. Hiện nút hướng dẫn Facebook
   const fbGuideBtn = document.getElementById('fbGuideBtn');
   if (fbGuideBtn) {
     setTimeout(() => fbGuideBtn.classList.add('show'), 800);
   }
 
-  // 3. Chuẩn bị biến cho nút cài đặt
+  // 3. Khai báo biến
   let deferredPrompt = null;
   const installBtn = document.getElementById('installBtn');
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches
@@ -659,75 +659,64 @@
     installBtn.classList.remove('show');
   };
 
-  // Nếu đã cài đặt rồi thì ẩn nút đi
+  // Nếu app đã được cài và đang chạy dạng App độc lập (Standalone) thì ẩn nút
   if (isStandalone) {
     hideBtn();
     return;
   }
 
-  // 4. Xử lý riêng cho iOS (vì iOS không hỗ trợ beforeinstallprompt)
-  if (isIOS) {
-    showBtn('Cài đặt App');
-    installBtn.addEventListener('click', () => {
+  // Luôn hiển thị nút Cài đặt App cho người dùng
+  showBtn('Cài đặt App');
+
+  // 4. Lắng nghe sự kiện trước khi cài đặt PWA
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log('✅ PWA đã sẵn sàng cài đặt tự động bằng prompt gốc!');
+  });
+
+  // 5. Xử lý sự kiện click
+  installBtn.addEventListener('click', async () => {
+    // Nếu có sự kiện chuẩn từ trình duyệt -> Mở popup gốc
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('Người dùng chọn:', outcome);
+      deferredPrompt = null;
+      if (outcome === 'accepted') {
+        hideBtn();
+        if (typeof toast === 'function') toast('✅ Đang cài đặt ứng dụng...');
+      }
+      return;
+    }
+
+    // Nếu chưa/không bắt được sự kiện (iOS hoặc Desktop chưa sẵn sàng)
+    if (isIOS) {
       alert(
         '📱 Cách cài đặt trên iPhone/iPad:\n\n' +
         '1. Nhấn nút Chia sẻ (⬆️) ở thanh dưới cùng Safari\n' +
         '2. Cuộn xuống chọn "Thêm vào Màn hình chính"\n' +
         '3. Nhấn "Thêm" để hoàn tất'
       );
-    });
-    return;
-  }
-
-  // 5. Đối với Desktop và Android: Lắng nghe sự kiện chuẩn từ trình duyệt
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Ngăn trình duyệt tự hiện banner mặc định (nếu có)
-    e.preventDefault();
-    // Lưu lại sự kiện để kích hoạt khi người dùng bấm nút
-    deferredPrompt = e;
-    // Hiển thị nút cài đặt lên giao diện
-    showBtn('Cài đặt App');
-    console.log('✅ PWA đã sẵn sàng để cài đặt');
-  });
-
-  // 6. Xử lý sự kiện khi người dùng click vào nút Cài đặt App
-  installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) {
-      // Trường hợp trình duyệt chưa sẵn sàng sự kiện (ví dụ chưa đủ tương tác)
+    } else {
       alert(
-        '💻 Trình duyệt đang chuẩn bị cài đặt:\n\n' +
-        'Hãy thử tải lại trang (Ctrl + F5), tương tác vài cái trên web rồi bấm lại nút Cài đặt, ' +
-        'hoặc bấm vào biểu tượng cài đặt (màn hình có mũi tên/dấu cộng) ngay trên thanh địa chỉ của Chrome/Edge.'
+        '💻 Hướng dẫn cài đặt trên Máy tính:\n\n' +
+        '1. Nhìn lên thanh địa chỉ (URL) ở trên cùng trình duyệt.\n' +
+        '2. Bấm vào biểu tượng cài đặt (Hình màn hình kèm dấu cộng ⊕ hoặc mũi tên đi xuống).\n' +
+        '3. Chọn "Cài đặt" (Install).'
       );
-      return;
     }
-
-    // Hiển thị bảng cài đặt gốc của trình duyệt
-    deferredPrompt.prompt();
-    
-    // Đợi người dùng phản hồi (chấp nhận hoặc hủy)
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log('Người dùng phản hồi:', outcome);
-    
-    if (outcome === 'accepted') {
-      hideBtn();
-      if (typeof toast === 'function') toast('✅ Đang tiến hành cài đặt...');
-    }
-    
-    // Sự kiện prompt chỉ dùng được 1 lần, sau đó phải reset
-    deferredPrompt = null;
   });
 
-  // 7. Khi PWA đã được cài đặt thành công hoàn tất
+  // 6. Khi cài đặt thành công
   window.addEventListener('appinstalled', () => {
-    console.log('✅ PWA đã được cài đặt thành công!');
+    console.log('✅ PWA đã được cài đặt!');
     hideBtn();
     deferredPrompt = null;
     if (typeof toast === 'function') toast('✅ Đã cài đặt ứng dụng thành công!');
   });
 })();
 </script>
-<!-- ================================================= -->
 
 </body>
 </html>
