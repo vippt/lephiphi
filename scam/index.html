@@ -74,6 +74,55 @@
   .page-controls button:disabled { opacity:.35; cursor:not-allowed; }
   .page-controls .dots { padding:7px 4px; color:#999; }
 
+  /* ===== Ô NHẬP CÓ NÚT DÁN BÊN TRONG ===== */
+  .input-with-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-with-btn input {
+    width: 100%;
+    padding-right: 88px; /* chừa chỗ cho nút Dán */
+  }
+  .paste-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 7px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #1877f2, #0d5dbf);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 6px rgba(24,119,242,.35);
+    transition: all .18s;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .paste-btn:hover {
+    background: linear-gradient(135deg, #0d5dbf, #094a94);
+    box-shadow: 0 3px 10px rgba(24,119,242,.55);
+    transform: translateY(-50%) scale(1.04);
+  }
+  .paste-btn:active {
+    transform: translateY(-50%) scale(.96);
+  }
+  .paste-btn:disabled {
+    opacity: .6;
+    cursor: wait;
+  }
+  .paste-btn.pasted {
+    background: linear-gradient(135deg, #27ae60, #1e8e4e);
+    box-shadow: 0 2px 6px rgba(39,174,96,.4);
+  }
+  .paste-btn .paste-icon { font-size: 13px; }
+
   /* ========= NÚT CÀI ĐẶT NỔI GÓC DƯỚI PHẢI ========= */
   #installBtn {
     position: fixed !important;
@@ -165,7 +214,6 @@
     font-family: inherit;
     white-space: nowrap;
     text-decoration: none;
-    /* Ban đầu ẩn hoàn toàn bên trái */
     transform: translateX(-100%);
     opacity: 0;
     pointer-events: none;
@@ -188,7 +236,6 @@
     transform: translateX(0) scale(.98) !important;
   }
 
-  /* Trượt vào/ra từ mép trái */
   @keyframes slideLeftLoop {
     0%   { transform: translateX(-25%); }
     15%  { transform: translateX(0); }
@@ -217,7 +264,7 @@
     50% { transform: scale(1.2); }
   }
 
-  /* Mobile: vẫn giữ chữ, thu gọn padding và font */
+  /* Mobile */
   @media (max-width: 480px) {
     #installBtn {
       padding: 11px 18px 11px 14px;
@@ -235,6 +282,9 @@
     #fbGuideBtn .fb-guide-icon { font-size: 18px; }
     #fbGuideBtn .fb-guide-label { font-size: 12px; }
 
+    .input-with-btn input { padding-right: 80px; }
+    .paste-btn { padding: 6px 10px; font-size: 11.5px; }
+
     @keyframes slideLoop {
       0%   { transform: translateX(25%); }
       15%  { transform: translateX(0); }
@@ -250,7 +300,6 @@
       100% { transform: translateX(-25%); }
     }
   }
-  /* ================================================ */
 </style>
 </head>
 <body>
@@ -278,7 +327,13 @@
       </div>
       <div class="form-group">
         <label>Link Facebook</label>
-        <input type="text" id="facebook" placeholder="VD: fb.com/abcxyz">
+        <div class="input-with-btn">
+          <input type="text" id="facebook" placeholder="VD: fb.com/abcxyz">
+          <button type="button" class="paste-btn" id="pasteFbBtn" aria-label="Dán link Facebook">
+            <span class="paste-icon">📋</span>
+            <span class="paste-text">Dán</span>
+          </button>
+        </div>
       </div>
       <div class="form-group">
         <label>Tài khoản ngân hàng</label>
@@ -338,14 +393,12 @@
   <span class="fb-guide-icon">📘</span>
   <span class="fb-guide-label">Hướng dẫn lấy link Facebook</span>
 </a>
-<!-- ========================================================================== -->
 
 <!-- ========== NÚT CÀI ĐẶT APP (NỔI GÓC DƯỚI PHẢI) ========== -->
 <button type="button" id="installBtn" aria-label="Cài đặt ứng dụng">
   <span class="install-icon">📲</span>
   <span class="install-label">Cài đặt App</span>
 </button>
-<!-- ============================================================ -->
 
 <script>
   // ================================================
@@ -386,26 +439,22 @@
 
     let text = String(raw).trim();
 
-    // Nếu không có dấu chấm ở phần đầu (domain) → coi là username FB
     const firstPart = text.split('/')[0];
     if (!/\./.test(firstPart) && !/^https?:\/\//i.test(text)) {
       text = 'facebook.com/' + text.replace(/^\/+/, '');
     }
 
-    // Tự động thêm https:// nếu thiếu
     let url = text;
     if (!/^https?:\/\//i.test(url)) {
       url = 'https://' + url.replace(/^\/+/, '');
     }
 
-    // Tạo text hiển thị (rút gọn)
     let display = text.replace(/^https?:\/\//i, '').replace(/^www\./i, '');
     const MAX_LEN = 20;
     if (display.length > MAX_LEN) {
       display = display.slice(0, MAX_LEN) + '...';
     }
 
-    // Mở CÙNG TAB (không dùng target="_blank")
     return `<a href="${escapeHtml(url)}"
                title="${escapeHtml(text)}"
                style="color:#1877f2;text-decoration:none;font-weight:600;
@@ -547,6 +596,72 @@
     document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // ==================================================
+  // ===== XỬ LÝ NÚT DÁN LINK FACEBOOK =================
+  // ==================================================
+  async function handlePasteFb() {
+    const btn = $('pasteFbBtn');
+    const input = $('facebook');
+    const textEl = btn.querySelector('.paste-text');
+    const iconEl = btn.querySelector('.paste-icon');
+
+    try {
+      let text = '';
+
+      // Ưu tiên Clipboard API hiện đại
+      if (navigator.clipboard && window.isSecureContext) {
+        text = await navigator.clipboard.readText();
+      } else {
+        // Fallback: tạo textarea tạm để dùng execCommand
+        text = await new Promise((resolve, reject) => {
+          const ta = document.createElement('textarea');
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          ta.style.top = '-1000px';
+          document.body.appendChild(ta);
+          ta.focus();
+          let ok = false;
+          try { ok = document.execCommand('paste'); } catch(e){}
+          const val = ta.value;
+          document.body.removeChild(ta);
+          if (ok && val) resolve(val);
+          else reject(new Error('Trình duyệt không cho phép đọc clipboard'));
+        });
+      }
+
+      text = (text || '').trim();
+      if (!text) {
+        toast('⚠️ Clipboard đang trống!', true);
+        return;
+      }
+
+      // Điền vào ô input (không tự thêm https:// — để renderFbLink lo)
+      input.value = text;
+      // Kích hoạt sự kiện input để các listener (nếu có) nhận biết
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+
+      // Hiệu ứng thành công
+      btn.classList.add('pasted');
+      textEl.textContent = 'Đã dán';
+      iconEl.textContent = '✅';
+      toast('✅ Đã dán link Facebook!');
+
+      setTimeout(() => {
+        btn.classList.remove('pasted');
+        textEl.textContent = 'Dán';
+        iconEl.textContent = '📋';
+      }, 1800);
+
+    } catch (err) {
+      // Nếu không đọc được clipboard → thông báo & focus vào ô để người dùng dán tay
+      input.focus();
+      toast('⚠️ Trình duyệt chặn dán. Hãy nhấn giữ vào ô và chọn "Dán".', true);
+    }
+  }
+
+  $('pasteFbBtn').addEventListener('click', handlePasteFb);
+  // ==================================================
+
   $('formData').addEventListener('submit', async function(e) {
     e.preventDefault();
     if (!checkApiUrl()) return toast('❌ Chưa cấu hình URL API!', true);
@@ -620,10 +735,8 @@
   setInterval(loadData, 30000);
 </script>
 
-<!-- ============= PWA + NÚT HƯỚNG DẪN ============= -->
 <script>
 (function () {
-  // 1. Đăng ký Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/scam/sw.js', { scope: '/scam/' })
@@ -632,13 +745,11 @@
     });
   }
 
-  // 2. Hiện nút hướng dẫn Facebook
   const fbGuideBtn = document.getElementById('fbGuideBtn');
   if (fbGuideBtn) {
     setTimeout(() => fbGuideBtn.classList.add('show'), 800);
   }
 
-  // 3. Khai báo biến
   let deferredPrompt = null;
   const installBtn = document.getElementById('installBtn');
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches
@@ -654,30 +765,25 @@
     }
     setTimeout(() => installBtn.classList.add('show'), 600);
   };
-  
+
   const hideBtn = () => {
     installBtn.classList.remove('show');
   };
 
-  // Nếu app đã được cài và đang chạy dạng App độc lập (Standalone) thì ẩn nút
   if (isStandalone) {
     hideBtn();
     return;
   }
 
-  // Luôn hiển thị nút Cài đặt App cho người dùng
   showBtn('Cài đặt App');
 
-  // 4. Lắng nghe sự kiện trước khi cài đặt PWA
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     console.log('✅ PWA đã sẵn sàng cài đặt tự động bằng prompt gốc!');
   });
 
-  // 5. Xử lý sự kiện click
   installBtn.addEventListener('click', async () => {
-    // Nếu có sự kiện chuẩn từ trình duyệt -> Mở popup gốc
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -690,7 +796,6 @@
       return;
     }
 
-    // Nếu chưa/không bắt được sự kiện (iOS hoặc Desktop chưa sẵn sàng)
     if (isIOS) {
       alert(
         '📱 Cách cài đặt trên iPhone/iPad:\n\n' +
@@ -708,7 +813,6 @@
     }
   });
 
-  // 6. Khi cài đặt thành công
   window.addEventListener('appinstalled', () => {
     console.log('✅ PWA đã được cài đặt!');
     hideBtn();
