@@ -308,7 +308,7 @@
 const CONFIG = {
   bankCode:    "MB",              // Mã ngân hàng MB Bank (VietQR)
   accountNo:   "0347226299",      // Số tài khoản
-  accountName: "Do Thi Thuan",                // Tên chủ tài khoản (không dấu, IN HOA)
+  accountName: "Do Thi Thuan",    // Tên chủ tài khoản (không dấu, IN HOA)
   template:    "compact2",        // compact | compact2 | qr_only | print
   appName:     "QR MB Bank"       // Tên hiển thị khi cài ra màn hình chính
 };
@@ -471,28 +471,57 @@ function scheduleQR(userAction) {
 descInput.addEventListener('input', () => scheduleQR(false));
 
 /* ============================================================
-   3. TẢI MÃ QR
+   3. TẢI MÃ QR — ĐÃ SỬA LỖI TRÊN ĐIỆN THOẠI
+   - Điện thoại: dùng Web Share API (Lưu hình ảnh / chia sẻ)
+   - Máy tính: tải Blob với tên file .png rõ ràng
+   - Fallback: mở ảnh trong tab mới để nhấn giữ lưu
    ============================================================ */
-function downloadQR() {
+async function downloadQR() {
   const url = buildQRUrl(false);
-
-  fetch(url)
-    .then(r => {
-      if (!r.ok) throw new Error('network');
-      return r.blob();
-    })
-    .then(blob => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'QR-MB-' + CONFIG.accountNo +
+  const fileName = 'QR-MB-' + CONFIG.accountNo +
                    (getAmount() ? '-' + getAmount() : '') + '.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-      showToast('Đã tải mã QR');
-    })
-    .catch(() => showToast('Không tải được, vui lòng thử lại'));
+
+  try {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) throw new Error('network');
+    const blob = await response.blob();
+
+    // --- Ưu tiên 1: Chia sẻ hệ thống (điện thoại) ---
+    const file = new File([blob], fileName, { type: 'image/png' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'Mã QR thanh toán',
+          text: 'Mã QR chuyển khoản ' + CONFIG.accountNo
+        });
+        showToast('Chọn "Lưu hình ảnh" để lưu QR');
+        return;
+      } catch (shareErr) {
+        // Người dùng hủy chia sẻ → không làm gì, không fallback
+        if (shareErr && shareErr.name === 'AbortError') return;
+        // Lỗi khác → tiếp tục fallback bên dưới
+      }
+    }
+
+    // --- Ưu tiên 2: Tải xuống bằng Blob (máy tính) ---
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fileName;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+
+    showToast('Đã tải mã QR');
+  } catch (err) {
+    // --- Fallback: mở ảnh trong tab mới để người dùng nhấn giữ lưu ---
+    showToast('Mở ảnh — nhấn giữ để lưu');
+    window.open(url, '_blank', 'noopener');
+  }
 }
 
 /* ============================================================
@@ -539,7 +568,7 @@ function makeIcon(size) {
 /* --- 5.2 Nhúng manifest động --- */
 function injectManifest() {
   const manifest = {
-    name: CONFIG.appName ,
+    name: CONFIG.appName,
     short_name: CONFIG.appName,
     description: "Tạo mã QR thanh toán MB Bank " + CONFIG.accountNo,
     start_url: location.href.split('#')[0],
