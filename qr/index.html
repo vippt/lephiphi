@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Thanh toán QR - MB Bank</title>
 
-<!-- ===== PWA META ===== -->
 <meta name="theme-color" content="#0b3d91">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -165,44 +164,6 @@
     line-height: 1.5;
   }
 
-  .install-wrap { margin-top: 18px; display: none; }
-  .install-wrap.show { display: block; }
-
-  .btn-install {
-    width: 100%;
-    padding: 14px;
-    border: 1.5px dashed #1565c0;
-    border-radius: 14px;
-    background: #f2f7fe;
-    color: #1565c0;
-    font-size: 14.5px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: .2s;
-  }
-  .btn-install:hover { background: #e3eefc; }
-  .btn-install:active { transform: scale(.98); }
-  .btn-install svg { width: 20px; height: 20px; flex-shrink: 0; }
-
-  .install-note {
-    display: none;
-    margin-top: 10px;
-    padding: 12px 14px;
-    background: #fff8e6;
-    border: 1px solid #f5dfa6;
-    border-radius: 12px;
-    font-size: 12.5px;
-    color: #7a5c00;
-    line-height: 1.55;
-  }
-  .install-note.show { display: block; }
-  .install-note b { color: #5c4500; }
-
   .toast {
     position: fixed;
     bottom: 24px;
@@ -251,20 +212,7 @@
 
     <div class="qr-box" id="qrBox">
       <div class="spinner" id="spinner">Đang tạo mã QR...</div>
-      <img id="qrImg" alt="Mã QR thanh toán MB Bank">
-    </div>
-
-    <div class="install-wrap" id="installWrap">
-      <button class="btn-install" id="btnInstall" onclick="installApp()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 3v12"></path>
-          <path d="M8 11l4 4 4-4"></path>
-          <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>
-        </svg>
-        Thêm vào màn hình chính
-      </button>
-      <div class="install-note" id="installNote"></div>
+      <img id="qrImg" alt="Mã QR thanh toán MB Bank" crossorigin="anonymous">
     </div>
 
     <p class="note">
@@ -284,8 +232,7 @@ const CONFIG = {
   bankCode:    "MB",
   accountNo:   "0347226299",
   accountName: "Do Thi Thuan",
-  template:    "compact2",
-  appName:     "QR MB Bank"
+  template:    "compact2"
 };
 
 const qrImg       = document.getElementById('qrImg');
@@ -417,6 +364,7 @@ function buildQR(userAction) {
 
   const url = buildQRUrl(true);
   const img = new Image();
+  img.crossOrigin = 'anonymous';
 
   img.onload = function () {
     qrImg.src = url;
@@ -444,42 +392,60 @@ function scheduleQR(userAction) {
 descInput.addEventListener('input', () => scheduleQR(false));
 
 /* ============================================================
-   3. TẢI MÃ QR — TẢI TRỰC TIẾP, KHÔNG DÙNG SHARE
+   3. TẢI MÃ QR — VẼ ẢNH RA CANVAS, XUẤT PNG
+   Không dùng fetch/Blob/SVG → luôn ra .png, mở được ngay.
    ============================================================ */
-async function downloadQR() {
-  const url = buildQRUrl(false);
+function downloadQR() {
+  if (!qrImg.src) {
+    showToast('Vui lòng tạo mã QR trước');
+    return;
+  }
+
   const fileName = 'QR-MB-' + CONFIG.accountNo +
                    (getAmount() ? '-' + getAmount() : '') + '.png';
 
-  try {
-    // Tải dữ liệu ảnh
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) throw new Error('network');
+  const doExport = (sourceImg) => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width  = sourceImg.naturalWidth  || 600;
+      canvas.height = sourceImg.naturalHeight || 600;
 
-    // Đảm bảo Blob có type image/png để trình duyệt nhận diện đúng
-    const rawBlob = await response.blob();
-    const blob = rawBlob.type === 'image/png'
-      ? rawBlob
-      : new Blob([rawBlob], { type: 'image/png' });
+      const ctx = canvas.getContext('2d');
+      // Nền trắng để chắc chắn ảnh PNG không trong suốt
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(sourceImg, 0, 0, canvas.width, canvas.height);
 
-    // Tạo URL tạm và gán vào thẻ <a download>
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = fileName;          // tên file có đuôi .png rõ ràng
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+      canvas.toBlob(function (blob) {
+        if (!blob) { fallbackOpen(); return; }
 
-    // Giải phóng URL sau một lúc
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
 
-    showToast('Đã tải mã QR');
-  } catch (err) {
-    // Fallback: mở ảnh trong tab mới để nhấn giữ lưu (trường hợp CORS/mạng)
+        showToast('Đã tải mã QR');
+      }, 'image/png');
+    } catch (e) {
+      fallbackOpen();
+    }
+  };
+
+  // Tải ảnh QR về với crossOrigin để canvas không bị "tainted"
+  const tempImg = new Image();
+  tempImg.crossOrigin = 'anonymous';
+  tempImg.onload = function () { doExport(tempImg); };
+  tempImg.onerror = function () { fallbackOpen(); };
+  tempImg.src = buildQRUrl(false);
+
+  function fallbackOpen() {
     showToast('Mở ảnh — nhấn giữ để lưu');
-    window.open(url, '_blank', 'noopener');
+    window.open(buildQRUrl(false), '_blank', 'noopener');
   }
 }
 
@@ -502,11 +468,11 @@ document.querySelectorAll('input').forEach(el => {
 });
 
 /* ============================================================
-   5. PWA
+   5. ICON APPLE (tĩnh, không inject manifest/SW để tránh lỗi)
    ============================================================ */
-function makeIcon(size) {
+(function setAppleIcon() {
   const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 192 192">
+    `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 192 192">
       <defs>
         <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#0b3d91"/>
@@ -519,130 +485,15 @@ function makeIcon(size) {
             font-size="44" font-weight="bold" fill="#0b3d91"
             text-anchor="middle">MB</text>
     </svg>`;
-  return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-}
-
-function injectManifest() {
-  const manifest = {
-    name: CONFIG.appName,
-    short_name: CONFIG.appName,
-    description: "Tạo mã QR thanh toán MB Bank " + CONFIG.accountNo,
-    start_url: location.href.split('#')[0],
-    scope: "./",
-    display: "standalone",
-    orientation: "portrait",
-    background_color: "#0b3d91",
-    theme_color: "#0b3d91",
-    lang: "vi",
-    icons: [
-      { src: makeIcon(192), sizes: "192x192", type: "image/svg+xml", purpose: "any" },
-      { src: makeIcon(512), sizes: "512x512", type: "image/svg+xml", purpose: "any" },
-      { src: makeIcon(512), sizes: "512x512", type: "image/svg+xml", purpose: "maskable" }
-    ]
-  };
-
-  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-  const link = document.createElement('link');
-  link.rel = 'manifest';
-  link.href = URL.createObjectURL(blob);
-  document.head.appendChild(link);
-
-  document.getElementById('appleIcon').href = makeIcon(180);
-}
-
-function injectServiceWorker() {
-  if (!('serviceWorker' in navigator)) return;
-
-  const swCode = `
-    self.addEventListener('install', e => self.skipWaiting());
-    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-    self.addEventListener('fetch', e => {
-      e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-    });
-  `;
-
-  const blob = new Blob([swCode], { type: 'application/javascript' });
-  const swUrl = URL.createObjectURL(blob);
-
-  navigator.serviceWorker.register(swUrl).catch(() => {});
-}
-
-let deferredPrompt = null;
-
-function isStandalone() {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-         window.navigator.standalone === true;
-}
-
-function isIOS() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-
-function showInstallUI() {
-  if (isStandalone()) return;
-  document.getElementById('installWrap').classList.add('show');
-}
-
-function installApp() {
-  const note = document.getElementById('installNote');
-
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choice => {
-      if (choice.outcome === 'accepted') {
-        showToast('Đang thêm vào màn hình chính...');
-      } else {
-        showToast('Bạn đã hủy cài đặt');
-      }
-      deferredPrompt = null;
-      document.getElementById('installWrap').classList.remove('show');
-    });
-    return;
-  }
-
-  if (isIOS()) {
-    note.innerHTML =
-      '<b>Trên iPhone / iPad (Safari):</b><br>' +
-      '1. Nhấn nút <b>Chia sẻ</b> (hình vuông có mũi tên ↑) ở thanh dưới.<br>' +
-      '2. Cuộn xuống và chọn <b>Thêm vào màn hình chính</b>.<br>' +
-      '3. Nhấn <b>Thêm</b> để hoàn tất.';
-    note.classList.toggle('show');
-    return;
-  }
-
-  note.innerHTML =
-    '<b>Trình duyệt của bạn chưa hỗ trợ cài trực tiếp.</b><br>' +
-    'Hãy mở trang này bằng <b>Chrome</b> (Android) hoặc <b>Safari</b> (iPhone), ' +
-    'rồi chọn <b>Thêm vào màn hình chính</b> trong menu trình duyệt.';
-  note.classList.toggle('show');
-}
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  showInstallUI();
-});
-
-window.addEventListener('appinstalled', () => {
-  document.getElementById('installWrap').classList.remove('show');
-  showToast('Đã thêm vào màn hình chính');
-});
+  document.getElementById('appleIcon').href =
+    'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+})();
 
 /* ============================================================
    6. KHỞI TẠO
    ============================================================ */
-injectManifest();
-injectServiceWorker();
 renderAmount();
 buildQR(false);
-
-if (!isStandalone() && (isIOS() || window.matchMedia('(display-mode: browser)').matches)) {
-  if (isIOS()) showInstallUI();
-  else setTimeout(() => {
-    if (deferredPrompt) showInstallUI();
-  }, 1200);
-}
 </script>
 
 </body>
