@@ -228,13 +228,14 @@
 
 <script>
 /* ============================================================
-   CẤU HÌNH
+   CẤU HÌNH (Cập nhật chuẩn SVG-first mới nhất của VietQR)
    ============================================================ */
 const CONFIG = {
   bankCode:    "MB",
   accountNo:   "0922332243",
   accountName: "Le Phi Phi",
-  template:    "compact2"
+  template:    "compact2",
+  ext:         "svg" // Chuyển sang svg theo chuẩn mới của VietQR
 };
 
 const qrImg       = document.getElementById('qrImg');
@@ -329,13 +330,14 @@ amountInput.addEventListener('input', function () {
 });
 
 /* ============================================================
-   2. TẠO MÃ QR (CÓ CƠ CHẾ THỬ LẠI KHI MẠNG LỖI)
+   2. TẠO MÃ QR (Hỗ trợ cấu trúc SVG mới và tự fallback PNG)
    ============================================================ */
-function buildQRUrl(withCacheBuster) {
+function buildQRUrl(withCacheBuster, overrideExt) {
   const amount = getAmount();
   const desc   = descInput.value.trim();
+  const extension = overrideExt || CONFIG.ext;
 
-  let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.png`;
+  let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.${extension}`;
   const params = [];
 
   if (amount)             params.push('amount='      + encodeURIComponent(amount));
@@ -360,11 +362,12 @@ function scrollToQR() {
   setTimeout(() => qrBox.classList.remove('flash'), 900);
 }
 
-function buildQR(userAction, retryCount = 0) {
+function buildQR(userAction, useFallback = false) {
   spinner.classList.remove('hide');
-  spinner.innerHTML = 'Đang tạo mã QR...';
+  spinner.textContent = 'Đang tạo mã QR...';
 
-  const url = buildQRUrl(true);
+  const currentExt = useFallback ? 'png' : CONFIG.ext;
+  const url = buildQRUrl(true, currentExt);
   const img = new Image();
   img.crossOrigin = 'anonymous';
 
@@ -378,17 +381,13 @@ function buildQR(userAction, retryCount = 0) {
       });
     }
   };
-
   img.onerror = function () {
-    // Thử lại tối đa 2 lần nếu lỗi kết nối đột xuất
-    if (retryCount < 2) {
-      spinner.innerHTML = `Đang kết nối lại lần ${retryCount + 1}...`;
-      setTimeout(() => {
-        buildQR(userAction, retryCount + 1);
-      }, 1000);
+    // Nếu dùng SVG lỗi thì tự động đổi về PNG dự phòng
+    if (!useFallback) {
+      buildQR(userAction, true);
     } else {
       spinner.classList.remove('hide');
-      spinner.innerHTML = '⚠️ Không tải được mã QR.<br><small style="font-size:11px; color:#94a3b8; margin-top:4px; display:block;">Kiểm tra lại kết nối mạng hoặc thử lại sau ít phút.</small>';
+      spinner.textContent = '⚠️ Không tải được mã QR. Vui lòng kiểm tra lại kết nối mạng.';
     }
   };
   img.src = url;
@@ -403,7 +402,7 @@ function scheduleQR(userAction) {
 descInput.addEventListener('input', () => scheduleQR(false));
 
 /* ============================================================
-   3. TẢI MÃ QR
+   3. TẢI MÃ QR — VẼ ẢNH RA CANVAS, XUẤT PNG
    ============================================================ */
 function downloadQR() {
   if (!qrImg.src) {
