@@ -240,10 +240,9 @@
    ============================================================ */
 const CONFIG = {
   bankCode:    "MB",
-  bankBin:     "970422", // Mã BIN của MB Bank (dùng cho chuẩn EMVCo)
+  bankBin:     "970422", // Mã BIN của MB Bank
   accountNo:   "0347226299",
   accountName: "Do Thi Thuan",
-  template:    "compact2"
 };
 
 const qrContainer = document.getElementById('qrcode');
@@ -338,54 +337,59 @@ amountInput.addEventListener('input', function () {
 });
 
 /* ============================================================
-   2. TẠO CHUỖI VIETQR CHUẨN EMVCo (Không dùng API)
+   2. TẠO CHUỖI VIETQR CHUẨN EMVCo (ĐÃ SỬA LỖI)
    ============================================================ */
 function createVietQRString() {
   const amount = getAmount();
-  const desc = descInput.value.trim().toUpperCase();
-  
-  // Hàm tạo trường dữ liệu theo chuẩn EMV: [ID] + [Độ dài] + [Giá trị]
-  const createField = (id, value) => {
+  // Chuẩn hóa nội dung: bỏ dấu, viết hoa, chỉ giữ chữ và số
+  let desc = descInput.value.trim();
+  desc = desc.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z0-9 ]/gi, "").toUpperCase();
+
+  // Hàm tạo trường TLV: ID + Độ dài (2 chữ số) + Giá trị
+  const tlv = (id, value) => {
     const len = value.length.toString().padStart(2, '0');
     return id + len + value;
   };
 
-  // 1. Tạo Merchant Account Information (Trường 38)
-  // 00: Mã BIN ngân hàng (MB Bank)
-  const guid = createField('00', CONFIG.bankBin);
-  // 01: Số tài khoản
-  const account = createField('01', CONFIG.accountNo);
-  const merchantInfo = createField('00', 'A000000727') + guid + account;
-  const field38 = createField('38', merchantInfo);
-
-  // 2. Tạo các trường cơ bản
-  const field00 = createField('00', '01'); // Phiên bản
-  const field01 = createField('01', '12'); // Định dạng động
-  const field52 = createField('52', '0000'); // Mã danh mục (để trống)
-  const field53 = createField('53', '704'); // Đơn vị tiền tệ (VND)
+  // --- Xây dựng Merchant Account Information (ID 38) ---
+  // 00: GUID của Napas
+  const guid = tlv('00', 'A000000727');
   
-  let qrString = field00 + field01 + field38 + field52 + field53;
+  // 01: Thông tin người nhận (BIN + Số tài khoản)
+  const beneficiary = tlv('00', CONFIG.bankBin) + tlv('01', CONFIG.accountNo);
+  const field01 = tlv('01', beneficiary);
+  
+  // 02: Service Code (BẮT BUỘC - QRIBFTTA cho chuyển khoản đến tài khoản)
+  const serviceCode = tlv('02', 'QRIBFTTA');
 
-  // 3. Thêm số tiền (nếu có)
+  // Gộp tất cả vào ID 38
+  const field38 = tlv('38', guid + field01 + serviceCode);
+
+  // --- Xây dựng các trường gốc ---
+  const field00 = tlv('00', '01'); // Payload Format Indicator
+  const field01Root = tlv('01', '12'); // Point of Initiation Method (12 = Dynamic)
+  const field53 = tlv('53', '704'); // Currency (VND)
+
+  let qrString = field00 + field01Root + field38 + field53;
+
+  // Thêm số tiền (ID 54) nếu có
   if (amount) {
-    qrString += createField('54', amount);
+    qrString += tlv('54', amount);
   }
 
-  // 4. Thêm nội dung (nếu có)
+  // Thêm nội dung (ID 62, sub 08) nếu có
   if (desc) {
-    // Xóa dấu tiếng Việt để app ngân hàng đọc không lỗi
-    const cleanDesc = desc.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z0-9 ]/g, "");
-    qrString += createField('62', createField('08', cleanDesc));
+    qrString += tlv('62', tlv('08', desc));
   }
 
-  // 5. Thêm CRC (Mã kiểm tra lỗi) - Yêu cầu bắt buộc của chuẩn
-  qrString += '6304'; 
+  // --- Tính CRC (ID 63) ---
+  qrString += '6304'; // Thêm ID và độ dài trước khi tính
   const crc = crc16(qrString).toUpperCase();
   
   return qrString + crc;
 }
 
-// Hàm tính mã CRC16-CCITT (dùng cho chuẩn VietQR)
+// Hàm tính mã CRC16-CCITT (chuẩn EMVCo)
 function crc16(str) {
   let crc = 0xFFFF;
   for (let i = 0; i < str.length; i++) {
@@ -410,13 +414,11 @@ function buildQR(userAction) {
   spinner.classList.remove('hide');
   spinner.textContent = 'Đang tạo mã QR...';
 
-  // Xóa QR cũ
   qrContainer.innerHTML = '';
 
   try {
     const qrData = createVietQRString();
     
-    // Vẽ QR bằng thư viện qrcode.js
     qrCodeInstance = new QRCode(qrContainer, {
       text: qrData,
       width: 256,
@@ -458,9 +460,7 @@ function scheduleQR(userAction) {
 
 descInput.addEventListener('input', () => scheduleQR(false));
 
-// Hàm tải QR xuống
 function downloadQR() {
-  // qrcode.js có thể xuất ra thẻ canvas hoặc thẻ img tùy trình duyệt
   const canvas = qrContainer.querySelector('canvas');
   const img = qrContainer.querySelector('img');
 
