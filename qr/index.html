@@ -12,6 +12,9 @@
 <meta name="apple-mobile-web-app-title" content="QR MB Bank">
 <link id="appleIcon" rel="apple-touch-icon">
 
+<!-- Thư viện tạo QR phía Client -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -124,21 +127,27 @@
     padding: 16px;
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-bottom: 18px;
     position: relative;
-    min-height: 200px;
+    min-height: 250px;
     scroll-margin-top: 16px;
     transition: box-shadow .5s;
   }
   .qr-box.flash { box-shadow: 0 0 0 4px rgba(21,101,192,.35); }
 
-  #qrImg {
+  #qrcode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    max-width: 300px;
-    height: auto;
+  }
+  
+  #qrcode img, #qrcode canvas {
     border-radius: 8px;
     display: block;
-    object-fit: contain;
+    max-width: 100%;
+    height: auto;
   }
 
   .spinner {
@@ -153,6 +162,7 @@
     color: #64748b;
     text-align: center;
     padding: 20px;
+    z-index: 10;
   }
   .spinner.hide { display: none; }
 
@@ -212,7 +222,7 @@
 
     <div class="qr-box" id="qrBox">
       <div class="spinner" id="spinner">Đang tạo mã QR...</div>
-      <img id="qrImg" alt="Mã QR thanh toán MB Bank" crossorigin="anonymous">
+      <div id="qrcode"></div>
     </div>
 
     <p class="note">
@@ -230,12 +240,13 @@
    ============================================================ */
 const CONFIG = {
   bankCode:    "MB",
+  bankBin:     "970422", // Mã BIN của MB Bank (dùng cho chuẩn EMVCo)
   accountNo:   "0347226299",
   accountName: "Do Thi Thuan",
   template:    "compact2"
 };
 
-const qrImg       = document.getElementById('qrImg');
+const qrContainer = document.getElementById('qrcode');
 const qrBox       = document.getElementById('qrBox');
 const spinner     = document.getElementById('spinner');
 const amountInput = document.getElementById('amount');
@@ -327,47 +338,94 @@ amountInput.addEventListener('input', function () {
 });
 
 /* ============================================================
-   2. TẠO MÃ QR
+   2. TẠO CHUỖI VIETQR CHUẨN EMVCo (Không dùng API)
    ============================================================ */
-function buildQRUrl(withCacheBuster) {
+function createVietQRString() {
   const amount = getAmount();
-  const desc   = descInput.value.trim();
+  const desc = descInput.value.trim().toUpperCase();
+  
+  // Hàm tạo trường dữ liệu theo chuẩn EMV: [ID] + [Độ dài] + [Giá trị]
+  const createField = (id, value) => {
+    const len = value.length.toString().padStart(2, '0');
+    return id + len + value;
+  };
 
-  let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.png`;
-  const params = [];
+  // 1. Tạo Merchant Account Information (Trường 38)
+  // 00: Mã BIN ngân hàng (MB Bank)
+  const guid = createField('00', CONFIG.bankBin);
+  // 01: Số tài khoản
+  const account = createField('01', CONFIG.accountNo);
+  const merchantInfo = createField('00', 'A000000727') + guid + account;
+  const field38 = createField('38', merchantInfo);
 
-  if (amount)             params.push('amount='      + encodeURIComponent(amount));
-  if (desc)               params.push('addInfo='     + encodeURIComponent(desc));
-  if (CONFIG.accountName) params.push('accountName=' + encodeURIComponent(CONFIG.accountName));
+  // 2. Tạo các trường cơ bản
+  const field00 = createField('00', '01'); // Phiên bản
+  const field01 = createField('01', '12'); // Định dạng động
+  const field52 = createField('52', '0000'); // Mã danh mục (để trống)
+  const field53 = createField('53', '704'); // Đơn vị tiền tệ (VND)
+  
+  let qrString = field00 + field01 + field38 + field52 + field53;
 
-  if (params.length) url += '?' + params.join('&');
-  if (withCacheBuster) url += (url.includes('?') ? '&' : '?') + 't=' + Date.now();
-
-  return url;
-}
-
-function scrollToQR() {
-  const rect = qrBox.getBoundingClientRect();
-  const fullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-
-  if (!fullyVisible) {
-    qrBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // 3. Thêm số tiền (nếu có)
+  if (amount) {
+    qrString += createField('54', amount);
   }
 
-  qrBox.classList.add('flash');
-  setTimeout(() => qrBox.classList.remove('flash'), 900);
+  // 4. Thêm nội dung (nếu có)
+  if (desc) {
+    // Xóa dấu tiếng Việt để app ngân hàng đọc không lỗi
+    const cleanDesc = desc.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Z0-9 ]/g, "");
+    qrString += createField('62', createField('08', cleanDesc));
+  }
+
+  // 5. Thêm CRC (Mã kiểm tra lỗi) - Yêu cầu bắt buộc của chuẩn
+  qrString += '6304'; 
+  const crc = crc16(qrString).toUpperCase();
+  
+  return qrString + crc;
 }
+
+// Hàm tính mã CRC16-CCITT (dùng cho chuẩn VietQR)
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      if (crc & 0x8000) {
+        crc = (crc << 1) ^ 0x1021;
+      } else {
+        crc <<= 1;
+      }
+    }
+  }
+  return (crc & 0xFFFF).toString(16).padStart(4, '0').toUpperCase();
+}
+
+/* ============================================================
+   3. VẼ MÃ QR & TẢI XUỐNG
+   ============================================================ */
+let qrCodeInstance = null;
 
 function buildQR(userAction) {
   spinner.classList.remove('hide');
   spinner.textContent = 'Đang tạo mã QR...';
 
-  const url = buildQRUrl(true);
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
+  // Xóa QR cũ
+  qrContainer.innerHTML = '';
 
-  img.onload = function () {
-    qrImg.src = url;
+  try {
+    const qrData = createVietQRString();
+    
+    // Vẽ QR bằng thư viện qrcode.js
+    qrCodeInstance = new QRCode(qrContainer, {
+      text: qrData,
+      width: 256,
+      height: 256,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+
     spinner.classList.add('hide');
 
     if (userAction) {
@@ -375,12 +433,21 @@ function buildQR(userAction) {
         setTimeout(scrollToQR, 60);
       });
     }
-  };
-  img.onerror = function () {
+  } catch (error) {
+    console.error(error);
     spinner.classList.remove('hide');
-    spinner.textContent = '⚠️ Không tải được mã QR. Vui lòng kiểm tra kết nối mạng.';
-  };
-  img.src = url;
+    spinner.textContent = '⚠️ Có lỗi xảy ra khi tạo mã QR.';
+  }
+}
+
+function scrollToQR() {
+  const rect = qrBox.getBoundingClientRect();
+  const fullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+  if (!fullyVisible) {
+    qrBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  qrBox.classList.add('flash');
+  setTimeout(() => qrBox.classList.remove('flash'), 900);
 }
 
 let qrTimer;
@@ -391,62 +458,32 @@ function scheduleQR(userAction) {
 
 descInput.addEventListener('input', () => scheduleQR(false));
 
-/* ============================================================
-   3. TẢI MÃ QR — VẼ ẢNH RA CANVAS, XUẤT PNG
-   Không dùng fetch/Blob/SVG → luôn ra .png, mở được ngay.
-   ============================================================ */
+// Hàm tải QR xuống
 function downloadQR() {
-  if (!qrImg.src) {
+  // qrcode.js có thể xuất ra thẻ canvas hoặc thẻ img tùy trình duyệt
+  const canvas = qrContainer.querySelector('canvas');
+  const img = qrContainer.querySelector('img');
+
+  if (!canvas && !img) {
     showToast('Vui lòng tạo mã QR trước');
     return;
   }
 
-  const fileName = 'QR-MB-' + CONFIG.accountNo +
-                   (getAmount() ? '-' + getAmount() : '') + '.png';
+  const fileName = 'QR-MB-' + CONFIG.accountNo + (getAmount() ? '-' + getAmount() : '') + '.png';
+  const link = document.createElement('a');
+  link.download = fileName;
 
-  const doExport = (sourceImg) => {
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width  = sourceImg.naturalWidth  || 600;
-      canvas.height = sourceImg.naturalHeight || 600;
-
-      const ctx = canvas.getContext('2d');
-      // Nền trắng để chắc chắn ảnh PNG không trong suốt
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(sourceImg, 0, 0, canvas.width, canvas.height);
-
-      canvas.toBlob(function (blob) {
-        if (!blob) { fallbackOpen(); return; }
-
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = fileName;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
-
-        showToast('Đã tải mã QR');
-      }, 'image/png');
-    } catch (e) {
-      fallbackOpen();
-    }
-  };
-
-  // Tải ảnh QR về với crossOrigin để canvas không bị "tainted"
-  const tempImg = new Image();
-  tempImg.crossOrigin = 'anonymous';
-  tempImg.onload = function () { doExport(tempImg); };
-  tempImg.onerror = function () { fallbackOpen(); };
-  tempImg.src = buildQRUrl(false);
-
-  function fallbackOpen() {
-    showToast('Mở ảnh — nhấn giữ để lưu');
-    window.open(buildQRUrl(false), '_blank', 'noopener');
+  if (canvas) {
+    link.href = canvas.toDataURL('image/png');
+  } else if (img) {
+    link.href = img.src;
   }
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  showToast('Đã tải mã QR');
 }
 
 /* ============================================================
@@ -468,7 +505,7 @@ document.querySelectorAll('input').forEach(el => {
 });
 
 /* ============================================================
-   5. ICON APPLE (tĩnh, không inject manifest/SW để tránh lỗi)
+   5. ICON APPLE
    ============================================================ */
 (function setAppleIcon() {
   const svg =
