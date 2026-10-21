@@ -145,6 +145,7 @@
     position: absolute;
     inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: #f7f9fc;
@@ -153,6 +154,7 @@
     color: #64748b;
     text-align: center;
     padding: 20px;
+    z-index: 2;
   }
   .spinner.hide { display: none; }
 
@@ -327,7 +329,7 @@ amountInput.addEventListener('input', function () {
 });
 
 /* ============================================================
-   2. TẠO MÃ QR
+   2. TẠO MÃ QR (CÓ CƠ CHẾ THỬ LẠI KHI MẠNG LỖI)
    ============================================================ */
 function buildQRUrl(withCacheBuster) {
   const amount = getAmount();
@@ -358,9 +360,9 @@ function scrollToQR() {
   setTimeout(() => qrBox.classList.remove('flash'), 900);
 }
 
-function buildQR(userAction) {
+function buildQR(userAction, retryCount = 0) {
   spinner.classList.remove('hide');
-  spinner.textContent = 'Đang tạo mã QR...';
+  spinner.innerHTML = 'Đang tạo mã QR...';
 
   const url = buildQRUrl(true);
   const img = new Image();
@@ -376,9 +378,18 @@ function buildQR(userAction) {
       });
     }
   };
+
   img.onerror = function () {
-    spinner.classList.remove('hide');
-    spinner.textContent = '⚠️ Không tải được mã QR. Vui lòng kiểm tra kết nối mạng.';
+    // Thử lại tối đa 2 lần nếu lỗi kết nối đột xuất
+    if (retryCount < 2) {
+      spinner.innerHTML = `Đang kết nối lại lần ${retryCount + 1}...`;
+      setTimeout(() => {
+        buildQR(userAction, retryCount + 1);
+      }, 1000);
+    } else {
+      spinner.classList.remove('hide');
+      spinner.innerHTML = '⚠️ Không tải được mã QR.<br><small style="font-size:11px; color:#94a3b8; margin-top:4px; display:block;">Kiểm tra lại kết nối mạng hoặc thử lại sau ít phút.</small>';
+    }
   };
   img.src = url;
 }
@@ -392,8 +403,7 @@ function scheduleQR(userAction) {
 descInput.addEventListener('input', () => scheduleQR(false));
 
 /* ============================================================
-   3. TẢI MÃ QR — VẼ ẢNH RA CANVAS, XUẤT PNG
-   Không dùng fetch/Blob/SVG → luôn ra .png, mở được ngay.
+   3. TẢI MÃ QR
    ============================================================ */
 function downloadQR() {
   if (!qrImg.src) {
@@ -411,7 +421,6 @@ function downloadQR() {
       canvas.height = sourceImg.naturalHeight || 600;
 
       const ctx = canvas.getContext('2d');
-      // Nền trắng để chắc chắn ảnh PNG không trong suốt
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(sourceImg, 0, 0, canvas.width, canvas.height);
@@ -436,7 +445,6 @@ function downloadQR() {
     }
   };
 
-  // Tải ảnh QR về với crossOrigin để canvas không bị "tainted"
   const tempImg = new Image();
   tempImg.crossOrigin = 'anonymous';
   tempImg.onload = function () { doExport(tempImg); };
@@ -468,7 +476,7 @@ document.querySelectorAll('input').forEach(el => {
 });
 
 /* ============================================================
-   5. ICON APPLE (tĩnh, không inject manifest/SW để tránh lỗi)
+   5. ICON APPLE
    ============================================================ */
 (function setAppleIcon() {
   const svg =
