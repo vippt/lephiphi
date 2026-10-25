@@ -406,6 +406,19 @@
         .btn:hover { transform: translateY(-3px); }
         .cv { background: linear-gradient(135deg,#4a90d9,#357abd); color: white; }
         .love { background: linear-gradient(135deg,#e85d75,#d64860); color: white; }
+
+        /* 🎵 Nút nghe nhạc — tím neon */
+        .music-link { background: linear-gradient(135deg,#8e44ad,#6c3483); color: white; }
+
+        /* ⚠️ Nút báo cáo scam — cam cảnh báo */
+        .scam  { background: linear-gradient(135deg,#f39c12,#d68910); color: white; }
+        .scam:hover { box-shadow: 0 6px 22px rgba(243,156,18,.45); }
+        .scam .btn-icon { animation: warnPulse 2s ease-in-out infinite; }
+        @keyframes warnPulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50%     { opacity: .75; transform: scale(1.1); }
+        }
+
         .btn-icon { font-size: 1.8rem; margin-right: 1rem; flex-shrink: 0; }
         .btn-text { flex: 1; min-width: 0; }
         .btn-h { font-size: 1.1rem; font-weight: 700; margin-bottom: .3rem; }
@@ -449,6 +462,9 @@
             .p-l { border-right: none; border-bottom: 1px dashed rgba(139,105,20,.15); }
             .avatar { width: 100px; height: 100px; }
             .qr-img { max-width: 140px; }
+
+            .btn { margin-bottom: 1rem; padding: 1.1rem 1.2rem; }
+            .btn-icon { font-size: 1.5rem; }
 
             .pwa-install-btn { font-size: 11px; padding: 8px 14px; }
             .pwa-hint-ios { font-size: 11px; bottom: 42px; }
@@ -566,6 +582,27 @@
                             </div>
                             <i class="fa fa-chevron-right btn-arrow"></i>
                         </a>
+
+                        <!-- 🎵 Nghe nhạc -->
+                        <a href="https://nhac.lephiphi.com" class="btn music-link" id="btnMusic" target="_blank" rel="noopener">
+                            <i class="fa fa-music btn-icon"></i>
+                            <div class="btn-text">
+                                <div class="btn-h">Góc Âm Nhạc 🎧</div>
+                                <div class="btn-p">Playlist và bài hát yêu thích</div>
+                            </div>
+                            <i class="fa fa-chevron-right btn-arrow"></i>
+                        </a>
+
+                        <!-- ⚠️ Báo cáo scam -->
+                        <a href="https://lephiphi.com/scam" class="btn scam" id="btnScam" target="_blank" rel="noopener">
+                            <i class="fa fa-shield btn-icon"></i>
+                            <div class="btn-text">
+                                <div class="btn-h">Báo Cáo Lừa Đảo ⚠️</div>
+                                <div class="btn-p">Cảnh báo bơm hàng, chiêu trò giả mạo</div>
+                            </div>
+                            <i class="fa fa-chevron-right btn-arrow"></i>
+                        </a>
+
                         <div style="margin-top:2rem;padding-top:1rem;border-top:1px dashed rgba(139,105,20,.15);" class="info-group" id="contactGroup">
                             <p style="font-size:.85rem;color:var(--text-soft);margin-bottom:.5rem;">Liên hệ:</p>
                             <p style="font-size:.9rem;color:var(--text-dark);" class="type-text" data-text=" 📲 0922332243"></p>
@@ -578,7 +615,6 @@
                 </div>
             </div>
         </div>
-       
     </div>
 
     <button class="close" onclick="closeDashboard()"><i class="fa fa-times"></i></button>
@@ -877,10 +913,12 @@ async function startTyping() {
         await typeWriter(el, el.dataset.text, 50);
         await new Promise(r => setTimeout(r, 200));
     }
-    setTimeout(() => document.getElementById('btnCv').classList.add('show'), 300);
-    setTimeout(() => document.getElementById('btnLove').classList.add('show'), 600);
-    setTimeout(() => document.getElementById('contactGroup').classList.add('show'), 900);
-    setTimeout(() => document.getElementById('qrBox').classList.add('show'), 1200);
+    setTimeout(() => document.getElementById('btnCv').classList.add('show'),    300);
+    setTimeout(() => document.getElementById('btnLove').classList.add('show'),  550);
+    setTimeout(() => document.getElementById('btnMusic').classList.add('show'), 800);
+    setTimeout(() => document.getElementById('btnScam').classList.add('show'),  1050);
+    setTimeout(() => document.getElementById('contactGroup').classList.add('show'), 1300);
+    setTimeout(() => document.getElementById('qrBox').classList.add('show'),        1550);
 }
 
 function closeDashboard() {
