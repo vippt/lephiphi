@@ -9,22 +9,17 @@
   html,body{height:100%}
   body{
     font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
-    background:#0d0604;color:#f5e6c8;overflow:hidden;
-    user-select:none;
+    background:#0d0604;color:#f5e6c8;overflow:hidden;user-select:none;
   }
   :root{
-    --gold:#e8c86a;
-    --gold-2:#ffeeb0;
-    --deep:#1a0d08;
-    --red:#7a1f1f;
+    --gold:#e8c86a;--gold-2:#ffeeb0;--deep:#1a0d08;--red:#7a1f1f;
   }
-
   .app{height:100vh;height:100dvh;display:flex;flex-direction:column;position:relative}
 
   /* ============ TOP BAR ============ */
   .topbar{
     display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:9px 16px;
+    padding:9px 14px;
     background:linear-gradient(180deg,rgba(62,26,15,.97),rgba(28,11,7,.9));
     border-bottom:1px solid rgba(232,200,106,.22);
     z-index:30;flex-shrink:0;
@@ -52,16 +47,32 @@
     color:#cbb98d;white-space:nowrap;
   }
   .stat b{color:var(--gold);font-weight:700}
-  .stat.merit b{font-size:13px}
   .dot{
     width:7px;height:7px;border-radius:50%;background:#4ade80;
     box-shadow:0 0 8px #4ade80;animation:pulse 2s infinite;
   }
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
+  .music-btn{
+    width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;font-size:16px;
+    background:rgba(0,0,0,.35);border:1px solid rgba(232,200,106,.3);
+    cursor:pointer;color:#e8d5a8;font-family:inherit;
+    transition:.2s;
+  }
+  .music-btn:hover{background:rgba(232,200,106,.2)}
+  .music-btn:not(.playing){
+    animation:pulseMusic 2.6s infinite;
+  }
+  @keyframes pulseMusic{
+    0%,100%{box-shadow:0 0 0 0 rgba(232,200,106,.5)}
+    60%{box-shadow:0 0 0 8px rgba(232,200,106,0)}
+  }
+
   /* ============ SCENE ============ */
   .scene{
     flex:1;position:relative;overflow:hidden;min-height:0;
+    touch-action:none;cursor:pointer;
     background:
       radial-gradient(ellipse 70% 55% at 50% 30%,rgba(120,58,26,.55) 0%,rgba(50,22,12,.35) 45%,transparent 72%),
       radial-gradient(ellipse 120% 80% at 50% 105%,#2a1409 0%,#150a05 55%,#0a0403 100%);
@@ -84,6 +95,7 @@
     background:radial-gradient(circle at 40% 30%,#ff9a5a,#c22c1a 65%,#6d1108);
     box-shadow:0 0 34px 10px rgba(255,110,40,.35),inset 0 -8px 14px rgba(0,0,0,.4);
     animation:sway 5s ease-in-out infinite;transform-origin:top center;
+    pointer-events:none;
   }
   .lantern::before{
     content:'';position:absolute;left:50%;top:-46px;width:1.5px;height:46px;
@@ -96,7 +108,7 @@
   /* ---- Altar & Buddha ---- */
   .altar{
     position:absolute;left:50%;bottom:24%;transform:translateX(-50%);
-    width:min(230px,42vw);z-index:2;
+    width:min(230px,42vw);z-index:2;pointer-events:none;
     filter:drop-shadow(0 10px 30px rgba(255,190,80,.22));
   }
   .buddha-svg{width:100%;height:auto;display:block;animation:breathe 6s ease-in-out infinite}
@@ -144,37 +156,68 @@
     100%{opacity:0;transform:translateY(-85px) translateX(14px) scale(2.6)}
   }
 
-  /* ---- Crowd ---- */
+  /* ---- Character figures ---- */
   .crowd{position:absolute;inset:0;z-index:5;pointer-events:none}
-  .figure{position:absolute;transform-origin:50% 100%;will-change:transform}
-  .bower{position:relative;transform-origin:50% 100%;display:block}
-  .bower svg{display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55))}
-  .bower.bowing{animation:bowAnim .85s cubic-bezier(.45,0,.3,1)}
-  @keyframes bowAnim{
-    0%,100%{transform:rotate(0deg) scaleY(1)}
-    45%{transform:rotate(-6deg) scaleY(.82)}
+  .figure{
+    position:absolute;
+    pointer-events:none;
+    will-change:left,top;
   }
-  .nametag{
-    position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
-    margin-bottom:3px;white-space:nowrap;font-size:10.5px;
+  .figure .bower{
+    position:absolute;left:50%;bottom:0;
+    transform-origin:50% 100%;
+    transform:translateX(-50%) scale(var(--sx,1), var(--sy,1));
+    will-change:transform;
+  }
+  .figure .bower svg{display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55))}
+  .figure .bower.bowing{animation:bowAnim .85s cubic-bezier(.45,0,.3,1)}
+  @keyframes bowAnim{
+    0%,100%{transform:translateX(-50%) scale(var(--sx,1), var(--sy,1)) rotate(0deg)}
+    45%{transform:translateX(-50%) scale(var(--sx,1), calc(var(--sy,1) * .82)) rotate(-5deg)}
+  }
+  .figure .nametag{
+    position:absolute;
+    left:50%;
+    bottom:calc(92px * var(--sy, 1) + 4px);
+    transform:translateX(-50%);
+    white-space:nowrap;font-size:10.5px;
     padding:2px 9px;border-radius:20px;
     background:rgba(18,9,4,.78);border:1px solid rgba(232,200,106,.22);
     color:#b8a583;letter-spacing:.2px;
+    pointer-events:none;
   }
   .figure.main .nametag{
     border-color:rgba(232,200,106,.85);color:#ffeeb0;
     background:rgba(64,32,12,.95);
     box-shadow:0 0 14px rgba(232,200,106,.45);
     font-weight:600;
+    pointer-events:auto;cursor:pointer;
+  }
+  .figure.main .nametag:hover{
+    background:rgba(90,45,18,.98);
+    box-shadow:0 0 20px rgba(232,200,106,.65);
+  }
+  .figure.main .nametag .edit-ico{
+    display:inline-block;margin-left:3px;font-size:10px;opacity:.85;
   }
   .figure.main::after{
-    content:'';position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);
-    width:78%;height:16px;border-radius:50%;
+    content:'';position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);
+    width:70%;height:14px;border-radius:50%;
     background:radial-gradient(ellipse,rgba(255,200,90,.45),transparent 70%);
-    filter:blur(4px);
+    filter:blur(3px);pointer-events:none;
+  }
+  .figure.remote .nametag{
+    border-color:rgba(74,222,128,.5);
+    color:#b8e8c8;
+  }
+  .online-dot{
+    display:inline-block;width:5px;height:5px;border-radius:50%;
+    background:#4ade80;margin-right:4px;
+    box-shadow:0 0 5px #4ade80;
+    animation:pulse 2s infinite;
   }
 
-  /* ---- FX layer ---- */
+  /* ---- FX ---- */
   .fx{position:absolute;inset:0;z-index:20;pointer-events:none;overflow:hidden}
   .float{
     position:absolute;transform:translate(-50%,0);white-space:nowrap;
@@ -187,7 +230,6 @@
     18%{opacity:1;transform:translate(-50%,0) scale(1.1)}
     100%{opacity:0;transform:translate(-50%,-80px) scale(1)}
   }
-
   .petal{
     position:absolute;top:-26px;width:13px;height:13px;
     background:radial-gradient(circle at 32% 28%,#fff0f6,#f0a3c4 55%,#d4649a);
@@ -201,9 +243,41 @@
     100%{top:104%;opacity:0;transform:rotate(var(--rot,360deg)) scale(1)}
   }
 
+  /* ---- D-pad ---- */
+  .dpad{
+    position:absolute;right:12px;bottom:12px;
+    width:132px;height:132px;display:none;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+    gap:4px;z-index:25;pointer-events:auto;
+  }
+  @media (hover:none){ .dpad{display:grid} }
+  .dpad-btn{
+    background:rgba(30,15,8,.62);
+    border:1px solid rgba(232,200,106,.32);
+    border-radius:10px;color:#ffeeb0;font-size:18px;
+    display:grid;place-items:center;cursor:pointer;
+    user-select:none;touch-action:none;font-family:inherit;
+  }
+  .dpad-btn:active{background:rgba(232,200,106,.35)}
+  .dpad-btn.up{grid-column:2;grid-row:1}
+  .dpad-btn.left{grid-column:1;grid-row:2}
+  .dpad-btn.right{grid-column:3;grid-row:2}
+  .dpad-btn.down{grid-column:2;grid-row:3}
+
+  /* ---- Hint ---- */
+  .hint{
+    position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+    padding:8px 16px;border-radius:20px;font-size:11.5px;
+    background:rgba(20,10,4,.88);border:1px solid rgba(232,200,106,.3);
+    color:#e8d5a8;z-index:40;pointer-events:none;
+    transition:opacity .6s;text-align:center;max-width:92%;
+  }
+  .hint.hide{opacity:0}
+
   /* ============ CONTROLS ============ */
   .controls{
-    display:flex;gap:9px;padding:11px 14px;justify-content:center;flex-wrap:wrap;
+    display:flex;gap:9px;padding:11px 12px;justify-content:center;flex-wrap:wrap;
     background:linear-gradient(0deg,rgba(26,11,7,.99),rgba(58,24,14,.92));
     border-top:1px solid rgba(232,200,106,.22);
     z-index:30;flex-shrink:0;
@@ -211,7 +285,7 @@
   .btn{
     display:flex;align-items:center;gap:7px;
     font-family:inherit;font-size:13.5px;font-weight:600;letter-spacing:.2px;
-    padding:11px 18px;border-radius:12px;cursor:pointer;
+    padding:11px 16px;border-radius:12px;cursor:pointer;
     color:#f0e2bd;background:rgba(255,255,255,.055);
     border:1px solid rgba(232,200,106,.3);
     transition:transform .13s,background .2s,box-shadow .2s;
@@ -262,6 +336,14 @@
   .modal-actions{display:flex;gap:10px;margin-top:22px}
   .modal-actions .btn{flex:1;justify-content:center;padding:13px}
   .modal .note{font-size:11px;color:#6f5c40;margin-top:14px;text-align:center;line-height:1.5}
+  .modal input[type=text]{
+    width:100%;padding:12px 14px;border-radius:10px;font-size:15px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(232,200,106,.35);
+    color:#ffeeb0;font-family:inherit;outline:none;
+  }
+  .modal input[type=text]:focus{
+    border-color:#ffeeb0;box-shadow:0 0 0 3px rgba(232,200,106,.2);
+  }
 
   .board-row{
     display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:10px;
@@ -292,10 +374,11 @@
     .brand p{display:none}
     .brand h1{font-size:14px}
     .stat{font-size:11px;padding:4px 9px}
-    .btn{font-size:12px;padding:10px 13px;gap:5px}
+    .btn{font-size:12px;padding:10px 12px;gap:5px}
     .btn span{font-size:14px}
     .lantern{width:28px;height:40px}
     .lantern::before{height:30px;top:-30px}
+    .hint{font-size:10.5px;padding:6px 12px;bottom:8px}
   }
 </style>
 </head>
@@ -303,7 +386,6 @@
 
 <div class="app">
 
-  <!-- ===== TOP BAR ===== -->
   <header class="topbar">
     <div class="brand">
       <div class="mark">☸</div>
@@ -313,12 +395,14 @@
       </div>
     </div>
     <div class="stats">
+      <button class="music-btn" id="musicBtn" title="Bật/tắt nhạc thiền & kinh Phật">
+        <span class="ico">🔇</span>
+      </button>
       <div class="stat"><span class="dot"></span><b id="online">42</b>&nbsp;đang lễ</div>
-      <div class="stat merit">☸ Công đức <b id="meritVal">0</b></div>
+      <div class="stat merit">☸ <b id="meritVal">0</b></div>
     </div>
   </header>
 
-  <!-- ===== SCENE ===== -->
   <main class="scene" id="scene">
     <div class="rays"></div>
     <div class="lantern l"></div>
@@ -342,32 +426,25 @@
             <stop offset="100%" stop-color="#e8c98c"/>
           </linearGradient>
         </defs>
-
         <circle cx="110" cy="90" r="90" fill="url(#haloGrad)"/>
-
         <ellipse cx="110" cy="278" rx="86" ry="13" fill="#000" opacity=".35"/>
         <path d="M28 268 Q110 232 192 268 Q110 292 28 268 Z" fill="#c9a227"/>
         <path d="M55 262 Q110 240 165 262 Q110 282 55 262 Z" fill="#e8c86a" opacity=".65"/>
-
         <path d="M110 126 C152 138 160 200 156 236 C140 252 80 252 64 236 C60 200 68 138 110 126 Z" fill="url(#goldGrad)"/>
         <path d="M78 182 Q110 198 142 182" stroke="#a8801f" stroke-width="2" fill="none" opacity=".55"/>
         <path d="M74 208 Q110 226 146 208" stroke="#a8801f" stroke-width="2" fill="none" opacity=".55"/>
         <path d="M110 132 L110 248" stroke="#a8801f" stroke-width="1.4" opacity=".3"/>
-
         <path d="M96 108 h28 v18 a14 14 0 0 1 -28 0 Z" fill="#e8c98c"/>
-
         <ellipse cx="72" cy="92" rx="7" ry="16" fill="#e0bd7d"/>
         <ellipse cx="148" cy="92" rx="7" ry="16" fill="#e0bd7d"/>
         <ellipse cx="110" cy="84" rx="37" ry="40" fill="url(#skinGrad)"/>
         <ellipse cx="110" cy="42" rx="16" ry="15" fill="url(#skinGrad)"/>
-
         <g fill="#5b4218">
           <circle cx="88" cy="52" r="5"/><circle cx="100" cy="46" r="5"/>
           <circle cx="110" cy="44" r="5"/><circle cx="120" cy="46" r="5"/>
           <circle cx="132" cy="52" r="5"/><circle cx="80" cy="63" r="5"/>
           <circle cx="140" cy="63" r="5"/>
         </g>
-
         <circle cx="110" cy="72" r="3.2" fill="#c9a227"/>
         <path d="M88 86 q10 7 20 0" stroke="#8a6a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
         <path d="M112 86 q10 7 20 0" stroke="#8a6a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
@@ -379,9 +456,17 @@
     <div class="incense-holder" id="incenseHolder"></div>
     <div class="crowd" id="crowd"></div>
     <div class="fx" id="fx"></div>
+
+    <div class="dpad" id="dpad">
+      <button class="dpad-btn up" data-dir="up">▲</button>
+      <button class="dpad-btn left" data-dir="left">◀</button>
+      <button class="dpad-btn right" data-dir="right">▶</button>
+      <button class="dpad-btn down" data-dir="down">▼</button>
+    </div>
+
+    <div class="hint" id="hint">Chạm vào sàn chùa để đi · Dùng phím mũi tên · Nhấn ✏️ để đổi tên · 🔊 bật nhạc thiền</div>
   </main>
 
-  <!-- ===== CONTROLS ===== -->
   <footer class="controls">
     <button class="btn" id="btnBow"><span>🙏</span> Quỳ lạy</button>
     <button class="btn" id="btnIncense"><span>🕯️</span> Dâng hương</button>
@@ -390,22 +475,26 @@
   </footer>
 </div>
 
-<!-- ===== MODAL ===== -->
-<div class="backdrop" id="backdrop">
-  <div class="modal" id="modal"></div>
-</div>
-
+<div class="backdrop" id="backdrop"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* =========================================================
-   CHÙA ONLINE — logic
+   CHÙA ONLINE — v2 (movement + music + name + multiplayer)
    ========================================================= */
 const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const rnd = (a,b) => a + Math.random()*(b-a);
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 const fmt = n => n.toLocaleString('vi-VN');
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+/* ---------- Storage (sessionStorage — mỗi tab độc lập) ---------- */
+let storage = sessionStorage;
+try { sessionStorage.setItem('__t','1'); sessionStorage.removeItem('__t'); }
+catch(e) { storage = { getItem:()=>null, setItem:()=>{} }; }
+
+const LS_KEY = 'chuaonline_v2';
 
 /* ---------- Dữ liệu ---------- */
 const ROBES = ['#b8452f','#3f6f8f','#7a5aa8','#2f7a5a','#a87b3f','#8f3f5a','#4a4a8f','#a8622f','#4f7a4f'];
@@ -414,32 +503,31 @@ const TEN   = ['An Nhiên','Từ Bi','Thanh Tịnh','Hỷ Xả','Minh Tâm','Thi
                'Tịnh Không','Huệ Giác','Chánh Niệm','Viên Dung','Như Ý','Tâm An','Bát Nhã',
                'Diệu Âm','Quảng Kết','Thiện Tâm','Vô Ưu','Liên Hoa','Tịnh Tâm'];
 
-const LS_KEY = 'chuaonline_v1';
-
-/* ---------- Trạng thái ---------- */
+/* ---------- State ---------- */
 let state = loadState();
 
 function loadState(){
-  try{
-    const s = JSON.parse(localStorage.getItem(LS_KEY));
+  try {
+    const s = JSON.parse(storage.getItem(LS_KEY));
     if(s && s.user && s.user.id) return s;
-  }catch(e){}
+  } catch(e){}
   return createState();
 }
 function createState(){
-  const user = {
-    id: Math.random().toString(36).slice(2,6).toUpperCase(),
-    name: pick(TEN),
-    robe: pick(ROBES),
-    skin: pick(SKINS),
-    merit: 0,
-    donated: 0,
-    bows: 0
+  return {
+    user: {
+      id: Math.random().toString(36).slice(2,8),
+      name: pick(TEN),
+      robe: pick(ROBES),
+      skin: pick(SKINS),
+      merit: 0,
+      donated: 0,
+      bows: 0
+    }
   };
-  return { user };
 }
 function save(){
-  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+  try { storage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
 }
 
 /* ---------- SVG nhân vật ---------- */
@@ -461,136 +549,506 @@ function personSVG(robe, skin){
   </svg>`;
 }
 
-/* ---------- Vị trí đứng trong chùa ---------- */
-const SPOTS = [
-  { l:50, b:1,  s:1.15, main:true },
-  { l:13, b:5,  s:.95 },
-  { l:87, b:5,  s:.95 },
-  { l:24, b:13, s:.80 },
-  { l:76, b:13, s:.80 },
-  { l:9,  b:15, s:.72 },
-  { l:91, b:15, s:.72 },
-  { l:34, b:7,  s:.88 },
-  { l:66, b:7,  s:.88 },
-  { l:44, b:16, s:.66 },
-  { l:56, b:16, s:.66 }
-];
-
-let playerFig = null;
-const npcFigs = [];
-
-/* ---------- Render đám đông ---------- */
-function renderCrowd(){
-  const crowd = $('#crowd');
-  crowd.innerHTML = '';
-  playerFig = null;
-  npcFigs.length = 0;
-
-  const isMobile = window.innerWidth < 640;
-  const list = isMobile ? SPOTS.slice(0, 7) : SPOTS;
-
-  list.forEach(spot => {
-    const isMain = !!spot.main;
-    const data = isMain
-      ? state.user
-      : { name: pick(TEN), robe: pick(ROBES), skin: pick(SKINS) };
-
-    const fig = document.createElement('div');
-    fig.className = 'figure' + (isMain ? ' main' : '');
-    fig.style.left = spot.l + '%';
-    fig.style.bottom = spot.b + '%';
-    fig.style.transform = `translateX(-50%) scale(${spot.s})`;
-    fig.innerHTML = `
-      <div class="bower">
-        <div class="nametag">${isMain ? '🪷 Bạn · ' : ''}Phật tử ${data.name}</div>
-        ${personSVG(data.robe, data.skin)}
-      </div>`;
-
-    crowd.appendChild(fig);
-
-    if(isMain) playerFig = fig;
-    else npcFigs.push(fig);
-  });
-}
-
-/* ---------- Âm thanh (chuông) ---------- */
-let audioCtx = null;
-function getAC(){
-  if(!audioCtx){
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if(!AC) return null;
-    audioCtx = new AC();
+/* =========================================================
+   AUDIO SYSTEM
+   ========================================================= */
+class MeditationAudio {
+  constructor(){
+    this.ctx = null;
+    this.master = null;
+    this.playing = false;
+    this.drones = [];
+    this.bellTimer = null;
+    this.chantTimer = null;
   }
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  return audioCtx;
-}
-function bell(freq = 620, vol = 0.16){
-  const ac = getAC();
-  if(!ac) return;
-  const t = ac.currentTime;
 
-  [[freq, 1], [freq*2.01, .45], [freq*2.98, .22]].forEach(([f, g]) => {
-    const o = ac.createOscillator();
-    const gain = ac.createGain();
-    o.type = 'sine';
-    o.frequency.setValueAtTime(f, t);
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(vol * g, t + 0.012);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
-    o.connect(gain).connect(ac.destination);
-    o.start(t);
-    o.stop(t + 2.3);
+  init(){
+    if(this.ctx) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = 0;
+      this.master.connect(this.ctx.destination);
+    } catch(e) {
+      console.warn('AudioContext không khả dụng', e);
+    }
+  }
+
+  ensure(){
+    this.init();
+    if(!this.ctx) return false;
+    if(this.ctx.state === 'suspended') this.ctx.resume();
+    return true;
+  }
+
+  async toggle(){
+    if(this.playing){ this.stopMusic(); return false; }
+    await this.startMusic(); return true;
+  }
+
+  async startMusic(){
+    if(!this.ensure()) return;
+    if(this.playing) return;
+    this.playing = true;
+
+    this.createDrone();
+    this.scheduleBell();
+    this.scheduleChant();
+
+    const t = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(t);
+    this.master.gain.setValueAtTime(0, t);
+    this.master.gain.linearRampToValueAtTime(0.55, t + 3);
+  }
+
+  createDrone(){
+    const notes = [110, 110.6, 164.81, 220, 220.8];
+    notes.forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      osc.type = i < 2 ? 'sawtooth' : 'triangle';
+      osc.frequency.value = freq;
+
+      const lfo = this.ctx.createOscillator();
+      const lfoGain = this.ctx.createGain();
+      lfo.frequency.value = 0.08 + Math.random() * 0.15;
+      lfoGain.gain.value = 0.4;
+      lfo.connect(lfoGain); lfoGain.connect(osc.frequency); lfo.start();
+
+      filter.type = 'lowpass';
+      filter.frequency.value = 380; filter.Q.value = 2;
+
+      gain.gain.value = i < 2 ? 0.035 : 0.018;
+
+      osc.connect(filter); filter.connect(gain); gain.connect(this.master);
+      osc.start();
+
+      this.drones.push({ osc, gain, lfo });
+    });
+  }
+
+  scheduleBell(){
+    const play = () => {
+      if(!this.playing) return;
+      this.playBell(false);
+      this.bellTimer = setTimeout(play, 8000 + Math.random() * 8000);
+    };
+    this.bellTimer = setTimeout(play, 2000);
+  }
+
+  playBell(short){
+    if(!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const decay = short ? 1.5 : 5;
+    const baseFreq = short ? 400 : 240 + Math.random() * 80;
+    const partials = short
+      ? [[1, .15], [2.01, .06]]
+      : [[1, .25], [2.01, .12], [2.98, .06], [4.2, .03]];
+
+    partials.forEach(([mult, vol]) => {
+      const osc = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = baseFreq * mult;
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(vol, now + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + decay);
+      osc.connect(g); g.connect(this.master);
+      osc.start(now); osc.stop(now + decay + 0.1);
+    });
+  }
+
+  scheduleChant(){
+    const play = () => {
+      if(!this.playing) return;
+      this.playChantPhrase();
+      this.chantTimer = setTimeout(play, 14000 + Math.random() * 10000);
+    };
+    this.chantTimer = setTimeout(play, 6000);
+  }
+
+  playChantPhrase(){
+    const now = this.ctx.currentTime;
+    const syllables = [
+      { v: 'a', d: 0.9, p: 130 },
+      { v: 'o', d: 0.8, p: 125 },
+      { v: 'a', d: 0.7, p: 140 },
+      { v: 'i', d: 0.7, p: 130 },
+      { v: 'a', d: 0.9, p: 125 },
+      { v: 'a', d: 1.4, p: 112 }
+    ];
+    const formants = {
+      a: [800, 1150, 2900],
+      o: [450, 800, 2830],
+      i: [270, 2290, 3010],
+      e: [530, 1840, 2480],
+      u: [300, 870, 2240]
+    };
+    let t = now + 0.1;
+    syllables.forEach(syl => {
+      this.synthSyllable(syl.v, t, syl.d, syl.p, formants[syl.v]);
+      t += syl.d + 0.06;
+    });
+  }
+
+  synthSyllable(vowel, start, dur, pitch, formants){
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = pitch;
+
+    const vib = this.ctx.createOscillator();
+    const vibGain = this.ctx.createGain();
+    vib.frequency.value = 5;
+    vibGain.gain.value = pitch * 0.02;
+    vib.connect(vibGain); vibGain.connect(osc.frequency);
+    vib.start(start); vib.stop(start + dur);
+
+    const amp = this.ctx.createGain();
+    amp.gain.setValueAtTime(0, start);
+    amp.gain.linearRampToValueAtTime(0.055, start + 0.08);
+    amp.gain.setValueAtTime(0.055, start + dur - 0.15);
+    amp.gain.linearRampToValueAtTime(0, start + dur);
+
+    const sum = this.ctx.createGain();
+    formants.forEach((freq, i) => {
+      const bp = this.ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = 10;
+      const fg = this.ctx.createGain();
+      fg.gain.value = [1, 0.6, 0.3][i];
+      osc.connect(bp); bp.connect(fg); fg.connect(sum);
+    });
+
+    const body = this.ctx.createGain();
+    body.gain.value = 0.12;
+    osc.connect(body); body.connect(sum);
+
+    sum.connect(amp); amp.connect(this.master);
+    osc.start(start); osc.stop(start + dur + 0.1);
+  }
+
+  stopMusic(){
+    if(!this.playing) return;
+    this.playing = false;
+
+    const t = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(t);
+    this.master.gain.setValueAtTime(this.master.gain.value, t);
+    this.master.gain.linearRampToValueAtTime(0, t + 0.8);
+
+    clearTimeout(this.bellTimer);
+    clearTimeout(this.chantTimer);
+
+    setTimeout(() => {
+      this.drones.forEach(d => {
+        try { d.osc.stop(); d.lfo.stop(); } catch(e){}
+      });
+      this.drones = [];
+    }, 1000);
+  }
+}
+
+const audio = new MeditationAudio();
+
+/* =========================================================
+   CHARACTER CLASSES
+   ========================================================= */
+class Character {
+  constructor(opts){
+    this.id = opts.id || Math.random().toString(36).slice(2,8);
+    this.name = opts.name;
+    this.robe = opts.robe;
+    this.skin = opts.skin;
+    this.x = opts.x ?? 50;
+    this.y = opts.y ?? 75;
+    this.targetX = this.x;
+    this.targetY = this.y;
+    this.baseSpeed = opts.speed || 26;
+    this.facing = 1;
+    this.state = 'idle';
+    this.bowTimer = 0;
+    this.isPlayer = !!opts.isPlayer;
+    this.remote = !!opts.remote;
+    this.currentScale = 1;
+
+    this.el = document.createElement('div');
+    this.el.className = 'figure' + (this.isPlayer ? ' main' : '') + (this.remote ? ' remote' : '');
+
+    let nameHTML;
+    if(this.isPlayer){
+      nameHTML = `🪷 Bạn · <span class="pname">${this.name}</span> <span class="edit-ico">✏️</span>`;
+    } else if(this.remote){
+      nameHTML = `<span class="online-dot"></span>${this.name}`;
+    } else {
+      nameHTML = `Phật tử ${this.name}`;
+    }
+
+    this.el.innerHTML = `
+      <div class="nametag">${nameHTML}</div>
+      <div class="bower">${personSVG(this.robe, this.skin)}</div>
+    `;
+    this.bowerEl = this.el.querySelector('.bower');
+    this.nametagEl = this.el.querySelector('.nametag');
+    this.updateDom();
+  }
+
+  get speed(){
+    return this.baseSpeed * (0.65 + (this.y - 48) / 44 * 0.35);
+  }
+
+  updateDom(){
+    let scale = 0.55 + ((this.y - 48) / 44) * 0.6;
+    if(this.isPlayer) scale *= 1.06;
+    this.currentScale = scale;
+    this.el.style.left = this.x + '%';
+    this.el.style.top  = this.y + '%';
+    this.el.style.setProperty('--sx', scale * this.facing);
+    this.el.style.setProperty('--sy', scale);
+    this.el.style.zIndex = Math.round(this.y * 10);
+  }
+
+  moveTo(x, y){
+    this.targetX = clamp(x, 8, 92);
+    this.targetY = clamp(y, 48, 92);
+  }
+
+  bow(){
+    if(this.state === 'bow') return;
+    this.state = 'bow';
+    this.bowTimer = 0;
+    this.bowerEl.classList.remove('bowing');
+    void this.bowerEl.offsetWidth;
+    this.bowerEl.classList.add('bowing');
+  }
+
+  setName(name){
+    this.name = name;
+    if(this.isPlayer){
+      this.nametagEl.innerHTML = `🪷 Bạn · <span class="pname">${name}</span> <span class="edit-ico">✏️</span>`;
+    }
+  }
+
+  update(dt, keys){
+    if(this.state === 'bow'){
+      this.bowTimer += dt;
+      if(this.bowTimer > 0.85) this.state = 'idle';
+      return;
+    }
+
+    let vx = 0, vy = 0;
+    if(this.isPlayer && keys){
+      if(keys.up) vy -= 1;
+      if(keys.down) vy += 1;
+      if(keys.left) vx -= 1;
+      if(keys.right) vx += 1;
+    }
+
+    if(vx !== 0 || vy !== 0){
+      const len = Math.hypot(vx, vy);
+      const step = this.speed * dt;
+      this.x = clamp(this.x + vx/len * step, 8, 92);
+      this.y = clamp(this.y + vy/len * step, 48, 92);
+      this.targetX = this.x;
+      this.targetY = this.y;
+      this.state = 'walk';
+      if(vx !== 0) this.facing = vx > 0 ? 1 : -1;
+      this.updateDom();
+      return;
+    }
+
+    const dx = this.targetX - this.x;
+    const dy = this.targetY - this.y;
+    const dist = Math.hypot(dx, dy);
+
+    if(dist > 0.3){
+      const step = Math.min(dist, this.speed * dt);
+      this.x += (dx/dist) * step;
+      this.y += (dy/dist) * step;
+      if(Math.abs(dx) > 0.5) this.facing = dx > 0 ? 1 : -1;
+      if(this.state !== 'walk') this.state = 'walk';
+      this.updateDom();
+    } else if(this.state === 'walk'){
+      this.state = 'idle';
+    }
+  }
+}
+
+class NPC extends Character {
+  constructor(opts){
+    super(opts);
+    this.thinkTimer = rnd(1, 4);
+  }
+  update(dt){
+    super.update(dt);
+    if(this.state === 'walk'){ this.thinkTimer = Math.max(this.thinkTimer, 0.8); return; }
+    if(this.state === 'bow') return;
+    this.thinkTimer -= dt;
+    if(this.thinkTimer <= 0){
+      this.thinkTimer = rnd(2, 6);
+      const r = Math.random();
+      if(r < 0.35) this.bow();
+      else if(r < 0.85) this.moveTo(rnd(12, 88), rnd(50, 90));
+    }
+  }
+}
+
+class RemotePlayer extends Character {
+  constructor(opts){
+    super({ ...opts, remote: true });
+    this.lastUpdate = Date.now();
+  }
+  applyRemote(info){
+    this.lastUpdate = Date.now();
+    this.targetX = clamp(info.x, 8, 92);
+    this.targetY = clamp(info.y, 48, 92);
+    if(info.facing !== this.facing) this.facing = info.facing;
+    if(info.state === 'bow' && this.state !== 'bow') this.bow();
+  }
+  update(dt){
+    if(this.state === 'bow'){
+      this.bowTimer += dt;
+      if(this.bowTimer > 0.85) this.state = 'idle';
+      return;
+    }
+    const lerp = 1 - Math.pow(0.0001, dt);
+    this.x += (this.targetX - this.x) * lerp;
+    this.y += (this.targetY - this.y) * lerp;
+    this.updateDom();
+  }
+}
+
+/* =========================================================
+   SETUP SCENE
+   ========================================================= */
+const scene = $('#scene');
+const crowd = $('#crowd');
+const fx = $('#fx');
+const keys = { up:false, down:false, left:false, right:false };
+
+let player = null;
+const npcs = [];
+const remotePlayers = new Map();
+
+function spawnPlayer(){
+  player = new Character({
+    id: state.user.id,
+    name: state.user.name,
+    robe: state.user.robe,
+    skin: state.user.skin,
+    x: 50, y: 75,
+    isPlayer: true,
+    speed: 28
   });
+  crowd.appendChild(player.el);
 }
 
-/* ---------- Cúi lạy ---------- */
-function bowFigure(fig, times = 1, silent = false){
-  if(!fig) return;
-  const bower = fig.querySelector('.bower');
-  let n = 0;
-
-  const step = () => {
-    bower.classList.remove('bowing');
-    void bower.offsetWidth;
-    bower.classList.add('bowing');
-    n++;
-    if(!silent) bell(600 + Math.random()*80, 0.14);
-    if(n < times) setTimeout(step, 880);
-  };
-  step();
-}
-
-/* ---------- Chữ bay ---------- */
-function floatText(fig, text, color){
-  if(!fig) return;
-  const fx = $('#fx');
-  const fr = fig.getBoundingClientRect();
-  const sr = fx.getBoundingClientRect();
-
-  const el = document.createElement('div');
-  el.className = 'float';
-  el.textContent = text;
-  if(color) el.style.color = color;
-  el.style.left = (fr.left - sr.left + fr.width/2) + 'px';
-  el.style.top  = (fr.top  - sr.top) + 'px';
-  fx.appendChild(el);
-  setTimeout(() => el.remove(), 1800);
-}
-
-/* ---------- Cánh hoa sen ---------- */
-function spawnPetals(count){
-  const fx = $('#fx');
+function spawnNPCs(count){
   for(let i = 0; i < count; i++){
-    const p = document.createElement('div');
-    p.className = 'petal';
-    p.style.left = rnd(2, 98) + '%';
-    p.style.animationDelay = rnd(0, 1.6) + 's';
-    p.style.animationDuration = rnd(3, 5.5) + 's';
-    p.style.setProperty('--rot', Math.floor(rnd(180, 720)) + 'deg');
-    p.style.transform = `scale(${rnd(.7, 1.3)})`;
-    fx.appendChild(p);
-    setTimeout(() => p.remove(), 7500);
+    const npc = new NPC({
+      name: pick(TEN),
+      robe: pick(ROBES),
+      skin: pick(SKINS),
+      x: rnd(15, 85),
+      y: rnd(52, 88)
+    });
+    crowd.appendChild(npc.el);
+    npcs.push(npc);
   }
+}
+
+/* ---------- Cross-tab multiplayer ---------- */
+const MSG = {
+  HELLO: 'chua:hello',
+  HI: 'chua:hi',
+  MOVE: 'chua:move',
+  BYE: 'chua:bye'
+};
+
+let channel = null;
+try {
+  if(typeof BroadcastChannel !== 'undefined') channel = new BroadcastChannel('chuaonline_v2');
+} catch(e){}
+
+function playerInfo(){
+  return {
+    id: state.user.id,
+    name: state.user.name,
+    robe: state.user.robe,
+    skin: state.user.skin,
+    x: player ? player.x : 50,
+    y: player ? player.y : 75,
+    facing: player ? player.facing : 1,
+    state: player ? player.state : 'idle'
+  };
+}
+
+function addOrUpdateRemote(info){
+  if(!info || info.id === state.user.id) return;
+  if(remotePlayers.has(info.id)){
+    remotePlayers.get(info.id).applyRemote(info);
+    return;
+  }
+  const rp = new RemotePlayer({
+    id: info.id, name: info.name, robe: info.robe, skin: info.skin,
+    x: info.x, y: info.y
+  });
+  rp.applyRemote(info);
+  crowd.appendChild(rp.el);
+  remotePlayers.set(info.id, rp);
+  toast(`🪷 Phật tử ${info.name} vừa vào chùa`);
+}
+
+function removeRemote(id){
+  const rp = remotePlayers.get(id);
+  if(!rp) return;
+  toast(`Phật tử ${rp.name} đã rời chùa`);
+  rp.el.remove();
+  remotePlayers.delete(id);
+}
+
+if(channel){
+  channel.onmessage = (e) => {
+    const data = e.data;
+    if(!data || !data.type) return;
+    if(data.player && data.player.id === state.user.id) return;
+    switch(data.type){
+      case MSG.HELLO:
+        addOrUpdateRemote(data.player);
+        channel.postMessage({ type: MSG.HI, player: playerInfo() });
+        break;
+      case MSG.HI:
+        addOrUpdateRemote(data.player);
+        break;
+      case MSG.MOVE:
+        addOrUpdateRemote(data.player);
+        if(remotePlayers.has(data.player.id)) {
+          remotePlayers.get(data.player.id).applyRemote(data.player);
+        }
+        break;
+      case MSG.BYE:
+        removeRemote(data.id);
+        break;
+    }
+  };
+
+  window.addEventListener('beforeunload', () => {
+    channel.postMessage({ type: MSG.BYE, id: state.user.id });
+  });
+
+  setInterval(() => {
+    if(player){
+      channel.postMessage({ type: MSG.MOVE, player: playerInfo() });
+    }
+  }, 120);
+
+  setInterval(() => {
+    const now = Date.now();
+    remotePlayers.forEach((rp, id) => {
+      if(now - rp.lastUpdate > 5000) removeRemote(id);
+    });
+  }, 2000);
 }
 
 /* ---------- HUD ---------- */
@@ -598,8 +1056,8 @@ function updateHUD(){
   const el = $('#meritVal');
   el.textContent = fmt(state.user.merit);
   el.animate(
-    [{ transform:'scale(1)' }, { transform:'scale(1.35)', color:'#fff6cf' }, { transform:'scale(1)' }],
-    { duration: 450, easing: 'ease-out' }
+    [{transform:'scale(1)'},{transform:'scale(1.35)',color:'#fff6cf'},{transform:'scale(1)'}],
+    {duration:450, easing:'ease-out'}
   );
 }
 
@@ -613,26 +1071,131 @@ function toast(msg){
   toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-/* =========================================================
-   HÀNH ĐỘNG
-   ========================================================= */
+/* ---------- FX helpers ---------- */
+function floatText(char, text, color){
+  if(!char) return;
+  const el = document.createElement('div');
+  el.className = 'float';
+  el.textContent = text;
+  if(color) el.style.color = color;
+  const sr = scene.getBoundingClientRect();
+  const px = (char.x / 100) * sr.width;
+  const py = (char.y / 100) * sr.height - (92 * char.currentScale) - 18;
+  el.style.left = px + 'px';
+  el.style.top  = py + 'px';
+  fx.appendChild(el);
+  setTimeout(() => el.remove(), 1800);
+}
 
-/* --- Quỳ lạy --- */
+function spawnPetals(count){
+  for(let i = 0; i < count; i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = rnd(2, 98) + '%';
+    p.style.animationDelay = rnd(0, 1.6) + 's';
+    p.style.animationDuration = rnd(3, 5.5) + 's';
+    p.style.setProperty('--rot', Math.floor(rnd(180, 720)) + 'deg');
+    p.style.transform = `scale(${rnd(.7, 1.3)})`;
+    fx.appendChild(p);
+    setTimeout(() => p.remove(), 7500);
+  }
+}
+
+function bowFigure(char, times = 1, silent = false){
+  if(!char) return;
+  let n = 0;
+  const step = () => {
+    if(char.state === 'bow' && n > 0) return;
+    char.bowerEl.classList.remove('bowing');
+    void char.bowerEl.offsetWidth;
+    char.bowerEl.classList.add('bowing');
+    char.state = 'bow';
+    char.bowTimer = 0;
+    n++;
+    if(!silent){ audio.ensure(); audio.playBell(true); }
+    if(n < times) setTimeout(step, 880);
+  };
+  step();
+}
+
+/* ---------- Hint ---------- */
+let hintHidden = false;
+function hideHint(){
+  if(hintHidden) return;
+  hintHidden = true;
+  const h = $('#hint');
+  if(h) h.classList.add('hide');
+}
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+document.addEventListener('keydown', (e) => {
+  if($('#backdrop').classList.contains('open')) return;
+  if(e.target.tagName === 'INPUT') return;
+  const k = e.key.toLowerCase();
+  let handled = true;
+  if(k === 'arrowup' || k === 'w') keys.up = true;
+  else if(k === 'arrowdown' || k === 's') keys.down = true;
+  else if(k === 'arrowleft' || k === 'a') keys.left = true;
+  else if(k === 'arrowright' || k === 'd') keys.right = true;
+  else handled = false;
+  if(handled) e.preventDefault();
+});
+
+document.addEventListener('keyup', (e) => {
+  const k = e.key.toLowerCase();
+  if(k === 'arrowup' || k === 'w') keys.up = false;
+  else if(k === 'arrowdown' || k === 's') keys.down = false;
+  else if(k === 'arrowleft' || k === 'a') keys.left = false;
+  else if(k === 'arrowright' || k === 'd') keys.right = false;
+});
+
+scene.addEventListener('click', (e) => {
+  if(e.target.closest('button, .nametag, .dpad')) return;
+  hideHint();
+  const rect = scene.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  if(player) player.moveTo(x, y);
+});
+
+crowd.addEventListener('click', (e) => {
+  const nm = e.target.closest('.figure.main .nametag');
+  if(nm){
+    e.stopPropagation();
+    openNameModal();
+  }
+});
+
+$$('.dpad-btn').forEach(btn => {
+  const dir = btn.dataset.dir;
+  const on  = (e) => { e.preventDefault(); keys[dir] = true; hideHint(); };
+  const off = (e) => { e.preventDefault(); keys[dir] = false; };
+  btn.addEventListener('pointerdown', on);
+  btn.addEventListener('pointerup', off);
+  btn.addEventListener('pointerleave', off);
+  btn.addEventListener('pointercancel', off);
+});
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
 $('#btnBow').addEventListener('click', () => {
-  bowFigure(playerFig, 3);
+  hideHint();
+  bowFigure(player, 3);
   const gain = 3;
   state.user.merit += gain;
   state.user.bows += 1;
-  save();
-  updateHUD();
-  setTimeout(() => floatText(playerFig, `+${gain} công đức`, '#ffeeb0'), 350);
+  save(); updateHUD();
+  setTimeout(() => floatText(player, `+${gain} công đức`, '#ffeeb0'), 350);
 });
 
-/* --- Dâng hương --- */
 let incenseLit = false;
 $('#btnIncense').addEventListener('click', () => {
+  hideHint();
   if(incenseLit){
-    toast('🕯️ Hương đã được dâng rồi, lòng thành vẫn đang tỏa...');
+    toast('🕯️ Hương đã dâng rồi, lòng thành vẫn đang tỏa...');
     return;
   }
   incenseLit = true;
@@ -643,16 +1206,8 @@ $('#btnIncense').addEventListener('click', () => {
     const s = document.createElement('div');
     s.className = 'incense';
     s.style.left = (28 + i * 22) + '%';
-    s.style.animationDelay = (i * 0.18) + 's';
-    s.querySelector?.('::after');
     holder.appendChild(s);
-    // delay khói lệch nhau
-    s.style.setProperty('--d', i);
   }
-  // smoke delays
-  holder.querySelectorAll('.incense').forEach((el, i) => {
-    el.style.cssText += `animation-delay:${i*0.18}s`;
-  });
   const style = document.createElement('style');
   style.textContent = `
     .incense:nth-child(1)::after{animation-delay:0s}
@@ -661,14 +1216,13 @@ $('#btnIncense').addEventListener('click', () => {
   `;
   document.head.appendChild(style);
 
-  bell(520, 0.2);
-  bowFigure(playerFig, 1, true);
+  audio.ensure(); audio.playBell(true);
+  bowFigure(player, 1, true);
 
   const gain = 5;
   state.user.merit += gain;
-  save();
-  updateHUD();
-  setTimeout(() => floatText(playerFig, `+${gain} công đức`, '#ffd6a0'), 300);
+  save(); updateHUD();
+  setTimeout(() => floatText(player, `+${gain} công đức`, '#ffd6a0'), 300);
   toast('🕯️ Ba nén hương lòng đã dâng lên Tam Bảo');
 });
 
@@ -682,21 +1236,19 @@ $('#btnDonate').addEventListener('click', openDonate);
 $('#btnBoard').addEventListener('click', openBoard);
 
 function openDonate(){
+  hideHint();
   const m = $('#modal');
   m.innerHTML = `
     <h3>🧧 Dâng lễ cúng dường</h3>
     <p class="sub">Mỗi tấm lòng thành đều được ghi vào công đức. Nguyện cầu bình an đến bạn và gia quyến.</p>
-
     <div class="label">Mục đích cúng dường</div>
     <div class="chips" id="purposes">
       ${PURPOSES.map((p,i)=>`<button class="chip ${i===selPurpose?'sel':''}" data-i="${i}">${p}</button>`).join('')}
     </div>
-
     <div class="label">Số tiền</div>
     <div class="chips" id="amounts">
       ${AMOUNTS.map(a=>`<button class="chip ${a===selAmount?'sel':''}" data-a="${a}">${fmt(a)}đ</button>`).join('')}
     </div>
-
     <div class="modal-actions">
       <button class="btn" id="mCancel">Hủy</button>
       <button class="btn donate" id="mOk">🙏 Dâng lễ</button>
@@ -706,51 +1258,42 @@ function openDonate(){
   $('#backdrop').classList.add('open');
 
   $('#purposes').addEventListener('click', e => {
-    const b = e.target.closest('.chip');
-    if(!b) return;
+    const b = e.target.closest('.chip'); if(!b) return;
     selPurpose = +b.dataset.i;
     $$('#purposes .chip').forEach(c => c.classList.toggle('sel', c === b));
   });
-
   $('#amounts').addEventListener('click', e => {
-    const b = e.target.closest('.chip');
-    if(!b) return;
+    const b = e.target.closest('.chip'); if(!b) return;
     selAmount = +b.dataset.a;
     $$('#amounts .chip').forEach(c => c.classList.toggle('sel', c === b));
   });
-
   $('#mCancel').onclick = closeModal;
   $('#mOk').onclick = confirmDonate;
 }
 
 function confirmDonate(){
   closeModal();
-
   const gain = Math.round(selAmount / 1000);
-  state.user.merit   += gain;
+  state.user.merit += gain;
   state.user.donated += selAmount;
-  save();
-  updateHUD();
+  save(); updateHUD();
 
   spawnPetals(30);
-  bell(880, 0.2);
-  setTimeout(() => bell(660, 0.15), 180);
+  audio.ensure();
+  audio.playBell(false);
+  setTimeout(() => audio.playBell(true), 180);
 
-  bowFigure(playerFig, 3, true);
-  setTimeout(() => floatText(playerFig, `+${gain} công đức`, '#ffeeb0'), 400);
-
+  bowFigure(player, 3, true);
+  setTimeout(() => floatText(player, `+${gain} công đức`, '#ffeeb0'), 400);
   toast(`🙏 Cảm niệm công đức ${fmt(selAmount)}đ — ${PURPOSES[selPurpose]}`);
 }
 
 /* --- Bảng công đức --- */
 function openBoard(){
+  hideHint();
   const names = ['Thí chủ Thiện Duyên','Phật tử Từ Bi','Ẩn danh','Đạo hữu Minh Tâm',
                  'Phật tử Bình An','Thí chủ Hỷ Xả','Phật tử Liên Hoa','Ẩn danh'];
-  const rows = names.map(n => ({
-    n,
-    a: Math.round(rnd(200000, 5000000) / 10000) * 10000
-  })).sort((x,y) => y.a - x.a);
-
+  const rows = names.map(n => ({ n, a: Math.round(rnd(200000, 5000000) / 10000) * 10000 }));
   rows.push({ n: `Bạn · Phật tử ${state.user.name}`, a: state.user.donated, me: true });
   rows.sort((x,y) => y.a - x.a);
 
@@ -773,50 +1316,96 @@ function openBoard(){
   $('#mClose').onclick = closeModal;
 }
 
-function closeModal(){
-  $('#backdrop').classList.remove('open');
+/* --- Đổi tên --- */
+function openNameModal(){
+  hideHint();
+  const m = $('#modal');
+  m.innerHTML = `
+    <h3>✏️ Đổi tên nhân vật</h3>
+    <p class="sub">Tên của bạn sẽ hiển thị với mọi người trong chùa.</p>
+    <div class="label">Tên mới</div>
+    <input type="text" id="nameInput" maxlength="20" placeholder="Nhập tên..." value="${state.user.name}">
+    <div class="modal-actions">
+      <button class="btn" id="nCancel">Hủy</button>
+      <button class="btn donate" id="nOk">Lưu</button>
+    </div>
+  `;
+  $('#backdrop').classList.add('open');
+  const inp = $('#nameInput');
+  setTimeout(() => { inp.focus(); inp.select(); }, 100);
+
+  $('#nCancel').onclick = closeModal;
+  $('#nOk').onclick = () => {
+    const val = inp.value.trim();
+    if(!val){ toast('Vui lòng nhập tên'); return; }
+    state.user.name = val.slice(0, 20);
+    save();
+    if(player) player.setName(state.user.name);
+    closeModal();
+    toast(`🪷 Đã đổi tên thành "${state.user.name}"`);
+    if(channel){
+      channel.postMessage({ type: MSG.MOVE, player: playerInfo() });
+    }
+  };
+  inp.addEventListener('keydown', e => { if(e.key === 'Enter') $('#nOk').click(); });
 }
+
+function closeModal(){ $('#backdrop').classList.remove('open'); }
 $('#backdrop').addEventListener('click', e => {
   if(e.target.id === 'backdrop') closeModal();
 });
 
+/* --- Music --- */
+$('#musicBtn').addEventListener('click', async () => {
+  hideHint();
+  const on = await audio.toggle();
+  $('#musicBtn').classList.toggle('playing', on);
+  $('#musicBtn .ico').textContent = on ? '🎵' : '🔇';
+  toast(on ? '🎵 Nhạc thiền & Kinh Phật đang vang' : '🔇 Đã tắt âm thanh');
+});
+
 /* =========================================================
-   KHỞI TẠO
+   GAME LOOP
+   ========================================================= */
+let lastTime = performance.now();
+function loop(now){
+  const dt = Math.min(0.05, (now - lastTime) / 1000);
+  lastTime = now;
+
+  if(player) player.update(dt, keys);
+  npcs.forEach(n => n.update(dt));
+  remotePlayers.forEach(r => r.update(dt));
+
+  requestAnimationFrame(loop);
+}
+
+/* =========================================================
+   INIT
    ========================================================= */
 function init(){
-  renderCrowd();
+  spawnPlayer();
+  spawnNPCs(window.innerWidth < 640 ? 5 : 8);
   updateHUD();
 
-  // NPC tự lạy ngẫu nhiên
-  setInterval(() => {
-    if(!npcFigs.length) return;
-    const f = pick(npcFigs);
-    bowFigure(f, 1, true);
-  }, 2600);
+  requestAnimationFrame(loop);
 
-  // Số người online dao động
-  setInterval(() => {
-    $('#online').textContent = 28 + Math.floor(Math.random() * 46);
-  }, 4200);
-
-  // Chào mừng
   setTimeout(() => {
     toast(`🪷 Chào mừng Phật tử ${state.user.name} đến chùa`);
   }, 700);
 
-  // Tự lạy nhẹ khi mới vào
-  setTimeout(() => bowFigure(playerFig, 1), 1200);
+  setTimeout(() => bowFigure(player, 1, true), 1200);
 
-  // Resize → render lại vị trí
-  let rz;
-  window.addEventListener('resize', () => {
-    clearTimeout(rz);
-    rz = setTimeout(() => {
-      const wasIncense = incenseLit;
-      renderCrowd();
-      incenseLit = wasIncense;
-    }, 250);
-  });
+  setInterval(() => {
+    $('#online').textContent = 28 + Math.floor(Math.random() * 46);
+  }, 4200);
+
+  setTimeout(hideHint, 8000);
+
+  if(channel){
+    setTimeout(() => {
+      channel.postMessage({ type: MSG.HELLO, player: playerInfo() });
+    }, 400);
+  }
 }
 
 init();
