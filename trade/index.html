@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sàng lọc tín hiệu coin — Top 20 đa chỉ báo</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --card: #1a1f2e;
+    --border: #2a3040;
+    --text: #e8eaed;
+    --muted: #8b95a5;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;
+    line-height: 1.6;
+  }
+  header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+  h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-top: 0.4rem; }
+  .disclaimer {
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 3px solid var(--amber);
+    padding: 0.75rem 1rem; border-radius: 4px;
+    font-size: 0.82rem; color: #d4a853;
+    margin: 1.25rem 0;
+  }
+  .disclaimer strong { color: var(--amber); }
+  .meta-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.78rem; color: var(--muted); margin-bottom: 1rem;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .score-legend { display: flex; gap: 1rem; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.75rem; flex-wrap: wrap; }
+  .score-legend span { display: flex; align-items: center; gap: 0.3rem; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot.g { background: var(--green); } .dot.a { background: var(--amber); } .dot.r { background: var(--red); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th {
+    text-align: right; padding: 0.7rem 0.6rem; color: var(--muted);
+    font-weight: 600; font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: 0.04em; border-bottom: 1px solid var(--border);
+    white-space: nowrap; position: sticky; top: 0; background: var(--bg); z-index: 2;
+  }
+  th:first-child, td:first-child { text-align: left; }
+  th:nth-child(2), td:nth-child(2) { text-align: left; }
+  td { padding: 0.7rem 0.6rem; border-bottom: 1px solid rgba(42,48,64,0.6); text-align: right; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .sym { font-weight: 700; font-size: 0.9rem; }
+  .name { color: var(--muted); font-size: 0.75rem; }
+  .pos { color: var(--green); font-weight: 600; }
+  .neg { color: var(--red); font-weight: 600; }
+  .neu { color: var(--muted); }
+  .badge {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap;
+  }
+  .badge.strong { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge.watch { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .badge.risky { background: rgba(239,68,68,0.12); color: var(--red); }
+  .badge.missing { background: rgba(139,149,165,0.12); color: var(--muted); }
+  .score-cell { font-variant-numeric: tabular-nums; }
+  .error-box {
+    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 6px; padding: 1rem; color: #fca5a5; margin: 1rem 0;
+    font-size: 0.85rem; display: none;
+  }
+  .loading { text-align: center; padding: 3rem; color: var(--muted); }
+  .progress { text-align: center; padding: 0.75rem; color: var(--muted); font-size: 0.8rem; }
+  .method {
+    margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .method h3 { color: var(--text); font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .method ul { list-style: none; padding: 0; }
+  .method li { padding: 0.35rem 0; padding-left: 1rem; position: relative; }
+  .method li::before { content: "—"; position: absolute; left: 0; color: var(--border); }
+  @media (max-width: 720px) {
+    body { padding: 1rem 0.5rem; }
+    table { font-size: 0.78rem; }
+    th, td { padding: 0.55rem 0.35rem; }
+    .hide-mobile { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sàng lọc tín hiệu coin — Top 20</h1>
+  <p class="subtitle">Phân tích đa chỉ báo · Cập nhật tự động · Không phải lời khuyên đầu tư</p>
+</header>
+
+<div class="disclaimer">
+  <strong>Giới hạn phương pháp luận:</strong> Bảng này sàng lọc coin dựa trên dữ liệu thị trường công khai và chỉ báo kỹ thuật, nhằm giảm nhiễu và loại bỏ một số rủi ro thanh khoản. Nhưng nó <strong>không dự đoán giá</strong>. "Điểm tín hiệu" cao chỉ có nghĩa là coin đó vượt qua nhiều bộ lọc hơn, không có nghĩa là sẽ tăng. Thị trường crypto có thể đảo chiều bất cứ lúc nào, quyết định đầu tư là trách nhiệm của bạn.
+</div>
+
+<div class="error-box" id="errorBox"></div>
+
+<div class="meta-bar">
+  <div class="score-legend">
+    <span><span class="dot g"></span>Tín hiệu tốt (≥5/7)</span>
+    <span><span class="dot a"></span>Cần theo dõi (3–4/7)</span>
+    <span><span class="dot r"></span>Rủi ro cao (≤2/7)</span>
+  </div>
+  <div id="updatedAt">Đang tải…</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Coin</th>
+      <th>Giá</th>
+      <th>24h</th>
+      <th>7d</th>
+      <th class="hide-mobile">So MA7</th>
+      <th class="hide-mobile">RSI</th>
+      <th>Vốn hóa</th>
+      <th>Điểm</th>
+      <th>Đánh giá</th>
+    </tr>
+  </thead>
+  <tbody id="tbody">
+    <tr><td colspan="10" class="loading">Đang lấy dữ liệu và tính toán chỉ báo…</td></tr>
+  </tbody>
+</table>
+<div class="progress" id="progress"></div>
+
+<div class="method">
+  <h3>Cách tính điểm tín hiệu (tối đa 7 điểm)</h3>
+  <ul>
+    <li><strong>Thanh khoản (bắt buộc):</strong> Vốn hóa > 100 triệu USD và khối lượng 24h > 10 triệu USD. Không đạt sẽ bị loại trực tiếp, không vào bảng.</li>
+    <li><strong>Tăng 24h (0–2 điểm):</strong> 0–5% = 0 điểm; 5–15% = 1 điểm; >15% = 2 điểm. Tăng quá cao cũng không cộng thêm, tránh khuyến khích đuổi đỉnh.</li>
+    <li><strong>Tăng 7d (0–2 điểm):</strong> >0% = 1 điểm; >10% = 2 điểm. Xác nhận đà tăng không chỉ trong một ngày.</li>
+    <li><strong>Vị trí MA7 (0–1 điểm):</strong> Giá hiện tại trên MA7 = 1 điểm, dưới = 0 điểm.</li>
+    <li><strong>RSI(14) (0–2 điểm):</strong> 50–70 = 2 điểm (động lượng lành mạnh); 40–50 hoặc 70–80 = 1 điểm; >80 hoặc <40 = 0 điểm.</li>
+    <li><strong>Thiếu dữ liệu:</strong> Coin không lấy được OHLC sẽ hiển thị "—" ở cột MA7 và RSI, và bị tính 0 điểm cho hai mục này. Đánh dấu "Thiếu dữ liệu" để phân biệt với coin thực sự yếu.</li>
+  </ul>
+  <p style="margin-top:0.75rem;">Dữ liệu từ CoinGecko Demo API. MA và RSI được tính gần đúng từ dữ liệu OHLC lịch sử. Với top 20, tổng cộng khoảng 21 lần gọi API, có thể mất 15–20 giây. Nếu quá tải, một số coin sẽ hiển thị "—" thay vì lỗi toàn trang.</p>
+</div>
+
+<script>
+const API = 'https://api.coingecko.com/api/v3';
+const DELAY_MS = 600;
+const TOP_N = 20;
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function fmtPrice(p) {
+  if (p == null) return '—';
+  if (p < 0.01) return '$' + p.toFixed(6);
+  if (p < 1) return '$' + p.toFixed(4);
+  return '$' + p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtPct(v) {
+  if (v == null || isNaN(v)) return { text: '—', cls: 'neu' };
+  const cls = v >= 0 ? 'pos' : 'neg';
+  return { text: (v >= 0 ? '+' : '') + v.toFixed(2) + '%', cls };
+}
+
+function fmtCap(v) {
+  if (v == null) return '—';
+  if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+  return '$' + (v / 1e6).toFixed(1) + 'M';
+}
+
+function computeRSI(closes, period = 14) {
+  if (closes.length < period + 1) return null;
+  let gains = 0, losses = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = closes[i] - closes[i - 1];
+    if (diff >= 0) gains += diff; else losses -= diff;
+  }
+  let avgGain = gains / period;
+  let avgLoss = losses / period;
+  for (let i = period + 1; i < closes.length; i++) {
+    const diff = closes[i] - closes[i - 1];
+    avgGain = (avgGain * (period - 1) + (diff > 0 ? diff : 0)) / period;
+    avgLoss = (avgLoss * (period - 1) + (diff < 0 ? -diff : 0)) / period;
+  }
+  if (avgLoss === 0) return 100;
+  const rs = avgGain / avgLoss;
+  return 100 - 100 / (1 + rs);
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function main() {
+  const tbody = document.getElementById('tbody');
+  const errorBox = document.getElementById('errorBox');
+  const updatedAt = document.getElementById('updatedAt');
+  const progress = document.getElementById('progress');
+
+  try {
+    // Bước 1: Lấy top 100 coin theo vốn hóa (đủ rộng để sau sàng lọc còn 20 ứng viên)
+    progress.textContent = 'Đang lấy dữ liệu thị trường…';
+    const markets = await fetchJSON(
+      `${API}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1` +
+      `&price_change_percentage=24h,7d`
+    );
+
+    // Bước 2: Sàng lọc thanh khoản, sắp xếp theo tăng 24h, lấy top 20
+    const candidates = markets
+      .filter(c =>
+        c.market_cap > 100_000_000 &&
+        c.total_volume > 10_000_000 &&
+        c.price_change_percentage_24h != null &&
+        c.price_change_percentage_7d_in_currency != null
+      )
+      .sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h)
+      .slice(0, TOP_N);
+
+    if (candidates.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="10" class="loading">Không có coin nào đáp ứng điều kiện thanh khoản.</td></tr>';
+      progress.textContent = '';
+      return;
+    }
+
+    progress.textContent = `Đã có ${candidates.length} ứng viên. Đang tính MA7 và RSI cho từng coin…`;
+
+    // Bước 3: Lấy OHLC cho từng ứng viên, xử lý lỗi độc lập
+    const enriched = [];
+    for (let i = 0; i < candidates.length; i++) {
+      const coin = candidates[i];
+      progress.textContent = `Đang tính chỉ báo: ${i + 1}/${candidates.length} — ${coin.symbol.toUpperCase()}`;
+
+      let ma7 = null, rsi = null, dataOk = false;
+      try {
+        const ohlc = await fetchJSON(
+          `${API}/coins/${coin.id}/ohlc?vs_currency=usd&days=30`
+        );
+        const closes = ohlc.map(c => c[4]).filter(v => v != null);
+        if (closes.length >= 7) {
+          const last7 = closes.slice(-7);
+          ma7 = last7.reduce((s, v) => s + v, 0) / last7.length;
+          dataOk = true;
+        }
+        rsi = computeRSI(closes, 14);
+      } catch (e) {
+        // Giữ null, đánh dấu thiếu dữ liệu
+      }
+      enriched.push({ ...coin, ma7, rsi, dataOk });
+      await sleep(DELAY_MS);
+    }
+
+    // Bước 4: Tính điểm
+    const scored = enriched.map(coin => {
+      let score = 0;
+      const ch24 = coin.price_change_percentage_24h;
+      const ch7d = coin.price_change_percentage_7d_in_currency;
+
+      if (ch24 > 15) score += 2;
+      else if (ch24 > 5) score += 1;
+
+      if (ch7d > 10) score += 2;
+      else if (ch7d > 0) score += 1;
+
+      if (coin.ma7 != null && coin.current_price > coin.ma7) score += 1;
+
+      if (coin.rsi != null) {
+        if (coin.rsi >= 50 && coin.rsi <= 70) score += 2;
+        else if ((coin.rsi >= 40 && coin.rsi < 50) || (coin.rsi > 70 && coin.rsi <= 80)) score += 1;
+      }
+
+      return { ...coin, score };
+    }).sort((a, b) => b.score - a.score);
+
+    // Bước 5: Render
+    tbody.innerHTML = scored.map((coin, i) => {
+      const ch24 = fmtPct(coin.price_change_percentage_24h);
+      const ch7d = fmtPct(coin.price_change_percentage_7d_in_currency);
+
+      let maText = '—', maCls = 'neu';
+      if (coin.ma7 != null) {
+        const diff = ((coin.current_price - coin.ma7) / coin.ma7) * 100;
+        maText = (diff >= 0 ? '+' : '') + diff.toFixed(1) + '%';
+        maCls = diff >= 0 ? 'pos' : 'neg';
+      }
+
+      let rsiText = '—', rsiCls = 'neu';
+      if (coin.rsi != null) {
+        rsiText = coin.rsi.toFixed(1);
+        if (coin.rsi >= 50 && coin.rsi <= 70) rsiCls = 'pos';
+        else if (coin.rsi > 80 || coin.rsi < 40) rsiCls = 'neg';
+        else rsiCls = 'neu';
+      }
+
+      let badge;
+      if (!coin.dataOk) badge = '<span class="badge missing">Thiếu dữ liệu</span>';
+      else if (coin.score >= 5) badge = '<span class="badge strong">Tín hiệu tốt</span>';
+      else if (coin.score >= 3) badge = '<span class="badge watch">Cần theo dõi</span>';
+      else badge = '<span class="badge risky">Rủi ro cao</span>';
+
+      return `
+        <tr>
+          <td>${i + 1}</td>
+          <td>
+            <div class="sym">${coin.symbol.toUpperCase()}</div>
+            <div class="name">${coin.name}</div>
+          </td>
+          <td>${fmtPrice(coin.current_price)}</td>
+          <td class="${ch24.cls}">${ch24.text}</td>
+          <td class="${ch7d.cls}">${ch7d.text}</td>
+          <td class="hide-mobile ${maCls}">${maText}</td>
+          <td class="hide-mobile ${rsiCls}">${rsiText}</td>
+          <td>${fmtCap(coin.market_cap)}</td>
+          <td class="score-cell"><strong>${coin.score}</strong>/7</td>
+          <td>${badge}</td>
+        </tr>
+      `;
+    }).join('');
+
+    progress.textContent = '';
+    updatedAt.textContent = 'Cập nhật: ' + new Date().toLocaleString('vi-VN');
+
+  } catch (err) {
+    console.error(err);
+    progress.textContent = '';
+    errorBox.style.display = 'block';
+    errorBox.textContent = 'Tải dữ liệu thất bại: ' + err.message + '. Có thể do giới hạn tần suất API, vui lòng thử lại sau vài phút.';
+    tbody.innerHTML = '<tr><td colspan="10" class="loading">Không thể tải dữ liệu.</td></tr>';
+  }
+}
+
+main();
+</script>
+
+</body>
+</html>
