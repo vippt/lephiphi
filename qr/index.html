@@ -201,12 +201,6 @@
       <div class="hint" id="amountHint">Nhập số tiền để mã QR có sẵn số tiền cần chuyển</div>
     </div>
 
-    <div class="field">
-      <label for="desc">Nội dung chuyển khoản</label>
-      <input id="desc" type="text" autocomplete="off"
-             placeholder="Ví dụ: Thanh toan don hang">
-    </div>
-
     <div class="actions">
       <button class="btn btn-primary" id="btnCreate" onclick="buildQR(true)">Tạo mã QR</button>
       <button class="btn btn-outline" onclick="downloadQR()">Tải QR</button>
@@ -228,14 +222,14 @@
 
 <script>
 /* ============================================================
-   CẤU HÌNH (Cập nhật chuẩn SVG-first mới nhất của VietQR)
+   CẤU HÌNH
    ============================================================ */
 const CONFIG = {
   bankCode:    "MB",
-  accountNo:   "0347226299",
-  accountName: "Do Thi Thuan",
+  accountNo:   "0922332243",
+  accountName: "Le Phi Phi",
   template:    "compact2",
-  ext:         "svg" // Chuyển sang svg theo chuẩn mới của VietQR
+  ext:         "svg"
 };
 
 const qrImg       = document.getElementById('qrImg');
@@ -243,7 +237,6 @@ const qrBox       = document.getElementById('qrBox');
 const spinner     = document.getElementById('spinner');
 const amountInput = document.getElementById('amount');
 const amountHint  = document.getElementById('amountHint');
-const descInput   = document.getElementById('desc');
 
 /* ============================================================
    1. XỬ LÝ SỐ TIỀN
@@ -330,18 +323,16 @@ amountInput.addEventListener('input', function () {
 });
 
 /* ============================================================
-   2. TẠO MÃ QR (Hỗ trợ cấu trúc SVG mới và tự fallback PNG)
+   2. TẠO MÃ QR (SVG + fallback PNG)
    ============================================================ */
 function buildQRUrl(withCacheBuster, overrideExt) {
   const amount = getAmount();
-  const desc   = descInput.value.trim();
   const extension = overrideExt || CONFIG.ext;
 
   let url = `https://img.vietqr.io/image/${CONFIG.bankCode}-${CONFIG.accountNo}-${CONFIG.template}.${extension}`;
   const params = [];
 
   if (amount)             params.push('amount='      + encodeURIComponent(amount));
-  if (desc)               params.push('addInfo='     + encodeURIComponent(desc));
   if (CONFIG.accountName) params.push('accountName=' + encodeURIComponent(CONFIG.accountName));
 
   if (params.length) url += '?' + params.join('&');
@@ -382,7 +373,6 @@ function buildQR(userAction, useFallback = false) {
     }
   };
   img.onerror = function () {
-    // Nếu dùng SVG lỗi thì tự động đổi về PNG dự phòng
     if (!useFallback) {
       buildQR(userAction, true);
     } else {
@@ -399,10 +389,8 @@ function scheduleQR(userAction) {
   qrTimer = setTimeout(() => buildQR(!!userAction), 450);
 }
 
-descInput.addEventListener('input', () => scheduleQR(false));
-
 /* ============================================================
-   3. TẢI MÃ QR — VẼ ẢNH RA CANVAS, XUẤT PNG
+   3. TẢI MÃ QR
    ============================================================ */
 function downloadQR() {
   if (!qrImg.src) {
